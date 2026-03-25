@@ -274,12 +274,19 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
         <label for="e-finalized" style="font-size:11px;color:var(--ink2);cursor:pointer;margin:0">シーケンス完了・アポ数確定済み（0件でもチェックしてね）</label>
       </div>
       <div class="f"><label>📝 本文テキスト<span id="e-body-count" style="font-weight:400;color:var(--pink);margin-left:5px"></span></label><textarea id="e-body" rows="3" oninput="syncEditLen()"></textarea></div>
-      <div class="f"><label>📌 AIメモ（分析結果を貼り付けて保存できるよ）</label><textarea id="e-aimemo" rows="3" placeholder="Claudeの分析結果をここに貼り付けて保存してね♡"></textarea></div>
+      <div class="f">
+        <label>📌 AIメモ（Claudeの分析結果をここに貼り付けて保存♡）</label>
+        <textarea id="e-aimemo" rows="3" placeholder="例：件名に個人名を入れると開封率UP。本文は300字以内推奨。&#10;（Claudeの分析結果をコピペして「保存する」を押してね）"></textarea>
+        <div class="f-hint" style="color:var(--hot)">← 共有URLをClaudeに送って「分析して」と頼むともらえるよ♡</div>
+      </div>
       <div style="margin-top:8px;padding-top:10px;border-top:2px solid var(--border)">
-        <div style="font-size:10px;font-weight:700;color:var(--ink2);margin-bottom:6px">📂 最新CSVでデータを更新</div>
-        <div class="drop-zone" id="updZone" style="padding:10px"><span class="dz-icon" style="font-size:18px">📂</span><div class="dz-main" style="font-size:11px">更新CSVをドロップ</div><div class="dz-sub">2通目・3通目後の最新CSVでOK</div></div>
+        <div style="font-size:10px;font-weight:700;color:var(--ink2);margin-bottom:6px">📂 最新データで更新（2通目・3通目送信後に使ってね）</div>
+        <div class="drop-zone" id="updZone" style="padding:10px"><span class="dz-icon" style="font-size:18px">📋</span><div class="dz-main" style="font-size:11px">①キャンペーンCSVをドロップ</div><div class="dz-sub">最新CSVで送信数・返信・バウンスを更新</div></div>
         <input type="file" id="updFileIn" accept=".xlsx,.xls,.csv" style="display:none">
         <div id="updMsg"></div>
+        <div class="drop-zone" id="updZone2" style="padding:10px;margin-top:6px"><span class="dz-icon" style="font-size:18px">📊</span><div class="dz-main" style="font-size:11px">②Open RateのExcelをドロップ（任意）</div><div class="dz-sub">時間帯・開封回数データを更新</div></div>
+        <input type="file" id="updFileIn2" accept=".xlsx,.xls,.csv" style="display:none">
+        <div id="updMsg2"></div>
       </div>
     </div>
     <div class="modal-btns">
@@ -323,6 +330,7 @@ let camps = [];
 let editIdx = -1;
 let pend1 = null, pend2 = null;
 let updPend = null;
+let updPend2 = null;
 
 // ══ URL DATA LOAD ══
 function loadFromUrl() {
@@ -413,7 +421,20 @@ initDrop('updZone', 'updFileIn', file => {
     if (!data) { msgEl.innerHTML = '<div class="msg-err">キャンペーンCSVを使ってね</div>'; return; }
     updPend = data;
     const c = camps[editIdx];
-    msgEl.innerHTML = `<div class="msg-ok">✓ プレビュー<br>送信: ${c.recipients}→<strong>${data.recipients}</strong> 開封率: ${pct(c.openRate)}→<strong>${pct(data.openRate)}</strong> 返信率: ${pct(c.replyRate)}→<strong>${pct(data.replyRate)}</strong></div>`;
+    msgEl.innerHTML = `<div class="msg-ok">✓ 送信: ${c.recipients}→<strong>${data.recipients}</strong> 開封率: ${pct(c.openRate)}→<strong>${pct(data.openRate)}</strong> 返信率: ${pct(c.replyRate)}→<strong>${pct(data.replyRate)}</strong></div>`;
+    document.getElementById('updZone').classList.add('loaded');
+  });
+});
+
+initDrop('updZone2', 'updFileIn2', file => {
+  parseFile(file, (rows, err) => {
+    const msgEl = document.getElementById('updMsg2');
+    if (err) { msgEl.innerHTML = `<div class="msg-err">${err}</div>`; return; }
+    const data = parseOpenRateExcel(rows);
+    if (!data) { msgEl.innerHTML = '<div class="msg-err">Open RateのExcelを使ってね</div>'; return; }
+    updPend2 = data;
+    msgEl.innerHTML = `<div class="msg-ok">✓ 開封者数: <strong>${data.openers}</strong> 平均開封回数: <strong>${data.avgOpenCount.toFixed(1)}回</strong></div>`;
+    document.getElementById('updZone2').classList.add('loaded');
   });
 });
 
@@ -577,7 +598,14 @@ function openEdit(i) {
   updPend = null;
   document.getElementById('editOverlay').classList.add('open');
 }
-function closeEdit() { document.getElementById('editOverlay').classList.remove('open'); editIdx = -1; updPend = null; }
+function closeEdit() {
+  document.getElementById('editOverlay').classList.remove('open');
+  editIdx = -1; updPend = null; updPend2 = null;
+  document.getElementById('updZone').classList.remove('loaded');
+  document.getElementById('updZone2').classList.remove('loaded');
+  document.getElementById('updMsg').innerHTML = '';
+  document.getElementById('updMsg2').innerHTML = '';
+}
 function saveEdit() {
   if (editIdx < 0) return;
   const c = camps[editIdx];
@@ -588,7 +616,7 @@ function saveEdit() {
   const memoText = document.getElementById('e-aimemo').value.trim();
   const base = updPend || c;
   const N = base.recipients || 1;
-  const actualOpens = base.opens || 0;
+  const actualOpens = updPend2 ? updPend2.openers : (base.opens || 0);
   const actualReplies = manualReplies > 0 ? manualReplies : (base.replies || 0);
   // AIメモを更新
   const aiMemos = c.aiMemos || [];
@@ -599,6 +627,12 @@ function saveEdit() {
     }
   }
   camps[editIdx] = { ...c, ...(updPend||{}),
+    opens: actualOpens,
+    openRate: N > 0 ? actualOpens/N : 0,
+    openTimes: updPend2 ? updPend2.openTimes.map(d => d instanceof Date ? d.toISOString() : d) : c.openTimes,
+    openCounts: updPend2 ? updPend2.openCounts : c.openCounts,
+    avgOpenCount: updPend2 ? updPend2.avgOpenCount : c.avgOpenCount,
+    maxOpenCount: updPend2 ? updPend2.maxOpenCount : c.maxOpenCount,
     weekday: document.getElementById('e-day').value || c.weekday,
     hour: document.getElementById('e-hour').value || c.hour,
     appointments: appt,
