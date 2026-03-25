@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✨ GMass 営業メール分析ちゃん ✨</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Maru+Gothic:wght@700&display=swap');
+:root{
+  --pink:#ff6eb4;--hot:#ff2d78;--purple:#c97fff;
+  --mint:#2dd4bf;--gold:#f0b429;--coral:#f87171;--green:#4ade80;
+  --pink3:#ffd6ec;--pink4:#fff0f8;--border:#ffd6ec;--border2:#ffb3d9;
+  --ink:#2d1a2e;--ink2:#7a4a7a;--ink3:#b888b8;
+  --bg:#fff5fb;--shadow:0 4px 20px rgba(255,110,180,.12);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif;font-size:13px;display:flex;flex-direction:column}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--pink4)}::-webkit-scrollbar-thumb{background:var(--pink3);border-radius:10px}
+.header{background:linear-gradient(135deg,#ff6eb4,#c97fff);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 4px 16px rgba(255,110,180,.3)}
+.logo{font-family:'Zen Maru Gothic',sans-serif;font-size:15px;color:white;letter-spacing:1px}
+.hstats{display:flex;gap:20px}
+.hstat{text-align:right}
+.hstat-val{font-size:16px;font-weight:700;color:white}
+.hstat-lbl{font-size:9px;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:.5px}
+.layout{display:flex;flex:1;overflow:hidden}
+.sidebar{width:310px;flex-shrink:0;background:white;border-right:2px solid var(--border);overflow-y:auto}
+.sb{padding:14px;display:flex;flex-direction:column;gap:12px}
+.panel{background:white;border:2px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+.panel-hd{background:linear-gradient(135deg,var(--pink4),#f0e8ff);padding:9px 14px;font-size:11px;font-weight:700;color:var(--ink2);display:flex;justify-content:space-between;align-items:center}
+.panel-bd{padding:14px}
+.drop-zone{border:2.5px dashed var(--border2);border-radius:12px;padding:14px 12px;text-align:center;cursor:pointer;transition:all .2s;background:var(--pink4);user-select:none;-webkit-user-select:none;margin-bottom:8px}
+.drop-zone:hover,.drop-zone.over{border-color:var(--hot);background:var(--pink3)}
+.drop-zone.loaded{border-color:var(--mint);background:#f0fdf4;border-style:solid}
+.dz-icon{font-size:22px;margin-bottom:4px;display:block;pointer-events:none}
+.dz-main{font-size:12px;font-weight:700;color:var(--pink);margin-bottom:2px;pointer-events:none}
+.dz-sub{font-size:10px;color:var(--ink3);line-height:1.4;pointer-events:none}
+.drop-zone.loaded .dz-main{color:#0d9488}
+.form{display:flex;flex-direction:column;gap:8px}
+.f label{display:block;font-size:10px;font-weight:700;color:var(--ink2);margin-bottom:3px}
+.f input,.f select,.f textarea{width:100%;background:var(--pink4);border:2px solid var(--border);border-radius:9px;color:var(--ink);font-family:'Noto Sans JP',sans-serif;font-size:12px;padding:7px 10px;outline:none;transition:border-color .2s;resize:none}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--pink)}
+.f select option{background:white}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.f-hint{font-size:10px;color:var(--ink3);margin-top:2px;line-height:1.5}
+.btn{border:none;border-radius:30px;cursor:pointer;font-size:12px;font-family:'Noto Sans JP',sans-serif;font-weight:700;padding:8px 16px;transition:all .15s;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.05)}
+.btn:active{transform:scale(.97)}
+.btn-pink{background:linear-gradient(135deg,var(--pink),var(--hot));color:white}
+.btn-mint{background:linear-gradient(135deg,var(--mint),#1aaa94);color:white}
+.btn-pu{background:linear-gradient(135deg,var(--purple),#7c3aed);color:white}
+.btn-ghost{background:white;color:var(--ink2);border:2px solid var(--border)}
+.btn-ghost:hover{border-color:var(--pink);color:var(--pink)}
+.btn-full{width:100%;margin-top:6px}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;filter:none}
+.icon-btn{background:none;border:none;cursor:pointer;font-size:13px;padding:3px 5px;border-radius:50%;transition:background .15s;line-height:1}
+.icon-btn:hover{background:var(--pink3)}
+.icon-btn.del:hover{background:#ffc8c8}
+.msg-ok{margin-top:6px;padding:6px 10px;background:#dcfce7;border:2px solid #86efac;border-radius:9px;color:#166534;font-size:11px;line-height:1.6}
+.msg-err{margin-top:6px;padding:6px 10px;background:#fee2e2;border:2px solid #fca5a5;border-radius:9px;color:#991b1b;font-size:11px;line-height:1.6}
+.msg-info{margin-top:6px;padding:6px 10px;background:var(--pink4);border:2px solid var(--border);border-radius:9px;color:var(--ink2);font-size:11px;line-height:1.6}
+.preview{background:#f0fdf4;border:2px solid #86efac;border-radius:9px;padding:8px 10px;font-size:11px;color:#166534;line-height:1.8;margin-top:6px}
+.camp{background:white;border:2px solid var(--border);border-radius:12px;padding:10px;margin-bottom:8px;transition:all .2s}
+.camp:last-child{margin-bottom:0}
+.camp:hover{border-color:var(--pink);box-shadow:var(--shadow)}
+.camp-top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;margin-bottom:6px}
+.camp-subj{font-size:11px;font-weight:700;line-height:1.4;flex:1}
+.camp-acts{display:flex;gap:2px;flex-shrink:0}
+.camp-stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.cs-v{font-size:13px;font-weight:700}.cs-l{font-size:9px;color:var(--ink3);text-transform:uppercase}
+.cp{color:var(--hot)}.cg{color:#ca8a04}.cgn{color:#16a34a}
+.camp-meta{font-size:10px;color:var(--ink3)}
+.badge{display:inline-block;padding:1px 6px;border-radius:20px;font-size:9px;font-weight:700;margin-right:3px}
+.bd{background:#dcfce7;color:#166534}.bp{background:#fef9c3;color:#854d0e}
+.content{flex:1;overflow-y:auto;padding:20px 24px}
+.empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--ink3);text-align:center}
+.empty-icon{font-size:48px;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.sec{font-size:10px;font-weight:700;color:var(--pink);margin-bottom:12px;display:flex;align-items:center;gap:8px;text-transform:uppercase;letter-spacing:1px}
+.sec::before{content:'♡'}
+.sec::after{content:'';flex:1;height:2px;background:linear-gradient(90deg,var(--pink3),transparent);border-radius:2px}
+.kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:20px}
+.kpi{background:white;border:2px solid var(--border);border-radius:14px;padding:12px;text-align:center;box-shadow:var(--shadow);transition:transform .2s}
+.kpi:hover{transform:translateY(-2px)}
+.kpi-e{font-size:18px;margin-bottom:3px}
+.kpi-l{font-size:9px;font-weight:700;color:var(--ink3);margin-bottom:5px;text-transform:uppercase}
+.kpi-v{font-size:20px;font-weight:900;line-height:1;margin-bottom:2px}
+.kpi-s{font-size:9px;color:var(--ink3)}
+.kv-p{color:var(--hot)}.kv-pu{color:#9333ea}.kv-g{color:#ca8a04}
+.kv-gn{color:#16a34a}.kv-m{color:#0d9488}.kv-c{color:#dc2626}
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.card{background:white;border:2px solid var(--border);border-radius:16px;padding:16px;box-shadow:var(--shadow)}
+.card-title{font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:12px}
+.bars{display:flex;flex-direction:column;gap:7px}
+.bar-r{display:flex;align-items:center;gap:8px}
+.bar-l{width:64px;font-size:11px;color:var(--ink2);text-align:right;flex-shrink:0;line-height:1.3;font-weight:500}
+.bar-t{flex:1;background:var(--pink3);border-radius:30px;height:20px;overflow:hidden}
+.bar-f{height:100%;border-radius:30px;display:flex;align-items:center;padding-left:8px;font-size:10px;color:white;font-weight:700;transition:width .7s cubic-bezier(.4,0,.2,1);min-width:34px;text-shadow:0 1px 3px rgba(0,0,0,.2)}
+.bf-p{background:linear-gradient(90deg,var(--pink),var(--hot))}.bf-g{background:linear-gradient(90deg,#f59e0b,#d97706)}
+.bf-gn{background:linear-gradient(90deg,var(--green),#16a34a)}.bf-m{background:linear-gradient(90deg,var(--mint),#0d9488)}
+.bf-c{background:linear-gradient(90deg,var(--coral),#dc2626)}.bf-pu{background:linear-gradient(90deg,var(--purple),#9333ea)}
+.bf-bl{background:linear-gradient(90deg,#60a5fa,#2563eb)}
+.hm{display:grid;gap:3px}
+.hm-l{font-size:9px;font-weight:700;color:var(--ink3);display:flex;align-items:center;justify-content:center;padding:2px;text-align:center}
+.hm-l.t{justify-content:flex-end;padding-right:5px}
+.hm-c{height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;cursor:default;transition:transform .1s;color:transparent;position:relative}
+.hm-c:hover{transform:scale(1.12);color:rgba(0,0,0,.7);z-index:5}
+.hm-tip{display:none;position:absolute;bottom:110%;left:50%;transform:translateX(-50%);background:var(--ink);color:white;padding:4px 8px;border-radius:7px;font-size:10px;white-space:nowrap;z-index:20;pointer-events:none}
+.hm-c:hover .hm-tip{display:block}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:9px;font-weight:700;text-transform:uppercase;color:var(--ink3);padding:7px 10px;border-bottom:2px solid var(--border);text-align:left;letter-spacing:.5px}
+.tbl td{padding:8px 10px;border-bottom:1px solid var(--pink3);font-size:11px;vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--pink4)}
+.pill{display:inline-block;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700}
+.pp{background:#fce7f3;color:#be185d}.pm{background:#d1fae5;color:#065f46}
+.pg{background:#fef3c7;color:#92400e}.ppu{background:#ede9fe;color:#6d28d9}
+.pgn{background:#dcfce7;color:#166534}.pc{background:#fee2e2;color:#991b1b}
+.pgr{background:var(--pink4);color:var(--ink3)}
+.rank{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;font-size:11px;font-weight:700}
+.r1{background:#fef3c7;color:#92400e}.r2{background:#f1f5f9;color:#475569}
+.r3{background:#fde8d8;color:#c2410c}.rn{background:var(--pink4);color:var(--ink3)}
+.ai-box{background:linear-gradient(135deg,var(--pink4),#f0ebff);border:2px solid var(--border2);border-radius:16px;padding:16px;margin-bottom:20px}
+.ai-box-title{font-size:13px;font-weight:700;color:var(--hot);margin-bottom:10px}
+.ai-btn{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,var(--pink),var(--purple));color:white;border:none;border-radius:30px;padding:9px 18px;cursor:pointer;font-size:12px;font-weight:700;transition:all .15s;font-family:'Noto Sans JP',sans-serif}
+.ai-btn:hover{transform:translateY(-1px)}
+.ai-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.spinner{width:13px;height:13px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.memo-box{background:white;border:2px solid var(--border);border-radius:12px;padding:12px;margin-top:10px}
+.memo-date{font-size:10px;color:var(--ink3);margin-bottom:4px}
+.memo-text{font-size:12px;color:var(--ink2);line-height:1.8;white-space:pre-wrap}
+.memo-text strong{color:var(--ink)}
+.note{background:#fef9c3;border:2px solid #fde047;border-radius:12px;padding:10px 14px;font-size:11px;color:#713f12;line-height:1.8;margin-bottom:16px}
+.mini{background:var(--pink4);border:2px solid var(--border);border-radius:10px;padding:9px 12px;font-size:11px;color:var(--ink2);line-height:1.7;margin-top:8px}
+.mini strong{color:var(--hot)}
+.loading-bar{height:3px;background:var(--pink3);border-radius:10px;overflow:hidden;margin:6px 0}
+.loading-fill{height:100%;background:linear-gradient(90deg,var(--pink),var(--purple));border-radius:10px;animation:la 1.4s ease-in-out infinite}
+@keyframes la{0%{width:0%;margin-left:0%}50%{width:50%;margin-left:25%}100%{width:0%;margin-left:100%}}
+.overlay{display:none;position:fixed;inset:0;background:rgba(45,26,46,.5);z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+.overlay.open{display:flex}
+.modal{background:white;border:2px solid var(--border);border-radius:22px;padding:24px;width:420px;max-width:calc(100vw - 32px);max-height:90vh;overflow-y:auto;box-shadow:0 20px 50px rgba(255,110,180,.2);animation:pop .25s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{from{opacity:0;transform:scale(.9) translateY(10px)}to{opacity:1;transform:none}}
+.modal-title{font-size:15px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.modal-btns{display:flex;gap:8px;margin-top:14px}
+.share-url-box{background:var(--pink3);border-radius:10px;padding:10px 12px;font-size:11px;color:var(--hot);word-break:break-all;margin-top:8px;line-height:1.6;cursor:pointer;border:2px solid var(--border2)}
+.share-url-box:hover{background:var(--pink)}
+.fade-in{animation:fi .3s ease forwards}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.step-badge{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;font-size:10px;font-weight:700;background:var(--pink);color:white;margin-right:5px;flex-shrink:0}
+.file-guide{background:var(--pink4);border:2px solid var(--border);border-radius:10px;padding:10px 12px;font-size:11px;color:var(--ink2);line-height:1.8;margin-bottom:10px}
+.file-guide strong{color:var(--hot)}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">✦ GMass 営業メール分析ちゃん ✦</div>
+  <div class="hstats">
+    <div class="hstat"><div class="hstat-val" id="h-n">0</div><div class="hstat-lbl">キャンペーン</div></div>
+    <div class="hstat"><div class="hstat-val" id="h-open">—</div><div class="hstat-lbl">平均開封率</div></div>
+    <div class="hstat"><div class="hstat-val" id="h-a1">—</div><div class="hstat-lbl">アポ率/送信</div></div>
+    <div class="hstat"><div class="hstat-val" id="h-a2">—</div><div class="hstat-lbl">アポ率/開封</div></div>
+  </div>
+</div>
+<div class="layout">
+  <div class="sidebar">
+    <div class="sb">
+      <div class="panel">
+        <div class="panel-hd">💗 キャンペーン追加</div>
+        <div class="panel-bd">
+          <div class="file-guide"><span class="step-badge">1</span><strong>キャンペーンCSV</strong>をドロップ<br><span style="font-size:10px;color:var(--ink3)">Gmail → GMass Reports → [CAMPAIGNS]のメール →「download campaign CSV」</span></div>
+          <div class="drop-zone" id="dz1"><span class="dz-icon">📋</span><div class="dz-main">① キャンペーンCSVをドロップ</div><div class="dz-sub">Opens・Replied・Bounced列が入ったファイル</div></div>
+          <input type="file" id="fi1" accept=".xlsx,.xls,.csv" style="display:none">
+          <div id="msg1"></div>
+          <div id="step2area" style="display:none;margin-top:10px">
+            <div class="file-guide"><span class="step-badge">2</span><strong>Open RateのExcel</strong>をドロップ（任意）<br><span style="font-size:10px;color:var(--ink3)">レポートページ → Open Rate → Download as Microsoft Excel</span></div>
+            <div class="drop-zone" id="dz2"><span class="dz-icon">📊</span><div class="dz-main">② Open RateのExcelをドロップ（任意）</div><div class="dz-sub">時間帯・開封回数分析に使うよ</div></div>
+            <input type="file" id="fi2" accept=".xlsx,.xls,.csv" style="display:none">
+            <div id="msg2"></div>
+          </div>
+          <div id="metaForm" style="display:none;margin-top:10px">
+            <div id="prev1" class="preview"></div>
+            <div id="prev2" class="preview" style="display:none;margin-top:6px"></div>
+            <div class="form" style="margin-top:10px">
+              <div class="f"><label>✦ 件名（1通目）</label><input type="text" id="f-subj" placeholder="例：【ベンナビ】初期費用ゼロのご案内"/></div>
+              <div class="f-row">
+                <div class="f"><label>送信曜日</label>
+                  <select id="f-day"><option value="">選択</option><option>月</option><option>火</option><option>水</option><option>木</option><option>金</option></select>
+                </div>
+                <div class="f"><label>送信時間（時）</label>
+                  <select id="f-hour"><option value="">選択</option>
+                    <option value="6">6時</option><option value="7">7時</option><option value="8">8時</option><option value="9">9時</option>
+                    <option value="10">10時</option><option value="11">11時</option><option value="12">12時</option><option value="13">13時</option>
+                    <option value="14">14時</option><option value="15">15時</option><option value="16">16時</option><option value="17">17時</option>
+                    <option value="18">18時</option><option value="19">19時</option><option value="20">20時</option>
+                  </select>
+                </div>
+              </div>
+              <div class="f">
+                <label>🎯 アポ獲得数（後から✏️で追記もOK）</label>
+                <input type="number" id="f-appt" placeholder="0" min="0" value="0"/>
+                <div class="f-hint">シーケンス完了後に✏️で更新できるよ♡</div>
+              </div>
+              <div class="f">
+                <label>📝 本文テキスト（AI分析に使うよ）<span id="f-body-count" style="font-weight:400;color:var(--pink);margin-left:5px"></span></label>
+                <textarea id="f-body" rows="3" placeholder="本文を貼り付けると文字数が自動カウント＆AI分析されるよ♡" oninput="syncLen()"></textarea>
+              </div>
+              <button class="btn btn-mint btn-full" onclick="confirmAdd()">✓ 登録する♡</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-hd" style="display:flex;justify-content:space-between;align-items:center">
+          <span>💖 登録済み（<span id="cnt">0</span>件）</span>
+          <div style="display:flex;gap:4px">
+            <button class="btn btn-ghost" onclick="loadDemo()" style="padding:3px 9px;font-size:10px;border-radius:20px">デモ</button>
+            <button class="btn btn-ghost" onclick="openShare()" style="padding:3px 9px;font-size:10px;border-radius:20px">🔗 共有</button>
+          </div>
+        </div>
+        <div class="panel-bd" style="padding:10px">
+          <div id="campList"><div style="color:var(--ink3);font-size:12px;text-align:center;padding:12px 0">まだないよ〜！</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content" id="content">
+    <div class="empty" id="emptyState">
+      <div class="empty-icon">💌</div>
+      <div style="font-size:16px;font-weight:700;color:var(--ink2)">キャンペーンを追加してね！</div>
+      <div style="max-width:400px;font-size:12px;color:var(--ink3);line-height:2.2;text-align:left;background:white;border:2px solid var(--border);border-radius:16px;padding:16px;box-shadow:var(--shadow)">
+        <div style="margin-bottom:8px"><span class="step-badge">1</span><strong style="color:var(--ink)">キャンペーンCSVをドロップ</strong><br><span style="font-size:11px;margin-left:23px;display:block">Gmail → GMass Reports → [CAMPAIGNS]のメール →「download campaign CSV」</span></div>
+        <div style="margin-bottom:8px"><span class="step-badge">2</span><strong style="color:var(--ink)">Open RateのExcelをドロップ（任意）</strong><br><span style="font-size:11px;margin-left:23px;display:block">レポートページ → Open Rate → Download as Excel</span></div>
+        <div><span class="step-badge">3</span><strong style="color:var(--ink)">件名・アポ数・本文を入力して登録</strong></div>
+      </div>
+      <button class="btn btn-ghost" onclick="loadDemo()" style="margin-top:6px">🌸 デモデータで試してみる</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="overlay" id="editOverlay">
+  <div class="modal">
+    <div class="modal-title">✏️ 編集・データ更新</div>
+    <div class="form">
+      <div class="f"><label>件名</label><input type="text" id="e-subj" readonly style="opacity:.6"/></div>
+      <div class="f-row">
+        <div class="f"><label>送信曜日</label>
+          <select id="e-day"><option value="">選択</option><option>月</option><option>火</option><option>水</option><option>木</option><option>金</option></select>
+        </div>
+        <div class="f"><label>送信時間（時）</label>
+          <select id="e-hour"><option value="">選択</option>
+            <option value="6">6時</option><option value="7">7時</option><option value="8">8時</option><option value="9">9時</option>
+            <option value="10">10時</option><option value="11">11時</option><option value="12">12時</option><option value="13">13時</option>
+            <option value="14">14時</option><option value="15">15時</option><option value="16">16時</option><option value="17">17時</option>
+            <option value="18">18時</option><option value="19">19時</option><option value="20">20時</option>
+          </select>
+        </div>
+      </div>
+      <div class="f"><label>🎯 アポ獲得数</label><input type="number" id="e-appt" min="0"/><div class="f-hint">1〜3通目を通じた合計アポ数を入力してね♡</div></div>
+      <div class="f"><label>📝 本文テキスト<span id="e-body-count" style="font-weight:400;color:var(--pink);margin-left:5px"></span></label><textarea id="e-body" rows="3" oninput="syncEditLen()"></textarea></div>
+      <div style="margin-top:8px;padding-top:10px;border-top:2px solid var(--border)">
+        <div style="font-size:10px;font-weight:700;color:var(--ink2);margin-bottom:6px">📂 最新CSVでデータを更新</div>
+        <div class="drop-zone" id="updZone" style="padding:10px"><span class="dz-icon" style="font-size:18px">📂</span><div class="dz-main" style="font-size:11px">更新CSVをドロップ</div><div class="dz-sub">2通目・3通目後の最新CSVでOK</div></div>
+        <input type="file" id="updFileIn" accept=".xlsx,.xls,.csv" style="display:none">
+        <div id="updMsg"></div>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-mint" style="flex:1" onclick="saveEdit()">保存する♡</button>
+      <button class="btn btn-ghost" onclick="closeEdit()">キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHARE MODAL -->
+<div class="overlay" id="shareOverlay">
+  <div class="modal">
+    <div class="modal-title">🔗 データを共有・エクスポート</div>
+    <div style="font-size:12px;color:var(--ink2);line-height:1.8;margin-bottom:14px">
+      データをURLに変換して共有できるよ♡<br>
+      <span style="font-size:10px;color:var(--ink3)">URLをコピーしてClaudeに貼り付けると分析してもらえるよ！</span>
+    </div>
+    <button class="btn btn-pink btn-full" onclick="genShareUrl()">🔗 共有URLを生成する</button>
+    <div id="shareUrlArea" style="display:none;margin-top:10px">
+      <div style="font-size:11px;color:var(--ink2);margin-bottom:6px;font-weight:700">共有URL（クリックでコピー）</div>
+      <div class="share-url-box" id="shareUrlBox" onclick="copyShareUrl()">URLを生成中...</div>
+      <div id="shareUrlMsg" style="margin-top:6px"></div>
+      <div style="font-size:10px;color:var(--ink3);margin-top:8px;line-height:1.7">
+        💡 このURLをClaudeのチャットに貼り付けて「分析して」と送ると<br>AIが詳しく分析してアドバイスしてくれるよ♡
+      </div>
+    </div>
+    <div style="margin-top:14px;padding-top:14px;border-top:2px solid var(--border)">
+      <div style="font-size:11px;font-weight:700;color:var(--ink2);margin-bottom:8px">📥 URLからデータを読み込む</div>
+      <div class="f"><input type="text" id="importUrlIn" placeholder="共有URLをここに貼り付け"/></div>
+      <button class="btn btn-mint btn-full" onclick="importFromUrl()">読み込む</button>
+      <div id="importMsg"></div>
+    </div>
+    <div class="modal-btns" style="margin-top:14px">
+      <button class="btn btn-ghost btn-full" onclick="closeShare()">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let camps = [];
+let editIdx = -1;
+let pend1 = null, pend2 = null;
+let updPend = null;
+
+// ══ URL DATA LOAD ══
+function loadFromUrl() {
+  try {
+    const hash = location.hash;
+    if (hash && hash.startsWith('#data=')) {
+      const encoded = hash.slice(6);
+      const json = decodeURIComponent(atob(encoded));
+      const loaded = JSON.parse(json);
+      if (Array.isArray(loaded) && loaded.length > 0) {
+        camps = loaded;
+        save();
+        return true;
+      }
+    }
+  } catch(e) {}
+  return false;
+}
+
+// ── localStorage fallback ──
+function loadFromStorage() {
+  try {
+    const saved = localStorage.getItem('gm_v11');
+    if (saved) { camps = JSON.parse(saved); return true; }
+  } catch(e) {}
+  return false;
+}
+
+const loadedFromUrl = loadFromUrl();
+if (!loadedFromUrl) loadFromStorage();
+renderAll();
+
+// ══ DROP ZONE SETUP ══
+function initDrop(zoneId, inputId, onFile) {
+  const zone = document.getElementById(zoneId);
+  const inp = document.getElementById(inputId);
+  if (!zone || !inp) return;
+  zone.addEventListener('click', () => inp.click());
+  zone.addEventListener('dragenter', e => { e.preventDefault(); e.stopPropagation(); zone.classList.add('over'); });
+  zone.addEventListener('dragover', e => { e.preventDefault(); e.stopPropagation(); zone.classList.add('over'); });
+  zone.addEventListener('dragleave', e => { e.preventDefault(); e.stopPropagation(); zone.classList.remove('over'); });
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); e.stopPropagation();
+    zone.classList.remove('over');
+    const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) onFile(f);
+  });
+  inp.addEventListener('change', () => { if (inp.files && inp.files[0]) onFile(inp.files[0]); inp.value = ''; });
+}
+
+initDrop('dz1', 'fi1', file => {
+  parseFile(file, (rows, err) => {
+    const msgEl = document.getElementById('msg1');
+    if (err) { msgEl.innerHTML = `<div class="msg-err">${err}</div>`; return; }
+    const data = parseCampaignCSV(rows);
+    if (!data) { msgEl.innerHTML = '<div class="msg-err">列が認識できなかったよ💦<br>Opens・Replied・Bounced列があるか確認してね</div>'; return; }
+    pend1 = data;
+    document.getElementById('dz1').classList.add('loaded');
+    document.getElementById('dz1').querySelector('.dz-main').textContent = '✓ ' + file.name;
+    document.getElementById('prev1').innerHTML = `<strong>✅ ①読み込み完了♡</strong><br>送信数: <strong>${data.recipients}</strong> 開封: <strong>${data.opens}</strong>(${pct(data.openRate)}) 返信: <strong>${data.replies}</strong>(${pct(data.replyRate)}) バウンス: <strong>${data.bounces}</strong>(${pct(data.bounceRate)})`;
+    msgEl.innerHTML = '<div class="msg-ok">✓ 読み込み完了！②のExcelもドロップするか、そのまま情報を入力してね♡</div>';
+    document.getElementById('step2area').style.display = 'block';
+    document.getElementById('metaForm').style.display = 'block';
+  });
+});
+
+initDrop('dz2', 'fi2', file => {
+  parseFile(file, (rows, err) => {
+    const msgEl = document.getElementById('msg2');
+    if (err) { msgEl.innerHTML = `<div class="msg-err">${err}</div>`; return; }
+    const data = parseOpenRateExcel(rows);
+    if (!data) { msgEl.innerHTML = '<div class="msg-err">列が認識できなかったよ💦<br>MostRecentOpen・NumberOfOpens列があるか確認してね</div>'; return; }
+    pend2 = data;
+    document.getElementById('dz2').classList.add('loaded');
+    document.getElementById('dz2').querySelector('.dz-main').textContent = '✓ ' + file.name;
+    const prev2El = document.getElementById('prev2');
+    prev2El.innerHTML = `<strong>✅ ②読み込み完了♡</strong><br>開封者数: <strong>${data.openers}</strong> 平均開封回数: <strong>${data.avgOpenCount.toFixed(1)}回</strong> 最多開封: <strong>${data.maxOpenCount}回</strong>`;
+    prev2El.style.display = 'block';
+    msgEl.innerHTML = '<div class="msg-ok">✓ 時間帯・開封回数データも読み込んだよ♡</div>';
+  });
+});
+
+initDrop('updZone', 'updFileIn', file => {
+  parseFile(file, (rows, err) => {
+    const msgEl = document.getElementById('updMsg');
+    if (err) { msgEl.innerHTML = `<div class="msg-err">${err}</div>`; return; }
+    const data = parseCampaignCSV(rows);
+    if (!data) { msgEl.innerHTML = '<div class="msg-err">キャンペーンCSVを使ってね</div>'; return; }
+    updPend = data;
+    const c = camps[editIdx];
+    msgEl.innerHTML = `<div class="msg-ok">✓ プレビュー<br>送信: ${c.recipients}→<strong>${data.recipients}</strong> 開封率: ${pct(c.openRate)}→<strong>${pct(data.openRate)}</strong> 返信率: ${pct(c.replyRate)}→<strong>${pct(data.replyRate)}</strong></div>`;
+  });
+});
+
+// ══ PARSE ══
+function parseFile(file, cb) {
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (!['xlsx','xls','csv'].includes(ext)) { cb(null, 'xlsx か csv を選んでね！'); return; }
+  const reader = new FileReader();
+  reader.onerror = () => cb(null, 'ファイルの読み込みに失敗したよ💦');
+  reader.onload = ev => {
+    try {
+      let rows;
+      if (ext === 'csv') {
+        rows = ev.target.result.split('\n').map(line => {
+          const cells = []; let cur = '', inQ = false;
+          for (const ch of line) {
+            if (ch === '"') inQ = !inQ;
+            else if ((ch === ',' || ch === '\t') && !inQ) { cells.push(cur.trim()); cur = ''; }
+            else cur += ch;
+          }
+          cells.push(cur.trim()); return cells;
+        }).filter(r => r.some(c => c !== ''));
+      } else {
+        const wb = XLSX.read(ev.target.result, { type: 'array' });
+        rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
+      }
+      cb(rows, null);
+    } catch(e) { cb(null, 'エラー: ' + e.message); }
+  };
+  ext === 'csv' ? reader.readAsText(file, 'UTF-8') : reader.readAsArrayBuffer(file);
+}
+
+function parseCampaignCSV(rows) {
+  if (!rows || rows.length < 2) return null;
+  const h = rows[0].map(x => String(x||'').toLowerCase().trim());
+  const fc = ns => { for (const n of ns) { const i = h.findIndex(x => x.includes(n)); if (i >= 0) return i; } return -1; };
+  const cols = {
+    opened: fc(['opens','opened','open']),
+    clicked: fc(['clicks','clicked','click']),
+    replied: fc(['replied','reply','replies']),
+    bounced: fc(['bounced','bounce','bounces']),
+  };
+  if (cols.opened < 0 && cols.replied < 0) return null;
+  const data = rows.slice(1).filter(r => r.some(x => String(x||'').trim() !== ''));
+  const N = data.length;
+  if (N === 0) return null;
+  const cn = col => col < 0 ? 0 : data.reduce((acc, r) => {
+    const v = r[col];
+    if (v === null || v === undefined || v === '') return acc;
+    const n = Number(v);
+    if (!isNaN(n)) return acc + (n > 0 ? 1 : 0);
+    return acc + (['yes','true','y','✓','x'].includes(String(v).toLowerCase().trim()) ? 1 : 0);
+  }, 0);
+  return { recipients: N, opens: cn(cols.opened), replies: cn(cols.replied), bounces: cn(cols.bounced), clicks: cn(cols.clicked),
+    openRate: N>0?cn(cols.opened)/N:0, replyRate: N>0?cn(cols.replied)/N:0,
+    bounceRate: N>0?cn(cols.bounced)/N:0, clickRate: N>0?cn(cols.clicked)/N:0 };
+}
+
+function parseOpenRateExcel(rows) {
+  if (!rows || rows.length < 2) return null;
+  const h = rows[0].map(x => String(x||'').toLowerCase().trim());
+  const fc = ns => { for (const n of ns) { const i = h.findIndex(x => x.includes(n)); if (i >= 0) return i; } return -1; };
+  const recentCol = fc(['mostrecentopen','most_recent','recent_open','opened','date']);
+  const countCol = fc(['numberoopens','numberofopens','number_of_opens','opens','count']);
+  if (recentCol < 0 && countCol < 0) return null;
+  const data = rows.slice(1).filter(r => r.some(x => String(x||'').trim() !== ''));
+  const openers = data.length;
+  const openTimes = [], openCounts = [];
+  for (const r of data) {
+    if (recentCol >= 0 && r[recentCol]) {
+      try {
+        const v = r[recentCol];
+        const d = typeof v === 'number' ? new Date(Math.round((v-25569)*86400*1000)) : new Date(String(v));
+        if (!isNaN(d.getTime())) openTimes.push(d);
+      } catch(e) {}
+    }
+    if (countCol >= 0) {
+      const v = parseInt(r[countCol]||'0');
+      if (!isNaN(v) && v > 0) openCounts.push(v);
+    }
+  }
+  const avgOpenCount = openCounts.length ? openCounts.reduce((a,b)=>a+b,0)/openCounts.length : 0;
+  const maxOpenCount = openCounts.length ? Math.max(...openCounts) : 0;
+  return { openers, openTimes, openCounts, avgOpenCount, maxOpenCount };
+}
+
+// ══ ADD ══
+function syncLen() {
+  const t = document.getElementById('f-body').value;
+  document.getElementById('f-body-count').textContent = t.trim().length > 0 ? `${t.trim().length}文字` : '';
+}
+function syncEditLen() {
+  const t = document.getElementById('e-body').value;
+  document.getElementById('e-body-count').textContent = t.trim().length > 0 ? `${t.trim().length}文字` : '';
+}
+
+function confirmAdd() {
+  if (!pend1) return;
+  const appt = parseInt(document.getElementById('f-appt').value) || 0;
+  const bodyText = document.getElementById('f-body').value || '';
+  const N = pend1.recipients || 1;
+  const actualOpens = pend2 ? pend2.openers : pend1.opens;
+  camps.push({
+    ...pend1,
+    opens: actualOpens,
+    openRate: N > 0 ? actualOpens/N : 0,
+    openTimes: pend2 ? pend2.openTimes.map(d => d.toISOString()) : [],
+    openCounts: pend2 ? pend2.openCounts : [],
+    avgOpenCount: pend2 ? pend2.avgOpenCount : 0,
+    maxOpenCount: pend2 ? pend2.maxOpenCount : 0,
+    subject: document.getElementById('f-subj').value.trim() || '（件名未入力）',
+    weekday: document.getElementById('f-day').value || '不明',
+    hour: document.getElementById('f-hour').value || null,
+    appointments: appt,
+    apptRateSent: N>0?appt/N:0,
+    apptRateOpen: actualOpens>0?appt/actualOpens:0,
+    apptFinalized: appt > 0,
+    bodyText, bodyLength: bodyText.trim().length || null,
+    aiMemos: [],
+    addedAt: new Date().toISOString(),
+  });
+  save(); pend1 = null; pend2 = null;
+  document.getElementById('metaForm').style.display = 'none';
+  document.getElementById('step2area').style.display = 'none';
+  document.getElementById('msg1').innerHTML = '';
+  document.getElementById('msg2').innerHTML = '';
+  document.getElementById('prev1').innerHTML = '';
+  document.getElementById('prev2').style.display = 'none';
+  document.getElementById('prev2').innerHTML = '';
+  document.getElementById('dz1').classList.remove('loaded');
+  document.getElementById('dz1').querySelector('.dz-main').textContent = '① キャンペーンCSVをドロップ';
+  document.getElementById('dz2').classList.remove('loaded');
+  document.getElementById('dz2').querySelector('.dz-main').textContent = '② Open RateのExcelをドロップ（任意）';
+  ['f-subj','f-appt','f-body'].forEach(id => document.getElementById(id).value = '');
+  ['f-day','f-hour'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-body-count').textContent = '';
+  renderAll();
+}
+
+// ══ EDIT ══
+function openEdit(i) {
+  editIdx = i; const c = camps[i];
+  document.getElementById('e-subj').value = c.subject || '';
+  document.getElementById('e-day').value = c.weekday || '';
+  document.getElementById('e-hour').value = c.hour || '';
+  document.getElementById('e-appt').value = c.appointments || 0;
+  document.getElementById('e-body').value = c.bodyText || '';
+  const bl = (c.bodyText||'').trim().length;
+  document.getElementById('e-body-count').textContent = bl > 0 ? `${bl}文字` : '';
+  document.getElementById('updMsg').innerHTML = '';
+  updPend = null;
+  document.getElementById('editOverlay').classList.add('open');
+}
+function closeEdit() { document.getElementById('editOverlay').classList.remove('open'); editIdx = -1; updPend = null; }
+function saveEdit() {
+  if (editIdx < 0) return;
+  const c = camps[editIdx];
+  const appt = parseInt(document.getElementById('e-appt').value) || 0;
+  const bodyText = document.getElementById('e-body').value || '';
+  const base = updPend || c;
+  const N = base.recipients || 1, opens = base.opens || 0;
+  camps[editIdx] = { ...c, ...(updPend||{}),
+    weekday: document.getElementById('e-day').value || c.weekday,
+    hour: document.getElementById('e-hour').value || c.hour,
+    appointments: appt, bodyText,
+    bodyLength: bodyText.trim().length || null,
+    apptRateSent: N>0?appt/N:0,
+    apptRateOpen: opens>0?appt/opens:0,
+    apptFinalized: appt > 0 };
+  save(); closeEdit(); renderAll();
+}
+function delCamp(i) { if (!confirm('削除する？')) return; camps.splice(i,1); save(); renderAll(); }
+
+// ══ SHARE URL ══
+function openShare() {
+  document.getElementById('shareUrlArea').style.display = 'none';
+  document.getElementById('shareUrlMsg').innerHTML = '';
+  document.getElementById('importMsg').innerHTML = '';
+  document.getElementById('importUrlIn').value = '';
+  document.getElementById('shareOverlay').classList.add('open');
+}
+function closeShare() { document.getElementById('shareOverlay').classList.remove('open'); }
+
+function genShareUrl() {
+  try {
+    const saveData = camps.map(({ openTimes, openCounts, ...rest }) => rest);
+    const json = JSON.stringify(saveData);
+    const encoded = btoa(encodeURIComponent(json));
+    const url = location.origin + location.pathname + '#data=' + encoded;
+    document.getElementById('shareUrlBox').textContent = url;
+    document.getElementById('shareUrlArea').style.display = 'block';
+  } catch(e) {
+    document.getElementById('shareUrlArea').style.display = 'block';
+    document.getElementById('shareUrlMsg').innerHTML = `<div class="msg-err">エラー: ${e.message}</div>`;
+  }
+}
+
+function copyShareUrl() {
+  const url = document.getElementById('shareUrlBox').textContent;
+  navigator.clipboard.writeText(url).then(() => {
+    document.getElementById('shareUrlMsg').innerHTML = '<div class="msg-ok">✓ URLをコピーしたよ♡ Claudeのチャットに貼り付けてね！</div>';
+  });
+}
+
+function importFromUrl() {
+  const input = document.getElementById('importUrlIn').value.trim();
+  const msgEl = document.getElementById('importMsg');
+  try {
+    let encoded = '';
+    if (input.includes('#data=')) {
+      encoded = input.split('#data=')[1];
+    } else {
+      encoded = input;
+    }
+    const json = decodeURIComponent(atob(encoded));
+    const loaded = JSON.parse(json);
+    if (!Array.isArray(loaded)) throw new Error('データの形式が正しくないよ');
+    camps = loaded; save(); closeShare(); renderAll();
+    msgEl.innerHTML = '<div class="msg-ok">✓ 読み込み完了♡</div>';
+  } catch(e) {
+    msgEl.innerHTML = `<div class="msg-err">エラー: ${e.message}</div>`;
+  }
+}
+
+function save() {
+  try { localStorage.setItem('gm_v11', JSON.stringify(camps)); } catch(e) {}
+  // Update URL hash
+  try {
+    const saveData = camps.map(({ openTimes, openCounts, ...rest }) => rest);
+    const encoded = btoa(encodeURIComponent(JSON.stringify(saveData)));
+    history.replaceState(null, '', location.pathname + '#data=' + encoded);
+  } catch(e) {}
+}
+
+// ══ RENDER ══
+function renderAll() { renderHeader(); renderSidebar(); renderContent(); }
+
+function renderHeader() {
+  document.getElementById('h-n').textContent = camps.length;
+  if (!camps.length) { ['h-open','h-a1','h-a2'].forEach(id => document.getElementById(id).textContent = '—'); return; }
+  document.getElementById('h-open').textContent = pct(avg(camps.map(c => c.openRate||0)));
+  document.getElementById('h-a1').textContent = pct(avg(camps.map(c => c.apptRateSent||0)));
+  const ho = camps.filter(c => (c.opens||0) > 0);
+  document.getElementById('h-a2').textContent = ho.length ? pct(avg(ho.map(c => c.apptRateOpen||0))) : '—';
+}
+
+function renderSidebar() {
+  document.getElementById('cnt').textContent = camps.length;
+  const el = document.getElementById('campList');
+  if (!camps.length) { el.innerHTML = '<div style="color:var(--ink3);font-size:12px;text-align:center;padding:12px 0">まだないよ〜！</div>'; return; }
+  el.innerHTML = camps.map((c,i) => `
+    <div class="camp">
+      <div class="camp-top">
+        <div class="camp-subj"><span class="badge ${c.apptFinalized?'bd':'bp'}">${c.apptFinalized?'完了✓':'未確定'}</span>${esc(c.subject)}</div>
+        <div class="camp-acts">
+          <button class="icon-btn" onclick="openEdit(${i})" title="編集">✏️</button>
+          <button class="icon-btn del" onclick="delCamp(${i})" title="削除">🗑️</button>
+        </div>
+      </div>
+      <div class="camp-stats">
+        <div><div class="cs-v cp">${pct(c.openRate)}</div><div class="cs-l">開封率</div></div>
+        <div><div class="cs-v cg">${pct(c.apptRateSent)}</div><div class="cs-l">アポ/送信</div></div>
+        <div><div class="cs-v cgn">${pct(c.apptRateOpen)}</div><div class="cs-l">アポ/開封</div></div>
+      </div>
+      <div class="camp-meta">📅 ${c.weekday||'?'}曜 ${c.hour?c.hour+'時':''} · 送信${num(c.recipients)}件 · アポ${c.appointments||0}件</div>
+    </div>`).join('');
+}
+
+function renderContent() {
+  const el = document.getElementById('content');
+  const emptyEl = document.getElementById('emptyState');
+  const old = document.getElementById('dashContent');
+  if (old) old.remove();
+  if (!camps.length) { emptyEl.style.display = 'flex'; return; }
+  emptyEl.style.display = 'none';
+  const wrapper = document.createElement('div');
+  wrapper.id = 'dashContent';
+  el.appendChild(wrapper);
+
+  const n = camps.length;
+  const totalAppt = sum(camps.map(c => c.appointments||0));
+  const avgOpen = avg(camps.map(c => c.openRate||0));
+  const avgReply = avg(camps.map(c => c.replyRate||0));
+  const avgA1 = avg(camps.map(c => c.apptRateSent||0));
+  const ho = camps.filter(c => (c.opens||0) > 0);
+  const avgA2 = ho.length ? avg(ho.map(c => c.apptRateOpen||0)) : 0;
+  const avgBounce = avg(camps.map(c => c.bounceRate||0));
+  const totalR = sum(camps.map(c => c.replies||0));
+  const r2a = totalR > 0 ? totalAppt/totalR : 0;
+  const pending = camps.filter(c => !c.apptFinalized).length;
+
+  wrapper.innerHTML = `<div class="fade-in">
+    ${pending > 0 ? `<div class="note">⏳ <strong>${pending}件</strong>のシーケンスが進行中！完了したら✏️ボタンでアポ数を追記してね♡</div>` : ''}
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-e">📬</div><div class="kpi-l">平均開封率</div><div class="kpi-v kv-p">${pct(avgOpen)}</div><div class="kpi-s">${n}件の平均</div></div>
+      <div class="kpi"><div class="kpi-e">💬</div><div class="kpi-l">平均返信率</div><div class="kpi-v kv-pu">${pct(avgReply)}</div><div class="kpi-s">返信ベース</div></div>
+      <div class="kpi"><div class="kpi-e">🎯</div><div class="kpi-l">アポ率（送信比）</div><div class="kpi-v kv-g">${pct(avgA1)}</div><div class="kpi-s">アポ÷送信数</div></div>
+      <div class="kpi"><div class="kpi-e">✨</div><div class="kpi-l">アポ率（開封比）</div><div class="kpi-v kv-gn">${pct(avgA2)}</div><div class="kpi-s">アポ÷開封数</div></div>
+      <div class="kpi"><div class="kpi-e">💌</div><div class="kpi-l">返信→アポ転換率</div><div class="kpi-v kv-m">${pct(r2a)}</div><div class="kpi-s">お断り除いた実力値</div></div>
+      <div class="kpi"><div class="kpi-e">⚠️</div><div class="kpi-l">平均バウンス率</div><div class="kpi-v kv-c">${pct(avgBounce)}</div><div class="kpi-s">${avgBounce>0.05?'リスト要更新！':'リスト良好♡'}</div></div>
+    </div>
+
+    <div class="ai-box">
+      <div class="ai-box-title">✨ AI分析・アドバイス</div>
+      <div style="font-size:11px;color:var(--ink2);line-height:1.8;margin-bottom:10px">
+        「🔗 共有」ボタンで<strong>共有URLを生成</strong>して、ClaudeのチャットにURLを貼り付けると<br>
+        データ全体＋本文テキストを含めた詳しいAI分析が受けられるよ♡
+      </div>
+      <button class="btn btn-pu" onclick="openShare()">🔗 共有URLを生成してClaudeに分析してもらう</button>
+      ${buildAiMemos()}
+    </div>
+
+    <div class="sec">キャンペーン別ランキング</div>
+    <div class="chart-row">
+      <div class="card"><div class="card-title">📬 開封率ランキング</div><div class="bars">${buildBar('openRate','bf-p')}</div></div>
+      <div class="card"><div class="card-title">🎯 アポ率ランキング（送信比）</div><div class="bars">${buildBar('apptRateSent','bf-g')}</div></div>
+    </div>
+    <div class="chart-row">
+      <div class="card"><div class="card-title">✨ アポ率ランキング（開封比）</div><div class="bars">${buildBar('apptRateOpen','bf-gn')}</div></div>
+      <div class="card"><div class="card-title">⚠️ バウンス率（低い方がGOOD！）</div><div class="bars">${buildBar('bounceRate','bf-c',true)}</div></div>
+    </div>
+
+    <div class="sec">開封の詳細分析</div>
+    <div class="chart-row">
+      <div class="card"><div class="card-title">🕐 時間帯別開封分布</div><div id="timeChart"></div><div class="mini">Open RateのExcelをドロップすると表示されるよ！</div></div>
+      <div class="card"><div class="card-title">🔁 開封回数の分布</div><div id="reopenChart"></div><div class="mini">複数回開封＝興味が高いリード！</div></div>
+    </div>
+    <div class="chart-row">
+      <div class="card"><div class="card-title">📊 曜日別 開封率 vs アポ率</div><div id="wdChart"></div></div>
+      <div class="card"><div class="card-title">✍️ 本文の文字数とアポ率の関係</div><div id="lenChart"></div></div>
+    </div>
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title">🔥 曜日×時間帯 アポ率ヒートマップ</div>
+      <div id="heatmap"></div>
+      <div class="mini" style="margin-top:8px">データが増えるほど精度UP！グレーはデータなし。</div>
+    </div>
+    <div class="chart-row">
+      <div class="card"><div class="card-title">💬 返信→アポ転換率の内訳</div><div id="convChart"></div></div>
+      <div class="card"><div class="card-title">📋 件名 最強 vs 最弱</div><div id="subjChart"></div></div>
+    </div>
+
+    <div class="sec">全キャンペーン一覧</div>
+    <div class="card" style="margin-bottom:20px;overflow-x:auto">
+      <table class="tbl"><thead><tr>
+        <th>状態</th><th>件名</th><th>曜日・時間</th><th>文字数</th>
+        <th>送信数</th><th>開封率</th><th>返信率</th><th>アポ数</th><th>アポ率(送信)</th><th>アポ率(開封)</th><th>返信→アポ</th><th>バウンス</th><th></th>
+      </tr></thead><tbody>${buildRows()}</tbody></table>
+    </div>
+  </div>`;
+  drawTimeChart(); drawReopenChart(); drawWd(); drawLen(); drawHeatmap(); drawConv(); drawSubj();
+}
+
+function buildAiMemos() {
+  const allMemos = camps.flatMap((c,i) => (c.aiMemos||[]).map(m => ({...m, campIdx:i, subject:c.subject})));
+  if (!allMemos.length) return '';
+  allMemos.sort((a,b) => new Date(b.date) - new Date(a.date));
+  return `<div style="margin-top:12px">
+    <div style="font-size:11px;font-weight:700;color:var(--ink2);margin-bottom:8px">📌 過去のAI分析メモ</div>
+    ${allMemos.slice(0,3).map(m => `<div class="memo-box">
+      <div class="memo-date">${fmtDate(m.date)} ｜ ${esc(shortS(m.subject))}</div>
+      <div class="memo-text">${esc(m.text)}</div>
+    </div>`).join('')}
+  </div>`;
+}
+
+function buildBar(field, cls, rev=false) {
+  const s = [...camps].sort((a,b) => rev?(a[field]||0)-(b[field]||0):(b[field]||0)-(a[field]||0));
+  const max = Math.max(...s.map(c=>c[field]||0),0.001);
+  return s.map(c=>{const v=c[field]||0,w=Math.round((v/max)*100);
+    return`<div class="bar-r"><div class="bar-l">${esc(shortS(c.subject))}</div><div class="bar-t"><div class="bar-f ${cls}" style="width:${w}%">${pct(v)}</div></div></div>`;}).join('');
+}
+
+function buildRows() {
+  return camps.map((c,i)=>{
+    const r2a=(c.replies||0)>0?pct((c.appointments||0)/c.replies):'—';
+    const lp=c.bodyLength?`<span class="pill ${c.bodyLength<150?'pc':c.bodyLength<350?'pm':'ppu'}">${c.bodyLength}字</span>`:'<span class="pill pgr">—</span>';
+    return`<tr>
+      <td><span class="badge ${c.apptFinalized?'bd':'bp'}">${c.apptFinalized?'完了':'未確定'}</span></td>
+      <td style="max-width:130px;font-size:11px">${esc(c.subject)}</td>
+      <td><span class="pill pgr">${c.weekday||'?'}曜 ${c.hour?c.hour+'時':''}</span></td>
+      <td>${lp}</td>
+      <td style="font-weight:700">${num(c.recipients)}</td>
+      <td><span class="pill pp">${pct(c.openRate)}</span></td>
+      <td><span class="pill ppu">${pct(c.replyRate)}</span></td>
+      <td style="color:var(--hot);font-weight:700;font-size:14px">${c.appointments||0}</td>
+      <td><span class="pill pg">${pct(c.apptRateSent)}</span></td>
+      <td><span class="pill pgn">${pct(c.apptRateOpen)}</span></td>
+      <td><span class="pill pm">${r2a}</span></td>
+      <td><span class="pill ${(c.bounceRate||0)>0.05?'pc':'pgr'}">${pct(c.bounceRate)}</span></td>
+      <td><button class="icon-btn" onclick="openEdit(${i})">✏️</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function drawTimeChart() {
+  const el = document.getElementById('timeChart'); if (!el) return;
+  const hc = new Array(24).fill(0); let total = 0;
+  for (const c of camps) for (const t of (c.openTimes||[])) {
+    try { const d = new Date(t); if (!isNaN(d)) { hc[d.getHours()]++; total++; } } catch(e) {}
+  }
+  if (!total) { el.innerHTML='<div style="color:var(--ink3);font-size:11px;text-align:center;padding:10px 0">Open RateのExcelをドロップすると<br>時間帯別開封が表示されるよ！</div>'; return; }
+  const max = Math.max(...hc, 1);
+  let html = '<div class="bars">';
+  for (let h=6;h<=22;h++) { const v=hc[h]; if(!v) continue; const w=Math.round((v/max)*100);
+    html+=`<div class="bar-r"><div class="bar-l">${h}時</div><div class="bar-t"><div class="bar-f bf-p" style="width:${w}%">${v}件</div></div></div>`; }
+  html += '</div>'; el.innerHTML = html;
+}
+
+function drawReopenChart() {
+  const el = document.getElementById('reopenChart'); if (!el) return;
+  const all = camps.flatMap(c => c.openCounts||[]);
+  if (!all.length) { el.innerHTML='<div style="color:var(--ink3);font-size:11px;text-align:center;padding:10px 0">Open RateのExcelをドロップすると<br>開封回数分布が表示されるよ！</div>'; return; }
+  const grps = {'1回':0,'2回':0,'3〜5回':0,'6回以上':0};
+  for (const v of all) { if(v===1)grps['1回']++;else if(v===2)grps['2回']++;else if(v<=5)grps['3〜5回']++;else grps['6回以上']++; }
+  const total = all.length, max = Math.max(...Object.values(grps), 1);
+  let html = '<div class="bars">';
+  for (const [lbl, v] of Object.entries(grps)) { const w=Math.round((v/max)*100);
+    html+=`<div class="bar-r"><div class="bar-l">${lbl}</div><div class="bar-t"><div class="bar-f bf-pu" style="width:${w}%">${v}人(${pct(v/total)})</div></div></div>`; }
+  html += '</div>';
+  const multi = all.filter(v=>v>1).length;
+  html += `<div class="mini" style="margin-top:8px">💡 複数回開封した人: <strong>${multi}人(${pct(multi/total)})</strong> 熱心なリードだよ！</div>`;
+  el.innerHTML = html;
+}
+
+function drawWd() {
+  const el = document.getElementById('wdChart'); if (!el) return;
+  const days=['月','火','水','木','金'], dd={};
+  for (const d of days) dd[d]={opens:[],appts:[]};
+  for (const c of camps) { if(dd[c.weekday]){dd[c.weekday].opens.push(c.openRate||0);dd[c.weekday].appts.push(c.apptRateSent||0);} }
+  const mO=Math.max(...days.map(d=>dd[d].opens.length?avg(dd[d].opens):0),0.001);
+  const mA=Math.max(...days.map(d=>dd[d].appts.length?avg(dd[d].appts):0),0.001);
+  let html='<div style="display:flex;flex-direction:column;gap:6px">';
+  for (const d of days) {
+    const {opens,appts}=dd[d];
+    if(!opens.length&&!appts.length){html+=`<div style="display:flex;align-items:center;gap:8px"><div style="width:26px;font-size:11px;font-weight:700;color:var(--ink3)">${d}曜</div><div style="font-size:10px;color:var(--ink3)">データなし</div></div>`;continue;}
+    const avgO=opens.length?avg(opens):0,avgA=appts.length?avg(appts):0;
+    html+=`<div style="display:flex;align-items:center;gap:8px"><div style="width:26px;font-size:11px;font-weight:700;color:var(--ink2)">${d}曜</div><div style="flex:1;display:flex;flex-direction:column;gap:2px">
+      <div style="display:flex;align-items:center;gap:5px"><div style="width:32px;font-size:9px;color:var(--hot)">開封</div><div class="bar-t" style="height:13px"><div class="bar-f bf-p" style="width:${Math.round((avgO/mO)*100)}%;font-size:9px;min-width:28px">${pct(avgO)}</div></div></div>
+      <div style="display:flex;align-items:center;gap:5px"><div style="width:32px;font-size:9px;color:#ca8a04">アポ</div><div class="bar-t" style="height:13px"><div class="bar-f bf-g" style="width:${Math.round((avgA/mA)*100)}%;font-size:9px;min-width:28px">${pct(avgA)}</div></div></div>
+    </div></div>`;
+  }
+  html+='</div>'; el.innerHTML=html;
+}
+
+function drawLen() {
+  const el = document.getElementById('lenChart'); if (!el) return;
+  const wl = camps.filter(c=>c.bodyLength&&c.bodyLength>0);
+  if (!wl.length) { el.innerHTML='<div style="color:var(--ink3);font-size:11px;text-align:center;padding:10px 0">本文を登録すると文字数とアポ率の関係が分析されるよ！</div>'; return; }
+  const grps={'〜150字':[],'151〜300字':[],'301〜500字':[],'501字〜':[]};
+  for (const c of wl){const l=c.bodyLength;if(l<=150)grps['〜150字'].push(c.apptRateSent||0);else if(l<=300)grps['151〜300字'].push(c.apptRateSent||0);else if(l<=500)grps['301〜500字'].push(c.apptRateSent||0);else grps['501字〜'].push(c.apptRateSent||0);}
+  const entries=Object.entries(grps).filter(([,v])=>v.length>0);
+  if (!entries.length) return;
+  const max=Math.max(...entries.map(([,v])=>avg(v)),0.001);
+  let html='<div class="bars">';
+  for(const[lbl,vals]of Object.entries(grps)){if(!vals.length)continue;const v=avg(vals),w=Math.round((v/max)*100);
+    html+=`<div class="bar-r"><div class="bar-l">${lbl}</div><div class="bar-t"><div class="bar-f bf-pu" style="width:${w}%">${pct(v)}</div></div></div>`;}
+  html+='</div>';
+  const best=entries.sort(([,a],[,b])=>avg(b)-avg(a))[0];
+  html+=`<div class="mini" style="margin-top:8px">💡 今のデータでは<strong>「${best[0]}」</strong>がアポ率が高いよ！</div>`;
+  el.innerHTML=html;
+}
+
+function drawHeatmap() {
+  const el = document.getElementById('heatmap'); if (!el) return;
+  const days=['月','火','水','木','金'],slots=[];
+  for(let h=7;h<=20;h++)slots.push(h);
+  const mat={};for(const t of slots){mat[t]={};for(const d of days)mat[t][d]=[];}
+  for(const c of camps){const s=parseInt(c.hour);if(!isNaN(s)&&mat[s]&&mat[s][c.weekday])mat[s][c.weekday].push(c.apptRateSent||0);}
+  let max=0;for(const t of slots)for(const d of days){const v=mat[t][d];if(v.length)max=Math.max(max,avg(v));}
+  if(max===0)max=0.05;
+  let html=`<div class="hm" style="grid-template-columns:52px repeat(${days.length},1fr)">`;
+  html+='<div class="hm-l"></div>';
+  for(const d of days)html+=`<div class="hm-l">${d}曜</div>`;
+  for(const t of slots){
+    html+=`<div class="hm-l t">${t}時</div>`;
+    for(const d of days){
+      const vals=mat[t][d];
+      if(!vals.length){html+=`<div class="hm-c" style="background:var(--pink3)"><span class="hm-tip">データなし</span></div>`;}
+      else{const v=avg(vals),i=v/max,a=0.2+i*0.8,rr=Math.round(255-i*30),g=Math.round(110-i*80),b=Math.round(180-i*60);
+        html+=`<div class="hm-c" style="background:rgba(${rr},${g},${b},${a})"><span class="hm-tip">アポ率 ${pct(v)}（${vals.length}件）</span>${pct(v)}</div>`;}
+    }
+  }
+  html+='</div>'; el.innerHTML=html;
+}
+
+function drawConv() {
+  const el=document.getElementById('convChart');if(!el)return;
+  const fin=camps.filter(c=>(c.replies||0)>0&&c.apptFinalized);
+  if(!fin.length){el.innerHTML='<div style="color:var(--ink3);font-size:11px;text-align:center;padding:10px 0">アポ数を確定済みにすると<br>返信→アポの転換率が表示されるよ！</div>';return;}
+  const totalR=sum(fin.map(c=>c.replies)),totalA=sum(fin.map(c=>c.appointments||0));
+  const totalNo=totalR-totalA,conv=totalR>0?totalA/totalR:0;
+  el.innerHTML=`<div style="display:flex;gap:14px;align-items:center;margin-bottom:10px">
+    <div style="text-align:center"><div style="font-size:24px;font-weight:900;color:var(--hot)">${pct(conv)}</div><div style="font-size:10px;color:var(--ink3)">返信→アポ転換率</div></div>
+    <div style="flex:1">
+      <div style="margin-bottom:6px"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px"><span style="color:#16a34a;font-weight:700">✓ アポ</span><span style="font-weight:700">${totalA}件</span></div><div class="bar-t" style="height:14px"><div class="bar-f bf-gn" style="width:${Math.round(conv*100)}%;min-width:26px">${totalA}</div></div></div>
+      <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px"><span style="color:#dc2626;font-weight:700">✕ お断り等</span><span style="font-weight:700">${totalNo}件</span></div><div class="bar-t" style="height:14px"><div class="bar-f bf-c" style="width:${Math.round((1-conv)*100)}%;min-width:26px">${totalNo}</div></div></div>
+    </div>
+  </div>
+  <div class="mini">💡 転換率が低い場合は<strong>本文・CTAの見直し</strong>が有効だよ♡</div>`;
+}
+
+function drawSubj() {
+  const el=document.getElementById('subjChart');if(!el)return;
+  if(camps.length<2){el.innerHTML='<div style="color:var(--ink3);font-size:11px;text-align:center;padding:10px 0">2件以上登録すると<br>最強・最弱の件名が表示されるよ！</div>';return;}
+  const s=[...camps].sort((a,b)=>(b.openRate||0)-(a.openRate||0));
+  const best=s[0],worst=s[s.length-1];
+  el.innerHTML=`
+    <div style="margin-bottom:10px;padding-bottom:10px;border-bottom:2px solid var(--border)">
+      <div style="font-size:10px;font-weight:700;color:#16a34a;margin-bottom:3px">🏆 最高開封率</div>
+      <div style="font-size:11px;font-weight:700;color:var(--hot);line-height:1.4;margin-bottom:4px">${esc(best.subject)}</div>
+      <div style="font-size:10px;color:var(--ink3)">開封率 <strong style="color:var(--hot)">${pct(best.openRate)}</strong> | アポ率(送信) <strong>${pct(best.apptRateSent)}</strong></div>
+      ${best.bodyLength?`<div class="mini">文字数: ${best.bodyLength}字 / 件名: ${best.subject.length}字</div>`:''}
+    </div>
+    <div>
+      <div style="font-size:10px;font-weight:700;color:#dc2626;margin-bottom:3px">📉 最低開封率</div>
+      <div style="font-size:11px;font-weight:700;color:#dc2626;line-height:1.4;margin-bottom:4px">${esc(worst.subject)}</div>
+      <div style="font-size:10px;color:var(--ink3)">開封率 <strong style="color:#dc2626">${pct(worst.openRate)}</strong> | アポ率(送信) <strong>${pct(worst.apptRateSent)}</strong></div>
+      ${worst.bodyLength?`<div class="mini">文字数: ${worst.bodyLength}字 / 件名: ${worst.subject.length}字</div>`:''}
+    </div>`;
+}
+
+// ══ DEMO ══
+function loadDemo() {
+  camps=[
+    {subject:'【ベンナビ】初期費用ゼロで始められる件のご案内',recipients:180,opens:54,replies:8,bounces:4,openRate:.30,replyRate:.044,bounceRate:.022,appointments:3,apptRateSent:.0167,apptRateOpen:.0556,weekday:'火',hour:'10',bodyLength:220,bodyText:'弁護士先生、はじめまして。株式会社アシロの並木と申します。ベンナビにて初期費用ゼロで始められるプランをご用意しております。まずは30分だけお時間をいただけませんか。',openTimes:[],openCounts:[1,1,2,1,3],avgOpenCount:1.6,maxOpenCount:3,aiMemos:[],addedAt:new Date().toISOString(),apptFinalized:true},
+    {subject:'{name}先生、初期費用なしで試せるプランができました',recipients:200,opens:78,replies:14,bounces:5,openRate:.39,replyRate:.07,bounceRate:.025,appointments:6,apptRateSent:.030,apptRateOpen:.0769,weekday:'木',hour:'10',bodyLength:170,bodyText:'{name}先生、お世話になっております。アシロの並木です。初期費用なしで試せる新プランができました。ご興味があればぜひ一度お話しさせてください。',openTimes:[],openCounts:[1,2,1,3,4,1],avgOpenCount:2.0,maxOpenCount:4,aiMemos:[],addedAt:new Date().toISOString(),apptFinalized:true},
+    {subject:'弁護士事務所向け集客ソリューションのご提案',recipients:150,opens:27,replies:3,bounces:9,openRate:.18,replyRate:.02,bounceRate:.06,appointments:0,apptRateSent:0,apptRateOpen:0,weekday:'月',hour:'9',bodyLength:450,bodyText:'拝啓 時下ますますご清栄のこととお慶び申し上げます。株式会社アシロと申します。この度は弁護士事務所様向けの集客ソリューションをご提案させていただきたく、ご連絡差し上げました。',openTimes:[],openCounts:[1,1,1],avgOpenCount:1.0,maxOpenCount:1,aiMemos:[],addedAt:new Date().toISOString(),apptFinalized:false},
+    {subject:'先生のご事務所、新規案件を増やすお手伝いができます',recipients:210,opens:88,replies:18,bounces:6,openRate:.419,replyRate:.086,bounceRate:.029,appointments:8,apptRateSent:.038,apptRateOpen:.0909,weekday:'水',hour:'11',bodyLength:190,bodyText:'先生、こんにちは。アシロの並木です。先生のご事務所の新規案件を増やすお手伝いができます。月10件以上の案件獲得を実現されている事務所様もいらっしゃいます。',openTimes:[],openCounts:[1,2,3,1,4,2,1],avgOpenCount:2.0,maxOpenCount:4,aiMemos:[{date:new Date().toISOString(),text:'件名に{name}を使ったパーソナライズが有効。本文は200字以下に抑えるとアポ率が高い傾向。火曜・木曜の10〜11時台が最も開封率が高い。'}],addedAt:new Date().toISOString(),apptFinalized:true},
+  ];
+  save();renderAll();
+}
+
+// ══ UTILS ══
+function pct(v){if(v==null||isNaN(v))return'—';return(v*100).toFixed(1)+'%';}
+function num(v){return v!=null?v.toLocaleString():'—';}
+function avg(arr){if(!arr.length)return 0;return arr.reduce((a,b)=>a+b,0)/arr.length;}
+function sum(arr){return arr.reduce((a,b)=>a+b,0);}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function shortS(s){if(!s)return'—';return s.length>14?s.slice(0,14)+'…':s;}
+function fmtDate(iso){try{const d=new Date(iso);return`${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`;}catch{return'—';}}
+</script>
+</body>
+</html>
