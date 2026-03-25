@@ -363,7 +363,21 @@ function loadFromUrl() {
       const json = decodeURIComponent(atob(encoded));
       const loaded = JSON.parse(json);
       if (Array.isArray(loaded) && loaded.length > 0) {
-        camps = loaded;
+        // localStorageの本文・メモデータとマージ
+        try {
+          const saved = localStorage.getItem('gm_v11');
+          if (saved) {
+            const local = JSON.parse(saved);
+            camps = loaded.map((c, i) => {
+              const loc = local[i] || {};
+              return { ...c, bodyText: loc.bodyText || c.bodyText || '', bodyLength: loc.bodyLength || c.bodyLength || null, aiMemos: loc.aiMemos || c.aiMemos || [], openTimes: loc.openTimes || [], openCounts: loc.openCounts || [] };
+            });
+          } else {
+            camps = loaded.map(c => ({ ...c, bodyText: c.bodyText || '', aiMemos: c.aiMemos || [], openTimes: [], openCounts: [] }));
+          }
+        } catch(e) {
+          camps = loaded;
+        }
         save();
         return true;
       }
@@ -709,8 +723,8 @@ function copyAnalysisText() {
   const msgEl = document.getElementById('analysisMsg');
   // 全キャンペーン統計
   const stats = camps.map((c,i) => {
-    const r2a = (c.replies||0)>0 ? `返信→アポ転換率${pct((c.appointments||0)/c.replies)}` : '';
-    return `キャンペーン${i+1}: 件名「${c.subject}」 送信${c.recipients}件 開封率${pct(c.openRate)} 返信率${pct(c.replyRate)} アポ${c.appointments||0}件 アポ率(送信比)${pct(c.apptRateSent)} アポ率(開封比)${pct(c.apptRateOpen)} バウンス率${pct(c.bounceRate)} 曜日:${c.weekday||'?'}曜${c.hour?c.hour+'時':''} 文字数:${c.bodyLength||'不明'}字 ${r2a} 平均開封回数:${c.avgOpenCount?(c.avgOpenCount).toFixed(1)+'回':'不明'} 最多開封:${c.maxOpenCount||'不明'}回`;
+    const r2a = (c.replies||0)>0 ? pct((c.appointments||0)/c.replies) : '0.0%';
+    return `キャンペーン${i+1}: 件名「${c.subject}」 送信${c.recipients}件 開封率${pct(c.openRate)} 返信率${pct(c.replyRate)} アポ${c.appointments||0}件 アポ率(送信比)${pct(c.apptRateSent)} アポ率(開封比)${pct(c.apptRateOpen)} バウンス率${pct(c.bounceRate)} 曜日:${c.weekday||'?'}曜${c.hour?c.hour+'時':''} 文字数:${c.bodyLength||'不明'}字 返信→アポ転換率${r2a} 平均開封回数:${c.avgOpenCount?(+c.avgOpenCount).toFixed(1)+'回':'不明'} 最多開封:${c.maxOpenCount||'不明'}回`;
   }).join('\n');
 
   // 選択キャンペーンの本文
@@ -718,17 +732,25 @@ function copyAnalysisText() {
     const chk = document.getElementById(`chk_${i}`);
     return chk && chk.checked && c.bodyText;
   });
-  const bodies = selected.map((c,i) => {
-    const idx = camps.indexOf(c) + 1;
-    return `【キャンペーン${idx}】\n件名: ${c.subject}\n本文(${c.bodyLength}字):\n${c.bodyText}`;
-  }).join('\n\n---\n\n');
+  const bodies = selected.length > 0
+    ? '\n\n=== 選択したキャンペーンの本文テキスト ===\n' +
+      selected.map(c => {
+        const idx = camps.indexOf(c) + 1;
+        return `【キャンペーン${idx}】\n件名: ${c.subject}\n本文(${c.bodyLength}字):\n${c.bodyText}`;
+      }).join('\n\n---\n\n')
+    : '';
 
-  const text = `=== GMass営業メール キャンペーン統計データ ===\n${stats}\n\n${bodies ? `=== 選択したキャンペーンの本文テキスト ===\n${bodies}\n\n` : ''}以上のデータを分析して、アポ率向上のためのアドバイスをください。件名・本文・送信タイミングの改善点を具体的に教えてください。`;
+  const selectedNums = selected.map(c => `キャンペーン${camps.indexOf(c)+1}`).join('・');
+  const compareNote = selected.length > 0
+    ? `\nキャンペーン全体の統計データと${selectedNums}を比較して、アポ率向上のためのアドバイスをください。件名・本文・送信タイミングの改善点を具体的に教えてください。`
+    : '\nキャンペーン全体の統計データを分析して、アポ率向上のためのアドバイスをください。件名・送信タイミングの改善点を具体的に教えてください。';
+
+  const text = `=== GMass営業メール キャンペーン統計データ ===\n${stats}${bodies}${compareNote}`;
 
   navigator.clipboard.writeText(text).then(() => {
     msgEl.innerHTML = '<div class="msg-ok">✓ コピーしたよ♡ Claudeのチャットに貼り付けて送信してね！</div>';
   }).catch(() => {
-    msgEl.innerHTML = '<div class="msg-err">コピーに失敗したよ。ブラウザの設定を確認してね💦</div>';
+    msgEl.innerHTML = '<div class="msg-err">コピーに失敗したよ💦</div>';
   });
 }
 function closeShare() { document.getElementById('shareOverlay').classList.remove('open'); }
@@ -789,10 +811,11 @@ function importFromUrl() {
 }
 
 function save() {
+  // localStorageには全データ（本文含む）を保存
   try { localStorage.setItem('gm_v11', JSON.stringify(camps)); } catch(e) {}
   // URLハッシュには本文・openTimes・openCountsを除いた軽量データのみ
   try {
-    const saveData = camps.map(({ openTimes, openCounts, bodyText, ...rest }) => rest);
+    const saveData = camps.map(({ openTimes, openCounts, bodyText, aiMemos, ...rest }) => rest);
     const encoded = btoa(encodeURIComponent(JSON.stringify(saveData)));
     history.replaceState(null, '', location.pathname + '#data=' + encoded);
   } catch(e) {}
