@@ -632,11 +632,15 @@ function openEdit(i) {
   const histEl = document.getElementById('e-aimemo-history');
   const memos = c.aiMemos || [];
   if (memos.length > 0) {
-    const sorted = [...memos].sort((a,b) => new Date(b.date) - new Date(a.date));
+    const sorted = [...memos].map((m,origIdx) => ({...m, origIdx})).sort((a,b) => new Date(b.date) - new Date(a.date));
     histEl.innerHTML = `<div style="font-size:10px;font-weight:700;color:var(--ink2);margin-top:8px;margin-bottom:4px">📌 過去のメモ（${memos.length}件）</div>` +
-      sorted.map((m,i) => `<details style="background:var(--pink4);border:2px solid var(--border);border-radius:10px;margin-bottom:4px;overflow:hidden">
+      sorted.map((m) => `<details style="background:var(--pink4);border:2px solid var(--border);border-radius:10px;margin-bottom:4px;overflow:hidden">
         <summary style="padding:7px 10px;cursor:pointer;font-size:10px;font-weight:700;color:var(--ink2);list-style:none;display:flex;justify-content:space-between;align-items:center">
-          <span>${fmtDate(m.date)}</span><span style="color:var(--pink);font-size:9px">▼</span>
+          <span>${fmtDate(m.date)}</span>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="color:var(--pink);font-size:9px">▼</span>
+            <button onclick="event.preventDefault();event.stopPropagation();deleteMemo(${editIdx},${m.origIdx})" style="background:#fee2e2;border:none;border-radius:20px;padding:2px 7px;font-size:9px;color:#991b1b;cursor:pointer;font-weight:700">削除</button>
+          </div>
         </summary>
         <div style="padding:8px 10px;border-top:1px solid var(--border);font-size:10px;color:var(--ink2);line-height:1.8;white-space:pre-wrap">${esc(m.text)}</div>
       </details>`).join('');
@@ -696,7 +700,13 @@ function saveEdit() {
     aiMemos };
   save(); closeEdit(); renderAll();
 }
-function delCamp(i) { if (!confirm('削除する？')) return; camps.splice(i,1); save(); renderAll(); }
+function deleteMemo(campIdx, memoIdx) {
+  if (!confirm('このメモを削除する？')) return;
+  camps[campIdx].aiMemos.splice(memoIdx, 1);
+  save();
+  // 履歴を再描画
+  openEdit(campIdx);
+}
 
 // ══ SHARE URL ══
 function openShare() {
