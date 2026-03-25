@@ -275,10 +275,11 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
       </div>
       <div class="f"><label>📝 本文テキスト<span id="e-body-count" style="font-weight:400;color:var(--pink);margin-left:5px"></span></label><textarea id="e-body" rows="3" oninput="syncEditLen()"></textarea></div>
       <div class="f">
-        <label>📌 AIメモ（Claudeの分析結果をここに貼り付けて保存♡）</label>
+        <label>📌 新しいAIメモを追加</label>
         <textarea id="e-aimemo" rows="3" placeholder="例：件名に個人名を入れると開封率UP。本文は300字以内推奨。&#10;（Claudeの分析結果をコピペして「保存する」を押してね）"></textarea>
         <div class="f-hint" style="color:var(--hot)">← 共有URLをClaudeに送って「分析して」と頼むともらえるよ♡</div>
       </div>
+      <div id="e-aimemo-history"></div>
       <div style="margin-top:8px;padding-top:10px;border-top:2px solid var(--border)">
         <div style="font-size:10px;font-weight:700;color:var(--ink2);margin-bottom:6px">📂 最新データで更新（2通目・3通目送信後に使ってね）</div>
         <div class="drop-zone" id="updZone" style="padding:10px"><span class="dz-icon" style="font-size:18px">📋</span><div class="dz-main" style="font-size:11px">①キャンペーンCSVをドロップ</div><div class="dz-sub">最新CSVで送信数・返信・バウンスを更新</div></div>
@@ -591,7 +592,22 @@ function openEdit(i) {
   document.getElementById('e-replies').value = c.replies || 0;
   document.getElementById('e-finalized').checked = c.apptFinalized || false;
   document.getElementById('e-body').value = c.bodyText || '';
-  document.getElementById('e-aimemo').value = (c.aiMemos && c.aiMemos.length > 0) ? c.aiMemos[c.aiMemos.length-1].text : '';
+  document.getElementById('e-aimemo').value = '';
+  // メモ履歴を表示
+  const histEl = document.getElementById('e-aimemo-history');
+  const memos = c.aiMemos || [];
+  if (memos.length > 0) {
+    const sorted = [...memos].sort((a,b) => new Date(b.date) - new Date(a.date));
+    histEl.innerHTML = `<div style="font-size:10px;font-weight:700;color:var(--ink2);margin-top:8px;margin-bottom:4px">📌 過去のメモ（${memos.length}件）</div>` +
+      sorted.map((m,i) => `<details style="background:var(--pink4);border:2px solid var(--border);border-radius:10px;margin-bottom:4px;overflow:hidden">
+        <summary style="padding:7px 10px;cursor:pointer;font-size:10px;font-weight:700;color:var(--ink2);list-style:none;display:flex;justify-content:space-between;align-items:center">
+          <span>${fmtDate(m.date)}</span><span style="color:var(--pink);font-size:9px">▼</span>
+        </summary>
+        <div style="padding:8px 10px;border-top:1px solid var(--border);font-size:10px;color:var(--ink2);line-height:1.8;white-space:pre-wrap">${esc(m.text)}</div>
+      </details>`).join('');
+  } else {
+    histEl.innerHTML = '';
+  }
   const bl = (c.bodyText||'').trim().length;
   document.getElementById('e-body-count').textContent = bl > 0 ? `${bl}文字` : '';
   document.getElementById('updMsg').innerHTML = '';
@@ -738,7 +754,7 @@ function renderSidebar() {
         <div><div class="cs-v cg">${pct(c.apptRateSent)}</div><div class="cs-l">アポ/送信</div></div>
         <div><div class="cs-v cgn">${pct(c.apptRateOpen)}</div><div class="cs-l">アポ/開封</div></div>
       </div>
-      <div class="camp-meta">📅 ${c.weekday||'?'}曜 ${c.hour?c.hour+'時':''} · 送信${num(c.recipients)}件 · アポ${c.appointments||0}件</div>
+      <div class="camp-meta">📅 ${c.weekday||'?'}曜 ${c.hour?c.hour+'時':''} · 送信${num(c.recipients)}件 · アポ${c.appointments||0}件${(c.aiMemos&&c.aiMemos.length>0)?` · <span style="color:#7c3aed;font-weight:700">📌メモあり</span>`:''}</div>
     </div>`).join('');
 }
 
@@ -830,15 +846,19 @@ function buildAiMemos() {
   const allMemos = camps.flatMap((c,i) => (c.aiMemos||[]).map(m => ({...m, campIdx:i, subject:c.subject})));
   if (!allMemos.length) return '';
   allMemos.sort((a,b) => new Date(b.date) - new Date(a.date));
+  const recent = allMemos.slice(0,5);
+  const hiddenCount = allMemos.length - 5;
   return `<div style="margin-top:12px">
-    ${allMemos.slice(0,5).map((m,i) => `
-    <details style="background:white;border:2px solid var(--border);border-radius:12px;margin-top:8px;overflow:hidden">
-      <summary style="padding:10px 14px;cursor:pointer;font-size:11px;font-weight:700;color:var(--ink2);list-style:none;display:flex;justify-content:space-between;align-items:center;user-select:none">
+    <div style="font-size:11px;font-weight:700;color:var(--ink2);margin-bottom:6px">📌 AI分析メモ（最新5件）</div>
+    ${recent.map(m => `
+    <details style="background:white;border:2px solid var(--border);border-radius:12px;margin-top:6px;overflow:hidden">
+      <summary style="padding:9px 14px;cursor:pointer;font-size:11px;font-weight:700;color:var(--ink2);list-style:none;display:flex;justify-content:space-between;align-items:center;user-select:none">
         <span>📌 ${fmtDate(m.date)} ｜ ${esc(shortS(m.subject))}</span>
         <span style="color:var(--pink);font-size:10px">▼ 展開</span>
       </summary>
       <div style="padding:10px 14px;border-top:2px solid var(--border);font-size:11px;color:var(--ink2);line-height:1.9;white-space:pre-wrap">${esc(m.text)}</div>
     </details>`).join('')}
+    ${hiddenCount > 0 ? `<div style="font-size:10px;color:var(--ink3);margin-top:6px;text-align:center">他${hiddenCount}件は各キャンペーンの✏️ボタンから確認できるよ♡</div>` : ''}
   </div>`;
 }
 
@@ -855,7 +875,7 @@ function buildRows() {
     const lp=c.bodyLength?`<span class="pill ${c.bodyLength<150?'pc':c.bodyLength<350?'pm':'ppu'}">${c.bodyLength}字</span>`:'<span class="pill pgr">—</span>';
     return`<tr>
       <td><span class="badge ${c.apptFinalized?'bd':'bp'}">${c.apptFinalized?'完了':'未確定'}</span></td>
-      <td style="max-width:130px;font-size:11px">${esc(c.subject)}</td>
+      <td style="max-width:130px;font-size:11px">${esc(c.subject)}${(c.aiMemos&&c.aiMemos.length>0)?` <span style="display:inline-block;padding:1px 5px;border-radius:20px;font-size:9px;font-weight:700;background:#ede9fe;color:#6d28d9">📌メモ</span>`:''}</td>
       <td><span class="pill pgr">${c.weekday||'?'}曜 ${c.hour?c.hour+'時':''}</span></td>
       <td>${lp}</td>
       <td style="font-weight:700">${num(c.recipients)}</td>
