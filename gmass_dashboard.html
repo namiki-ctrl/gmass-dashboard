@@ -299,26 +299,47 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
 
 <!-- SHARE MODAL -->
 <div class="overlay" id="shareOverlay">
-  <div class="modal">
-    <div class="modal-title">🔗 データを共有・エクスポート</div>
-    <div style="font-size:12px;color:var(--ink2);line-height:1.8;margin-bottom:14px">
-      データをURLに変換して共有できるよ♡<br>
-      <span style="font-size:10px;color:var(--ink3)">URLをコピーしてClaudeに貼り付けると分析してもらえるよ！</span>
+  <div class="modal" style="width:480px">
+    <div class="modal-title">📋 Claudeに分析を依頼する</div>
+
+    <div style="font-size:11px;color:var(--ink2);line-height:1.8;margin-bottom:12px">
+      全キャンペーンの統計データ＋選択した本文をまとめてコピーできるよ♡<br>
+      コピーしてClaudeのチャットに貼り付けるだけ！
     </div>
-    <button class="btn btn-pink btn-full" onclick="genShareUrl()">🔗 共有URLを生成する</button>
-    <div id="shareUrlArea" style="display:none;margin-top:10px">
-      <div style="font-size:11px;color:var(--ink2);margin-bottom:6px;font-weight:700">共有URL（クリックでコピー）</div>
-      <div class="share-url-box" id="shareUrlBox" onclick="copyShareUrl()">URLを生成中...</div>
-      <div id="shareUrlMsg" style="margin-top:6px"></div>
-      <div style="font-size:10px;color:var(--ink3);margin-top:8px;line-height:1.7">
-        💡 このURLをClaudeのチャットに貼り付けて「分析して」と送ると<br>AIが詳しく分析してアドバイスしてくれるよ♡
+
+    <div style="font-size:10px;font-weight:700;color:var(--ink2);margin-bottom:6px">📝 本文も分析したいキャンペーンを選択（任意）</div>
+    <div id="campCheckList" style="background:var(--pink4);border:2px solid var(--border);border-radius:10px;padding:8px;max-height:160px;overflow-y:auto;margin-bottom:10px"></div>
+
+    <button class="btn btn-pink btn-full" onclick="copyAnalysisText()" style="font-size:13px;padding:10px">📋 Claudeに依頼するテキストをコピーする</button>
+    <div id="analysisMsg" style="margin-top:6px"></div>
+    <div style="font-size:10px;color:var(--ink3);margin-top:6px;line-height:1.7;background:var(--pink4);border-radius:8px;padding:8px">
+      💡 コピー後、Claudeのチャットに貼り付けて送信するだけで分析してもらえるよ♡<br>
+      本文を選択しなければ統計データのみの分析になるよ
+    </div>
+
+    <div style="margin-top:14px;padding-top:12px;border-top:2px solid var(--border)">
+      <div style="font-size:10px;font-weight:700;color:var(--ink2);margin-bottom:6px">🔗 チームへの共有URL（ダッシュボードを共有する）</div>
+      <button class="btn btn-ghost btn-full" onclick="genShareUrl()" style="font-size:11px">URLを生成する</button>
+      <div id="shareUrlArea" style="display:none;margin-top:8px">
+        <div class="share-url-box" id="shareUrlBox" onclick="copyShareUrl()" style="font-size:10px">URLを生成中...</div>
+        <div id="shareUrlMsg" style="margin-top:4px"></div>
       </div>
     </div>
-    <div style="margin-top:14px;padding-top:14px;border-top:2px solid var(--border)">
-      <div style="font-size:11px;font-weight:700;color:var(--ink2);margin-bottom:8px">📥 URLからデータを読み込む</div>
-      <div class="f"><input type="text" id="importUrlIn" placeholder="共有URLをここに貼り付け"/></div>
-      <button class="btn btn-mint btn-full" onclick="importFromUrl()">読み込む</button>
+
+    <div style="margin-top:12px;padding-top:12px;border-top:2px solid var(--border)">
+      <div style="font-size:10px;font-weight:700;color:var(--ink2);margin-bottom:6px">📥 共有URLからデータを読み込む</div>
+      <div style="display:flex;gap:6px">
+        <input type="text" id="importUrlIn" placeholder="共有URLをここに貼り付け" style="flex:1;font-size:11px"/>
+        <button class="btn btn-mint" onclick="importFromUrl()" style="padding:7px 12px;border-radius:20px;font-size:11px">読込</button>
+      </div>
       <div id="importMsg"></div>
+    </div>
+
+    <div class="modal-btns" style="margin-top:12px">
+      <button class="btn btn-ghost btn-full" onclick="closeShare()">閉じる</button>
+    </div>
+  </div>
+</div>
     </div>
     <div class="modal-btns" style="margin-top:14px">
       <button class="btn btn-ghost btn-full" onclick="closeShare()">閉じる</button>
@@ -666,16 +687,56 @@ function delCamp(i) { if (!confirm('削除する？')) return; camps.splice(i,1)
 // ══ SHARE URL ══
 function openShare() {
   document.getElementById('shareUrlArea').style.display = 'none';
-  document.getElementById('shareUrlMsg').innerHTML = '';
+  document.getElementById('shareUrlMsg') && (document.getElementById('shareUrlMsg').innerHTML = '');
+  document.getElementById('analysisMsg').innerHTML = '';
   document.getElementById('importMsg').innerHTML = '';
   document.getElementById('importUrlIn').value = '';
+  // キャンペーンチェックボックスを生成
+  const el = document.getElementById('campCheckList');
+  if (!camps.length) {
+    el.innerHTML = '<div style="color:var(--ink3);font-size:11px;text-align:center;padding:8px">キャンペーンがないよ〜</div>';
+  } else {
+    el.innerHTML = camps.map((c,i) => `
+      <label style="display:flex;align-items:center;gap:8px;padding:5px 4px;cursor:pointer;border-radius:6px;font-size:11px;color:var(--ink2)" onmouseover="this.style.background='var(--pink3)'" onmouseout="this.style.background=''">
+        <input type="checkbox" id="chk_${i}" ${c.bodyText?'':'disabled'} style="width:14px;height:14px;cursor:pointer;flex-shrink:0">
+        <span>${esc(c.subject)}${c.bodyText?` <span style="color:var(--mint);font-size:9px">📝本文あり</span>`:'<span style="color:var(--ink3);font-size:9px">（本文未登録）</span>'}</span>
+      </label>`).join('');
+  }
   document.getElementById('shareOverlay').classList.add('open');
+}
+
+function copyAnalysisText() {
+  const msgEl = document.getElementById('analysisMsg');
+  // 全キャンペーン統計
+  const stats = camps.map((c,i) => {
+    const r2a = (c.replies||0)>0 ? `返信→アポ転換率${pct((c.appointments||0)/c.replies)}` : '';
+    return `キャンペーン${i+1}: 件名「${c.subject}」 送信${c.recipients}件 開封率${pct(c.openRate)} 返信率${pct(c.replyRate)} アポ${c.appointments||0}件 アポ率(送信比)${pct(c.apptRateSent)} アポ率(開封比)${pct(c.apptRateOpen)} バウンス率${pct(c.bounceRate)} 曜日:${c.weekday||'?'}曜${c.hour?c.hour+'時':''} 文字数:${c.bodyLength||'不明'}字 ${r2a} 平均開封回数:${c.avgOpenCount?(c.avgOpenCount).toFixed(1)+'回':'不明'} 最多開封:${c.maxOpenCount||'不明'}回`;
+  }).join('\n');
+
+  // 選択キャンペーンの本文
+  const selected = camps.filter((c,i) => {
+    const chk = document.getElementById(`chk_${i}`);
+    return chk && chk.checked && c.bodyText;
+  });
+  const bodies = selected.map((c,i) => {
+    const idx = camps.indexOf(c) + 1;
+    return `【キャンペーン${idx}】\n件名: ${c.subject}\n本文(${c.bodyLength}字):\n${c.bodyText}`;
+  }).join('\n\n---\n\n');
+
+  const text = `=== GMass営業メール キャンペーン統計データ ===\n${stats}\n\n${bodies ? `=== 選択したキャンペーンの本文テキスト ===\n${bodies}\n\n` : ''}以上のデータを分析して、アポ率向上のためのアドバイスをください。件名・本文・送信タイミングの改善点を具体的に教えてください。`;
+
+  navigator.clipboard.writeText(text).then(() => {
+    msgEl.innerHTML = '<div class="msg-ok">✓ コピーしたよ♡ Claudeのチャットに貼り付けて送信してね！</div>';
+  }).catch(() => {
+    msgEl.innerHTML = '<div class="msg-err">コピーに失敗したよ。ブラウザの設定を確認してね💦</div>';
+  });
 }
 function closeShare() { document.getElementById('shareOverlay').classList.remove('open'); }
 
 function genShareUrl() {
   try {
-    const saveData = camps.map(({ openTimes, openCounts, ...rest }) => rest);
+    // 本文テキスト・openTimes・openCountsを除いた統計データのみ
+    const saveData = camps.map(({ openTimes, openCounts, bodyText, ...rest }) => rest);
     const json = JSON.stringify(saveData);
     const encoded = btoa(encodeURIComponent(json));
     const url = location.origin + location.pathname + '#data=' + encoded;
@@ -691,6 +752,19 @@ function copyShareUrl() {
   const url = document.getElementById('shareUrlBox').textContent;
   navigator.clipboard.writeText(url).then(() => {
     document.getElementById('shareUrlMsg').innerHTML = '<div class="msg-ok">✓ URLをコピーしたよ♡ Claudeのチャットに貼り付けてね！</div>';
+  });
+}
+
+function copyBodyTexts() {
+  const texts = camps.filter(c => c.bodyText && c.bodyText.trim()).map((c,i) =>
+    `【キャンペーン${i+1}】件名: ${c.subject}\n本文(${c.bodyLength}字):\n${c.bodyText}`
+  ).join('\n\n---\n\n');
+  if (!texts) {
+    document.getElementById('shareUrlMsg').innerHTML = '<div class="msg-err">本文が登録されているキャンペーンがないよ💦</div>';
+    return;
+  }
+  navigator.clipboard.writeText(texts).then(() => {
+    document.getElementById('shareUrlMsg').innerHTML = '<div class="msg-ok">✓ 本文テキストをコピーしたよ♡<br>URLと一緒にClaudeに貼り付けてね！</div>';
   });
 }
 
@@ -716,9 +790,9 @@ function importFromUrl() {
 
 function save() {
   try { localStorage.setItem('gm_v11', JSON.stringify(camps)); } catch(e) {}
-  // Update URL hash
+  // URLハッシュには本文・openTimes・openCountsを除いた軽量データのみ
   try {
-    const saveData = camps.map(({ openTimes, openCounts, ...rest }) => rest);
+    const saveData = camps.map(({ openTimes, openCounts, bodyText, ...rest }) => rest);
     const encoded = btoa(encodeURIComponent(JSON.stringify(saveData)));
     history.replaceState(null, '', location.pathname + '#data=' + encoded);
   } catch(e) {}
