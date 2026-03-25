@@ -200,7 +200,15 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
               <div class="f">
                 <label>🎯 アポ獲得数（後から✏️で追記もOK）</label>
                 <input type="number" id="f-appt" placeholder="0" min="0" value="0"/>
-                <div class="f-hint">シーケンス完了後に✏️で更新できるよ♡</div>
+              </div>
+              <div class="f">
+                <label>💬 返信数（手動入力）</label>
+                <input type="number" id="f-replies" placeholder="0" min="0" value="0"/>
+                <div class="f-hint">GMassのレポートページの返信数を入力してね</div>
+              </div>
+              <div class="f" style="display:flex;align-items:center;gap:8px;background:var(--pink4);border:2px solid var(--border);border-radius:9px;padding:8px 10px">
+                <input type="checkbox" id="f-finalized" style="width:16px;height:16px;cursor:pointer;flex-shrink:0">
+                <label for="f-finalized" style="font-size:11px;color:var(--ink2);cursor:pointer;margin:0">シーケンス完了・アポ数確定済み（0件でもチェック）</label>
               </div>
               <div class="f">
                 <label>📝 本文テキスト（AI分析に使うよ）<span id="f-body-count" style="font-weight:400;color:var(--pink);margin-left:5px"></span></label>
@@ -259,8 +267,14 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
           </select>
         </div>
       </div>
-      <div class="f"><label>🎯 アポ獲得数</label><input type="number" id="e-appt" min="0"/><div class="f-hint">1〜3通目を通じた合計アポ数を入力してね♡</div></div>
+      <div class="f"><label>💬 返信数（手動入力）</label><input type="number" id="e-replies" min="0" placeholder="0"/><div class="f-hint">GMassのレポートページの返信数を入力してね</div></div>
+      <div class="f"><label>🎯 アポ獲得数</label><input type="number" id="e-appt" min="0"/></div>
+      <div class="f" style="display:flex;align-items:center;gap:8px;background:var(--pink4);border:2px solid var(--border);border-radius:9px;padding:8px 10px">
+        <input type="checkbox" id="e-finalized" style="width:16px;height:16px;cursor:pointer;flex-shrink:0">
+        <label for="e-finalized" style="font-size:11px;color:var(--ink2);cursor:pointer;margin:0">シーケンス完了・アポ数確定済み（0件でもチェックしてね）</label>
+      </div>
       <div class="f"><label>📝 本文テキスト<span id="e-body-count" style="font-weight:400;color:var(--pink);margin-left:5px"></span></label><textarea id="e-body" rows="3" oninput="syncEditLen()"></textarea></div>
+      <div class="f"><label>📌 AIメモ（分析結果を貼り付けて保存できるよ）</label><textarea id="e-aimemo" rows="3" placeholder="Claudeの分析結果をここに貼り付けて保存してね♡"></textarea></div>
       <div style="margin-top:8px;padding-top:10px;border-top:2px solid var(--border)">
         <div style="font-size:10px;font-weight:700;color:var(--ink2);margin-bottom:6px">📂 最新CSVでデータを更新</div>
         <div class="drop-zone" id="updZone" style="padding:10px"><span class="dz-icon" style="font-size:18px">📂</span><div class="dz-main" style="font-size:11px">更新CSVをドロップ</div><div class="dz-sub">2通目・3通目後の最新CSVでOK</div></div>
@@ -499,13 +513,19 @@ function syncEditLen() {
 function confirmAdd() {
   if (!pend1) return;
   const appt = parseInt(document.getElementById('f-appt').value) || 0;
+  const manualReplies = parseInt(document.getElementById('f-replies').value) || 0;
+  const finalized = document.getElementById('f-finalized').checked;
   const bodyText = document.getElementById('f-body').value || '';
   const N = pend1.recipients || 1;
   const actualOpens = pend2 ? pend2.openers : pend1.opens;
+  // 返信数は手動入力を優先
+  const actualReplies = manualReplies > 0 ? manualReplies : pend1.replies;
   camps.push({
     ...pend1,
     opens: actualOpens,
+    replies: actualReplies,
     openRate: N > 0 ? actualOpens/N : 0,
+    replyRate: N > 0 ? actualReplies/N : 0,
     openTimes: pend2 ? pend2.openTimes.map(d => d.toISOString()) : [],
     openCounts: pend2 ? pend2.openCounts : [],
     avgOpenCount: pend2 ? pend2.avgOpenCount : 0,
@@ -516,7 +536,7 @@ function confirmAdd() {
     appointments: appt,
     apptRateSent: N>0?appt/N:0,
     apptRateOpen: actualOpens>0?appt/actualOpens:0,
-    apptFinalized: appt > 0,
+    apptFinalized: finalized,
     bodyText, bodyLength: bodyText.trim().length || null,
     aiMemos: [],
     addedAt: new Date().toISOString(),
@@ -533,8 +553,9 @@ function confirmAdd() {
   document.getElementById('dz1').querySelector('.dz-main').textContent = '① キャンペーンCSVをドロップ';
   document.getElementById('dz2').classList.remove('loaded');
   document.getElementById('dz2').querySelector('.dz-main').textContent = '② Open RateのExcelをドロップ（任意）';
-  ['f-subj','f-appt','f-body'].forEach(id => document.getElementById(id).value = '');
+  ['f-subj','f-appt','f-replies','f-body'].forEach(id => document.getElementById(id).value = '');
   ['f-day','f-hour'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-finalized').checked = false;
   document.getElementById('f-body-count').textContent = '';
   renderAll();
 }
@@ -546,7 +567,10 @@ function openEdit(i) {
   document.getElementById('e-day').value = c.weekday || '';
   document.getElementById('e-hour').value = c.hour || '';
   document.getElementById('e-appt').value = c.appointments || 0;
+  document.getElementById('e-replies').value = c.replies || 0;
+  document.getElementById('e-finalized').checked = c.apptFinalized || false;
   document.getElementById('e-body').value = c.bodyText || '';
+  document.getElementById('e-aimemo').value = (c.aiMemos && c.aiMemos.length > 0) ? c.aiMemos[c.aiMemos.length-1].text : '';
   const bl = (c.bodyText||'').trim().length;
   document.getElementById('e-body-count').textContent = bl > 0 ? `${bl}文字` : '';
   document.getElementById('updMsg').innerHTML = '';
@@ -558,17 +582,33 @@ function saveEdit() {
   if (editIdx < 0) return;
   const c = camps[editIdx];
   const appt = parseInt(document.getElementById('e-appt').value) || 0;
+  const manualReplies = parseInt(document.getElementById('e-replies').value) || 0;
+  const finalized = document.getElementById('e-finalized').checked;
   const bodyText = document.getElementById('e-body').value || '';
+  const memoText = document.getElementById('e-aimemo').value.trim();
   const base = updPend || c;
-  const N = base.recipients || 1, opens = base.opens || 0;
+  const N = base.recipients || 1;
+  const actualOpens = base.opens || 0;
+  const actualReplies = manualReplies > 0 ? manualReplies : (base.replies || 0);
+  // AIメモを更新
+  const aiMemos = c.aiMemos || [];
+  if (memoText) {
+    const lastMemo = aiMemos[aiMemos.length - 1];
+    if (!lastMemo || lastMemo.text !== memoText) {
+      aiMemos.push({ date: new Date().toISOString(), text: memoText });
+    }
+  }
   camps[editIdx] = { ...c, ...(updPend||{}),
     weekday: document.getElementById('e-day').value || c.weekday,
     hour: document.getElementById('e-hour').value || c.hour,
-    appointments: appt, bodyText,
-    bodyLength: bodyText.trim().length || null,
+    appointments: appt,
+    replies: actualReplies,
+    replyRate: N > 0 ? actualReplies/N : 0,
+    bodyText, bodyLength: bodyText.trim().length || null,
     apptRateSent: N>0?appt/N:0,
-    apptRateOpen: opens>0?appt/opens:0,
-    apptFinalized: appt > 0 };
+    apptRateOpen: actualOpens>0?appt/actualOpens:0,
+    apptFinalized: finalized,
+    aiMemos };
   save(); closeEdit(); renderAll();
 }
 function delCamp(i) { if (!confirm('削除する？')) return; camps.splice(i,1); save(); renderAll(); }
