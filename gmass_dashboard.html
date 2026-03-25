@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✨ GMass 営業メール分析ちゃん ✨</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Maru+Gothic:wght@700&display=swap');
+:root{
+  --pink:#ff6eb4;--hot:#ff2d78;--purple:#c97fff;
+  --mint:#2dd4bf;--gold:#f0b429;--coral:#f87171;--green:#4ade80;
+  --pink3:#ffd6ec;--pink4:#fff0f8;--border:#ffd6ec;--border2:#ffb3d9;
+  --ink:#2d1a2e;--ink2:#7a4a7a;--ink3:#b888b8;
+  --bg:#fff5fb;--shadow:0 4px 20px rgba(255,110,180,.12);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif;font-size:13px;display:flex;flex-direction:column}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--pink4)}::-webkit-scrollbar-thumb{background:var(--pink3);border-radius:10px}
+
+.header{background:linear-gradient(135deg,#ff6eb4,#c97fff);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 4px 16px rgba(255,110,180,.3)}
+.logo{font-family:'Zen Maru Gothic',sans-serif;font-size:15px;color:white;letter-spacing:1px}
+.hstats{display:flex;gap:20px}
+.hstat{text-align:right}
+.hstat-val{font-size:16px;font-weight:700;color:white}
+.hstat-lbl{font-size:9px;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:.5px}
+
+.layout{display:flex;flex:1;overflow:hidden}
+.sidebar{width:310px;flex-shrink:0;background:white;border-right:2px solid var(--border);overflow-y:auto}
+.sb{padding:14px;display:flex;flex-direction:column;gap:12px}
+
+.panel{background:white;border:2px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+.panel-hd{background:linear-gradient(135deg,var(--pink4),#f0e8ff);padding:9px 14px;font-size:11px;font-weight:700;color:var(--ink2);display:flex;justify-content:space-between;align-items:center}
+.panel-bd{padding:14px}
+
+.form{display:flex;flex-direction:column;gap:9px}
+.f label{display:block;font-size:10px;font-weight:700;color:var(--ink2);margin-bottom:3px}
+.f input,.f select,.f textarea{width:100%;background:var(--pink4);border:2px solid var(--border);border-radius:9px;color:var(--ink);font-family:'Noto Sans JP',sans-serif;font-size:12px;padding:7px 10px;outline:none;transition:border-color .2s;resize:none}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--pink)}
+.f select option{background:white}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.f-hint{font-size:10px;color:var(--ink3);margin-top:2px;line-height:1.5}
+
+.btn{border:none;border-radius:30px;cursor:pointer;font-size:12px;font-family:'Noto Sans JP',sans-serif;font-weight:700;padding:8px 16px;transition:all .15s;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.05)}
+.btn:active{transform:scale(.97)}
+.btn-pink{background:linear-gradient(135deg,var(--pink),var(--hot));color:white;box-shadow:0 3px 12px rgba(255,45,120,.25)}
+.btn-mint{background:linear-gradient(135deg,var(--mint),#1aaa94);color:white;box-shadow:0 3px 12px rgba(45,212,191,.25)}
+.btn-ghost{background:white;color:var(--ink2);border:2px solid var(--border)}
+.btn-ghost:hover{border-color:var(--pink);color:var(--pink)}
+.btn-full{width:100%;margin-top:6px}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;filter:none}
+.icon-btn{background:none;border:none;cursor:pointer;font-size:13px;padding:3px 5px;border-radius:50%;transition:background .15s;line-height:1}
+.icon-btn:hover{background:var(--pink3)}
+.icon-btn.del:hover{background:#ffc8c8}
+
+.msg-ok{margin-top:6px;padding:7px 10px;background:#dcfce7;border:2px solid #86efac;border-radius:9px;color:#166534;font-size:11px;line-height:1.6}
+.msg-err{margin-top:6px;padding:7px 10px;background:#fee2e2;border:2px solid #fca5a5;border-radius:9px;color:#991b1b;font-size:11px;line-height:1.6}
+.msg-info{margin-top:6px;padding:7px 10px;background:var(--pink4);border:2px solid var(--border);border-radius:9px;color:var(--ink2);font-size:11px;line-height:1.6}
+.preview{background:#f0fdf4;border:2px solid #86efac;border-radius:9px;padding:9px 12px;font-size:11px;color:#166534;line-height:1.9;margin-top:8px}
+.preview strong{color:#14532d}
+
+.camp{background:white;border:2px solid var(--border);border-radius:12px;padding:10px;margin-bottom:8px;transition:all .2s}
+.camp:last-child{margin-bottom:0}
+.camp:hover{border-color:var(--pink);box-shadow:var(--shadow)}
+.camp-top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;margin-bottom:6px}
+.camp-subj{font-size:11px;font-weight:700;line-height:1.4;flex:1}
+.camp-acts{display:flex;gap:2px;flex-shrink:0}
+.camp-stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:5px}
+.cs-v{font-size:13px;font-weight:700}.cs-l{font-size:9px;color:var(--ink3);text-transform:uppercase}
+.cp{color:var(--hot)}.cg{color:#ca8a04}.cgn{color:#16a34a}
+.camp-meta{font-size:10px;color:var(--ink3)}
+.badge{display:inline-block;padding:1px 6px;border-radius:20px;font-size:9px;font-weight:700;margin-right:3px}
+.bd{background:#dcfce7;color:#166534}.bp{background:#fef9c3;color:#854d0e}
+
+.content{flex:1;overflow-y:auto;padding:20px 24px}
+.empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--ink3)}
+.empty-icon{font-size:48px;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+.sec{font-size:10px;font-weight:700;color:var(--pink);margin-bottom:12px;display:flex;align-items:center;gap:8px;text-transform:uppercase;letter-spacing:1px}
+.sec::before{content:'♡'}
+.sec::after{content:'';flex:1;height:2px;background:linear-gradient(90deg,var(--pink3),transparent);border-radius:2px}
+
+.kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:20px}
+.kpi{background:white;border:2px solid var(--border);border-radius:14px;padding:12px;text-align:center;box-shadow:var(--shadow);transition:transform .2s}
+.kpi:hover{transform:translateY(-2px)}
+.kpi-e{font-size:18px;margin-bottom:3px}
+.kpi-l{font-size:9px;font-weight:700;color:var(--ink3);margin-bottom:5px;text-transform:uppercase}
+.kpi-v{font-size:20px;font-weight:900;line-height:1;margin-bottom:2px}
+.kpi-s{font-size:9px;color:var(--ink3)}
+.kv-p{color:var(--hot)}.kv-pu{color:#9333ea}.kv-g{color:#ca8a04}
+.kv-gn{color:#16a34a}.kv-m{color:#0d9488}.kv-c{color:#dc2626}
+
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.card{background:white;border:2px solid var(--border);border-radius:16px;padding:16px;box-shadow:var(--shadow)}
+.card-title{font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+
+.bars{display:flex;flex-direction:column;gap:7px}
+.bar-r{display:flex;align-items:center;gap:8px}
+.bar-l{width:64px;font-size:11px;color:var(--ink2);text-align:right;flex-shrink:0;line-height:1.3;font-weight:500}
+.bar-t{flex:1;background:var(--pink3);border-radius:30px;height:20px;overflow:hidden}
+.bar-f{height:100%;border-radius:30px;display:flex;align-items:center;padding-left:8px;font-size:10px;color:white;font-weight:700;transition:width .7s cubic-bezier(.4,0,.2,1);min-width:34px;text-shadow:0 1px 3px rgba(0,0,0,.2)}
+.bf-p{background:linear-gradient(90deg,var(--pink),var(--hot))}.bf-g{background:linear-gradient(90deg,#f59e0b,#d97706)}
+.bf-gn{background:linear-gradient(90deg,var(--green),#16a34a)}.bf-m{background:linear-gradient(90deg,var(--mint),#0d9488)}
+.bf-c{background:linear-gradient(90deg,var(--coral),#dc2626)}.bf-pu{background:linear-gradient(90deg,var(--purple),#9333ea)}
+.bf-bl{background:linear-gradient(90deg,#60a5fa,#2563eb)}
+
+.donut-w{display:flex;gap:14px;align-items:center}
+.leg-r{display:flex;align-items:center;gap:7px;margin-bottom:7px}
+.leg-d{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.leg-n{font-size:11px;color:var(--ink2);flex:1;font-weight:500}
+.leg-v{font-size:14px;font-weight:700}
+
+.hm{display:grid;gap:3px}
+.hm-l{font-size:9px;font-weight:700;color:var(--ink3);display:flex;align-items:center;justify-content:center;padding:2px;text-align:center}
+.hm-l.t{justify-content:flex-end;padding-right:5px}
+.hm-c{height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;cursor:default;transition:transform .1s;color:transparent;position:relative}
+.hm-c:hover{transform:scale(1.12);color:rgba(0,0,0,.7);z-index:5}
+.hm-tip{display:none;position:absolute;bottom:110%;left:50%;transform:translateX(-50%);background:var(--ink);color:white;padding:4px 8px;border-radius:7px;font-size:10px;white-space:nowrap;z-index:20;pointer-events:none}
+.hm-c:hover .hm-tip{display:block}
+
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:9px;font-weight:700;text-transform:uppercase;color:var(--ink3);padding:7px 10px;border-bottom:2px solid var(--border);text-align:left;letter-spacing:.5px}
+.tbl td{padding:8px 10px;border-bottom:1px solid var(--pink3);font-size:11px;vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--pink4)}
+.pill{display:inline-block;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700}
+.pp{background:#fce7f3;color:#be185d}.pm{background:#d1fae5;color:#065f46}
+.pg{background:#fef3c7;color:#92400e}.ppu{background:#ede9fe;color:#6d28d9}
+.pgn{background:#dcfce7;color:#166534}.pc{background:#fee2e2;color:#991b1b}
+.pgr{background:var(--pink4);color:var(--ink3)}
+.rank{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;font-size:11px;font-weight:700}
+.r1{background:#fef3c7;color:#92400e}.r2{background:#f1f5f9;color:#475569}
+.r3{background:#fde8d8;color:#c2410c}.rn{background:var(--pink4);color:var(--ink3)}
+
+.insight{background:linear-gradient(135deg,var(--pink4),#f5f0ff);border:2px solid var(--border2);border-radius:16px;padding:16px;margin-bottom:20px}
+.insight-title{font-size:13px;font-weight:700;color:var(--hot);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.insight-body{font-size:12px;color:var(--ink2);line-height:1.9}
+.insight-body strong{color:var(--ink)}
+.ai-btn{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,var(--pink),var(--purple));color:white;border:none;border-radius:30px;padding:9px 18px;cursor:pointer;font-size:12px;font-weight:700;transition:all .15s;margin-bottom:10px;font-family:'Noto Sans JP',sans-serif}
+.ai-btn:hover{transform:translateY(-1px)}
+.ai-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.spinner{width:13px;height:13px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.note{background:#fef9c3;border:2px solid #fde047;border-radius:12px;padding:10px 14px;font-size:11px;color:#713f12;line-height:1.8;margin-bottom:16px}
+.mini{background:var(--pink4);border:2px solid var(--border);border-radius:10px;padding:9px 12px;font-size:11px;color:var(--ink2);line-height:1.7;margin-top:8px}
+.mini strong{color:var(--hot)}
+
+.loading-bar{height:3px;background:var(--pink3);border-radius:10px;overflow:hidden;margin:6px 0}
+.loading-fill{height:100%;background:linear-gradient(90deg,var(--pink),var(--purple));border-radius:10px;animation:la 1.4s ease-in-out infinite}
+@keyframes la{0%{width:0%;margin-left:0%}50%{width:50%;margin-left:25%}100%{width:0%;margin-left:100%}}
+
+.overlay{display:none;position:fixed;inset:0;background:rgba(45,26,46,.5);z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+.overlay.open{display:flex}
+.modal{background:white;border:2px solid var(--border);border-radius:22px;padding:24px;width:400px;max-width:calc(100vw - 32px);max-height:90vh;overflow-y:auto;box-shadow:0 20px 50px rgba(255,110,180,.2);animation:pop .25s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{from{opacity:0;transform:scale(.9) translateY(10px)}to{opacity:1;transform:none}}
+.modal-title{font-size:15px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.modal-btns{display:flex;gap:8px;margin-top:14px}
+
+.tl-row{display:flex;align-items:center;gap:7px;margin-bottom:4px}
+.tl-lbl{width:36px;font-size:9px;color:var(--ink2);text-align:right;flex-shrink:0;font-weight:500}
+.tl-bar-t{flex:1;background:var(--pink3);border-radius:30px;height:16px;overflow:hidden}
+.tl-bar-f{height:100%;border-radius:30px;display:flex;align-items:center;padding-left:6px;font-size:9px;color:white;font-weight:700;transition:width .7s;min-width:26px;text-shadow:0 1px 2px rgba(0,0,0,.2)}
+
+.fade-in{animation:fi .3s ease forwards}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">✦ GMass 営業メール分析ちゃん ✦</div>
+  <div class="hstats">
+    <div class="hstat"><div class="hstat-val" id="h-n">0</div><div class="hstat-lbl">キャンペーン</div></div>
+    <div class="hstat"><div class="hstat-val" id="h-open">—</div><div class="hstat-lbl">平均開封率</div></div>
+    <div class="hstat"><div class="hstat-val" id="h-a1">—</div><div class="hstat-lbl">アポ率/送信</div></div>
+    <div class="hstat"><div class="hstat-val" id="h-a2">—</div><div class="hstat-lbl">アポ率/開封</div></div>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="sidebar">
+    <div class="sb">
+
+      <div class="panel">
+        <div class="panel-hd">🔑 GMass APIキー設定</div>
+        <div class="panel-bd">
+          <div class="f">
+            <label>APIキー</label>
+            <input type="password" id="apiKeyInput" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"/>
+            <div class="f-hint">GMassダッシュボード → Settings → API Keys から取得してね♡</div>
+          </div>
+          <button class="btn btn-pink btn-full" onclick="saveApiKey()">✓ 保存する</button>
+          <div id="apiMsg"></div>
+        </div>
+      </div>
+
+      <div class="panel" id="addPanel" style="display:none">
+        <div class="panel-hd">💗 キャンペーン追加</div>
+        <div class="panel-bd">
+          <div class="f">
+            <label>GMassレポートURL</label>
+            <input type="text" id="urlInput" placeholder="https://app.gmass.co/report?c=..."/>
+            <div class="f-hint">レポートページのURLをそのまま貼り付けてね♡</div>
+          </div>
+          <button class="btn btn-pink btn-full" id="fetchBtn" onclick="fetchCampaign()">📥 データを自動取得する</button>
+          <div id="loadingBar" style="display:none" class="loading-bar"><div class="loading-fill"></div></div>
+          <div id="fetchMsg"></div>
+          <div id="metaForm" style="display:none">
+            <div id="fetchPreview" class="preview"></div>
+            <div class="form" style="margin-top:10px">
+              <div class="f">
+                <label>🎯 アポ獲得数（後から✏️で追記もOK）</label>
+                <input type="number" id="f-appt" placeholder="0" min="0" value="0"/>
+                <div class="f-hint">シーケンス完了後に✏️で更新できるよ♡</div>
+              </div>
+              <div class="f">
+                <label>本文テキスト（AI分析用・任意）<span id="f-body-count" style="font-weight:400;color:var(--pink);margin-left:5px"></span></label>
+                <textarea id="f-body" rows="3" placeholder="本文を貼り付けると文字数が自動カウントされるよ♡" oninput="syncLen()"></textarea>
+              </div>
+              <button class="btn btn-mint btn-full" onclick="confirmAdd()">✓ 登録する♡</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" id="listPanel" style="display:none">
+        <div class="panel-hd" style="display:flex;justify-content:space-between;align-items:center">
+          <span>💖 登録済み（<span id="cnt">0</span>件）</span>
+          <button class="btn btn-ghost" onclick="openShare()" style="padding:3px 10px;font-size:10px;border-radius:20px">🔗 共有</button>
+        </div>
+        <div class="panel-bd" style="padding:10px">
+          <div id="campList"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="content" id="content">
+    <div class="empty" id="emptyState">
+      <div class="empty-icon">💌</div>
+      <div style="font-size:16px;font-weight:700;color:var(--ink2)">まずAPIキーを設定してね！</div>
+      <div style="max-width:400px;background:white;border:2px solid var(--border);border-radius:16px;padding:20px;box-shadow:var(--shadow);text-align:left;font-size:12px;color:var(--ink2);line-height:2">
+        <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:12px">
+          <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--hot));color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px">1</div>
+          <div><strong>GMassダッシュボードを開く</strong><br><a href="https://app.gmass.co/dashboard" target="_blank" style="color:var(--pink)">app.gmass.co/dashboard</a> にアクセス</div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:12px">
+          <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--hot));color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px">2</div>
+          <div><strong>APIキーを発行する</strong><br>右上の歯車アイコン →「API Keys」→「Create a new API Key」</div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--hot));color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px">3</div>
+          <div><strong>左のフォームにAPIキーを貼り付けて「保存する」</strong><br>これだけ！あとは全自動♡</div>
+        </div>
+      </div>
+      <button class="btn btn-ghost" onclick="loadDemo()" style="margin-top:6px">🌸 デモデータで試してみる</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="overlay" id="editOverlay">
+  <div class="modal">
+    <div class="modal-title">✏️ 編集・データ更新</div>
+    <div class="form">
+      <div class="f"><label>件名</label><input type="text" id="e-subj" readonly style="opacity:.6"/></div>
+      <div class="f">
+        <label>🎯 アポ獲得数</label>
+        <input type="number" id="e-appt" min="0"/>
+        <div class="f-hint">1〜3通目を通じた合計アポ数を入力してね♡</div>
+      </div>
+      <div class="f">
+        <label>本文テキスト<span id="e-body-count" style="font-weight:400;color:var(--pink);margin-left:5px"></span></label>
+        <textarea id="e-body" rows="3" oninput="syncEditLen()"></textarea>
+      </div>
+      <div style="margin-top:8px;padding-top:10px;border-top:2px solid var(--border)">
+        <div style="font-size:10px;font-weight:700;color:var(--ink2);margin-bottom:6px">🔄 最新データをAPIから再取得</div>
+        <button class="btn btn-pink btn-full" id="refreshBtn" onclick="refreshCamp()">最新データを取得する</button>
+        <div id="refreshMsg"></div>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-mint" style="flex:1" onclick="saveEdit()">保存する♡</button>
+      <button class="btn btn-ghost" onclick="closeEdit()">キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHARE MODAL -->
+<div class="overlay" id="shareOverlay">
+  <div class="modal">
+    <div class="modal-title">🔗 チームと共有する</div>
+    <div style="font-size:12px;color:var(--ink2);line-height:1.8;margin-bottom:14px">
+      データをクラウドに保存してチームと共有できるよ♡<br>
+      <span style="font-size:10px;color:var(--ink3)">※ APIキーは保存されません</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button class="btn btn-pink btn-full" onclick="saveCloud()">☁️ 保存して共有IDを発行</button>
+      <div style="text-align:center;font-size:11px;color:var(--ink3)">または</div>
+      <div class="f">
+        <label>共有IDを入力して読み込む</label>
+        <div style="display:flex;gap:6px">
+          <input type="text" id="shareIn" placeholder="例: gmass-abc12345" style="flex:1"/>
+          <button class="btn btn-mint" onclick="loadCloud()" style="padding:7px 12px;border-radius:20px">読込</button>
+        </div>
+      </div>
+    </div>
+    <div id="shareMsg" style="margin-top:8px"></div>
+    <div id="shareBox" style="display:none;margin-top:12px">
+      <div style="font-size:11px;font-weight:700;color:var(--ink2);margin-bottom:6px">共有ID（チームに教えてね♡）</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div id="shareId" style="flex:1;background:var(--pink3);border-radius:10px;padding:10px 12px;font-size:14px;font-weight:700;color:var(--hot);letter-spacing:1px"></div>
+        <button class="btn btn-pink" onclick="copyId()" style="flex-shrink:0;padding:8px 14px">コピー</button>
+      </div>
+    </div>
+    <div class="modal-btns" style="margin-top:14px">
+      <button class="btn btn-ghost btn-full" onclick="closeShare()">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══ STATE ══
+let camps = JSON.parse(localStorage.getItem('gm_v9') || '[]');
+let apiKey = localStorage.getItem('gm_apikey') || '';
+let shareId = localStorage.getItem('gm_sid') || null;
+let editIdx = -1;
+let pendingData = null;
+
+// ══ INIT ══
+if (apiKey) {
+  document.getElementById('apiKeyInput').value = apiKey;
+  showMainUI();
+}
+renderAll();
+
+// ══ API KEY ══
+async function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  const msgEl = document.getElementById('apiMsg');
+  if (!key) return;
+  msgEl.innerHTML = '<div class="msg-info">🔄 APIキーを確認中...</div>';
+
+  try {
+    // CORSを回避するためAnthropicのAPIを通じてGMass APIを呼び出す
+    const result = await callGmassViaProxy(`/api/campaigns?limit=1`, key);
+    if (result.error) throw new Error(result.error);
+    apiKey = key;
+    localStorage.setItem('gm_apikey', key);
+    msgEl.innerHTML = '<div class="msg-ok">✓ API接続成功♡ キャンペーンを追加してね！</div>';
+    showMainUI();
+  } catch(e) {
+    msgEl.innerHTML = `<div class="msg-err">エラー: ${e.message}<br>APIキーを確認してね💦</div>`;
+  }
+}
+
+// ══ CORS回避: AnthropicのAPIを通じてGMass APIを叩く ══
+async function callGmassViaProxy(path, key) {
+  const k = key || apiKey;
+  const prompt = `以下のGMass APIエンドポイントにHTTPリクエストを送って、レスポンスのJSONをそのまま返してください。
+
+エンドポイント: https://api.gmass.co${path}
+HTTPメソッド: GET
+ヘッダー: X-apikey: ${k}
+
+レスポンスのJSONのみを返してください。説明文は不要です。エラーの場合は {"error": "エラー内容"} を返してください。`;
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 4000,
+      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+
+  if (!res.ok) throw new Error(`Anthropic API エラー: ${res.status}`);
+  const data = await res.json();
+  const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
+  const match = text.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
+  if (!match) throw new Error('レスポンスの解析に失敗したよ');
+  return JSON.parse(match[0]);
+}
+
+function showMainUI() {
+  document.getElementById('addPanel').style.display = 'block';
+  document.getElementById('listPanel').style.display = 'block';
+  if (camps.length > 0) document.getElementById('emptyState').style.display = 'none';
+}
+
+// ══ FETCH CAMPAIGN ══
+async function fetchCampaign() {
+  const url = document.getElementById('urlInput').value.trim();
+  const msgEl = document.getElementById('fetchMsg');
+  const barEl = document.getElementById('loadingBar');
+  const formEl = document.getElementById('metaForm');
+  msgEl.innerHTML = ''; formEl.style.display = 'none';
+
+  if (!url) { msgEl.innerHTML = '<div class="msg-err">URLを入力してね！</div>'; return; }
+  if (!url.includes('gmass.co')) { msgEl.innerHTML = '<div class="msg-err">GMassのレポートURLを入力してね♡</div>'; return; }
+
+  // キャンペーンIDを抽出（数値IDまたはトークン形式）
+  const numMatch = url.match(/[?&]c=(\d+)/);
+  const tokenMatch = url.match(/[?&]c=([^&]+)/);
+  let campaignId = numMatch ? numMatch[1] : null;
+
+  // 数値IDが取れない場合はトークンから試みる
+  if (!campaignId && tokenMatch) {
+    const token = decodeURIComponent(tokenMatch[1]);
+    const numInToken = token.match(/\d{7,}/);
+    if (numInToken) campaignId = numInToken[0];
+  }
+
+  // URLのパスからIDを探す
+  if (!campaignId) {
+    const pathMatch = url.match(/\/(\d{7,})/);
+    if (pathMatch) campaignId = pathMatch[1];
+  }
+
+  if (!campaignId) {
+    msgEl.innerHTML = '<div class="msg-err">URLからキャンペーンIDを取得できなかったよ💦<br>レポートページのURLをそのままコピーしてね</div>';
+    return;
+  }
+
+  barEl.style.display = 'block';
+  msgEl.innerHTML = '<div class="msg-info">📥 GMass APIからデータを取得中... 少し時間がかかるよ♡</div>';
+  document.getElementById('fetchBtn').disabled = true;
+
+  try {
+    const data = await fetchAllCampaignData(campaignId);
+    pendingData = data;
+    barEl.style.display = 'none';
+    document.getElementById('fetchBtn').disabled = false;
+    document.getElementById('fetchPreview').innerHTML = buildPreviewHTML(data);
+    formEl.style.display = 'block';
+    msgEl.innerHTML = '<div class="msg-ok">✓ データ取得完了♡ アポ数を入力して登録してね！</div>';
+    document.getElementById('urlInput').value = '';
+    document.getElementById('f-appt').value = '0';
+    document.getElementById('f-body').value = '';
+    document.getElementById('f-body-count').textContent = '';
+  } catch(e) {
+    barEl.style.display = 'none';
+    document.getElementById('fetchBtn').disabled = false;
+    msgEl.innerHTML = `<div class="msg-err">エラー: ${e.message}</div>`;
+  }
+}
+
+async function fetchAllCampaignData(campaignId) {
+  // 並列で取得
+  const [summary, opensRaw, repliesRaw, bouncesRaw] = await Promise.allSettled([
+    callGmassViaProxy(`/api/campaigns/${campaignId}`),
+    callGmassViaProxy(`/api/reports/${campaignId}/opens`),
+    callGmassViaProxy(`/api/reports/${campaignId}/replies`),
+    callGmassViaProxy(`/api/reports/${campaignId}/bounces`),
+  ]);
+
+  const s = summary.status === 'fulfilled' ? summary.value : null;
+  if (!s || s.error) throw new Error(s?.error || 'キャンペーンが見つからないよ。APIキーとIDを確認してね');
+
+  const opens = (opensRaw.status === 'fulfilled' && Array.isArray(opensRaw.value)) ? opensRaw.value : [];
+  const replies = (repliesRaw.status === 'fulfilled' && Array.isArray(repliesRaw.value)) ? repliesRaw.value : [];
+  const bounces = (bouncesRaw.status === 'fulfilled' && Array.isArray(bouncesRaw.value)) ? bouncesRaw.value : [];
+
+  return processData(campaignId, s, opens, replies, bounces);
+}
+
+function processData(campaignId, s, opensRaw, repliesRaw, bouncesRaw) {
+  const recipients = s.numberOfRecipients || s.recipients || 0;
+  const opensCount = s.numberOfOpens || s.opens || opensRaw.length || 0;
+  const repliesCount = s.numberOfReplies || s.replies || repliesRaw.length || 0;
+  const bouncesCount = s.numberOfBounces || s.bounces || bouncesRaw.length || 0;
+  const clicksCount = s.numberOfClicks || s.clicks || 0;
+
+  // デバイス・時間帯解析
+  const openTimes = [];
+  let mobileCount = 0, desktopCount = 0, appleMPP = 0;
+  for (const o of opensRaw) {
+    const ua = (o.userAgent || o.user_agent || o.UserAgent || '').toLowerCase();
+    const t = o.openedAt || o.opened_at || o.OpenedAt || o.date || '';
+    if (t) { try { openTimes.push(new Date(t)); } catch(e) {} }
+    if (ua.includes('apple mpp') || ua.includes('mail privacy')) appleMPP++;
+    else if (ua.includes('mobile') || ua.includes('android') || ua.includes('iphone') || ua.includes('ipad')) mobileCount++;
+    else if (ua) desktopCount++;
+  }
+
+  const sentDate = s.scheduledDate || s.sentDate || s.created || null;
+  let weekday = '不明', hour = null;
+  if (sentDate) {
+    try {
+      const d = new Date(sentDate);
+      const days = ['日','月','火','水','木','金','土'];
+      const wd = days[d.getDay()];
+      if (['月','火','水','木','金'].includes(wd)) weekday = wd;
+      hour = String(d.getHours());
+    } catch(e) {}
+  }
+
+  return {
+    campaignId, subject: cleanSubject(s.subject || s.name || '（件名不明）'),
+    sentDate, weekday, hour, recipients, opensCount, repliesCount,
+    bouncesCount, clicksCount,
+    openRate: recipients > 0 ? opensCount/recipients : 0,
+    replyRate: recipients > 0 ? repliesCount/recipients : 0,
+    bounceRate: recipients > 0 ? bouncesCount/recipients : 0,
+    clickRate: recipients > 0 ? clicksCount/recipients : 0,
+    openTimes, mobileCount, desktopCount, appleMPP,
+  };
+}
+
+function cleanSubject(s) {
+  return String(s||'').replace(/\{\{spin\}\}[\s\S]*?\{\{end spin\}\}/g,'').replace(/\{[^}]+\}/g,'').trim() || '（件名不明）';
+}
+
+function buildPreviewHTML(d) {
+  const devTotal = d.mobileCount + d.desktopCount + d.appleMPP;
+  const devInfo = devTotal > 0 ? `スマホ ${pct(d.mobileCount/devTotal)} / PC ${pct(d.desktopCount/devTotal)} / AppleMPP ${pct(d.appleMPP/devTotal)}` : '（データなし）';
+  return `<strong>✅ 取得完了♡</strong><br>
+    件名: <strong>${esc(d.subject)}</strong><br>
+    送信数: <strong>${num(d.recipients)}</strong> &nbsp; 開封率: <strong>${pct(d.openRate)}</strong> &nbsp; 返信率: <strong>${pct(d.replyRate)}</strong> &nbsp; バウンス率: <strong>${pct(d.bounceRate)}</strong><br>
+    デバイス: ${devInfo}<br>
+    送信: ${d.sentDate ? fmtDate(d.sentDate) : '—'} (${d.weekday}曜 ${d.hour ? d.hour+'時台' : ''})`;
+}
+
+// ══ ADD ══
+function syncLen() {
+  const t = document.getElementById('f-body').value;
+  const l = t.trim().length;
+  document.getElementById('f-body-count').textContent = l > 0 ? `${l}文字` : '';
+}
+function syncEditLen() {
+  const t = document.getElementById('e-body').value;
+  const l = t.trim().length;
+  document.getElementById('e-body-count').textContent = l > 0 ? `${l}文字` : '';
+}
+
+function confirmAdd() {
+  if (!pendingData) return;
+  const appt = parseInt(document.getElementById('f-appt').value) || 0;
+  const bodyText = document.getElementById('f-body').value || '';
+  const N = pendingData.recipients || 1, opens = pendingData.opensCount || 0;
+  camps.push({
+    ...pendingData, appointments: appt,
+    apptRateSent: N > 0 ? appt/N : 0,
+    apptRateOpen: opens > 0 ? appt/opens : 0,
+    apptFinalized: appt > 0, bodyText,
+    bodyLength: bodyText.trim().length || null,
+    addedAt: new Date().toISOString(),
+  });
+  save(); pendingData = null;
+  document.getElementById('metaForm').style.display = 'none';
+  document.getElementById('fetchMsg').innerHTML = '';
+  renderAll();
+}
+
+// ══ EDIT ══
+function openEdit(i) {
+  editIdx = i; const c = camps[i];
+  document.getElementById('e-subj').value = c.subject || '';
+  document.getElementById('e-appt').value = c.appointments || 0;
+  document.getElementById('e-body').value = c.bodyText || '';
+  const bl = (c.bodyText||'').trim().length;
+  document.getElementById('e-body-count').textContent = bl > 0 ? `${bl}文字` : '';
+  document.getElementById('refreshMsg').innerHTML = '';
+  document.getElementById('editOverlay').classList.add('open');
+}
+function closeEdit() { document.getElementById('editOverlay').classList.remove('open'); editIdx = -1; }
+function saveEdit() {
+  if (editIdx < 0) return;
+  const c = camps[editIdx];
+  const appt = parseInt(document.getElementById('e-appt').value) || 0;
+  const bodyText = document.getElementById('e-body').value || '';
+  const N = c.recipients || 1, opens = c.opensCount || 0;
+  camps[editIdx] = { ...c, appointments: appt, bodyText,
+    bodyLength: bodyText.trim().length || null,
+    apptRateSent: N>0?appt/N:0, apptRateOpen: opens>0?appt/opens:0, apptFinalized: appt>0 };
+  save(); closeEdit(); renderAll();
+}
+
+async function refreshCamp() {
+  if (editIdx < 0) return;
+  const c = camps[editIdx];
+  const msgEl = document.getElementById('refreshMsg');
+  const btn = document.getElementById('refreshBtn');
+  btn.disabled = true;
+  msgEl.innerHTML = '<div class="msg-info">🔄 最新データを取得中...</div>';
+  try {
+    const fresh = await fetchAllCampaignData(c.campaignId);
+    const appt = parseInt(document.getElementById('e-appt').value) || 0;
+    const bodyText = document.getElementById('e-body').value || '';
+    const N = fresh.recipients || 1, opens = fresh.opensCount || 0;
+    camps[editIdx] = { ...c, ...fresh, appointments: appt, bodyText,
+      bodyLength: bodyText.trim().length || null,
+      apptRateSent: N>0?appt/N:0, apptRateOpen: opens>0?appt/opens:0, apptFinalized: appt>0 };
+    save(); renderAll();
+    document.getElementById('e-subj').value = fresh.subject || '';
+    msgEl.innerHTML = `<div class="msg-ok">✓ 更新完了♡ 開封率: ${pct(fresh.openRate)} / 返信率: ${pct(fresh.replyRate)}</div>`;
+  } catch(e) {
+    msgEl.innerHTML = `<div class="msg-err">エラー: ${e.message}</div>`;
+  }
+  btn.disabled = false;
+}
+
+function delCamp(i) { if (!confirm('削除する？')) return; camps.splice(i,1); save(); renderAll(); }
+
+// ══ SHARE ══
+function openShare() {
+  document.getElementById('shareMsg').innerHTML = '';
+  document.getElementById('shareBox').style.display = 'none';
+  document.getElementById('shareIn').value = shareId || '';
+  document.getElementById('shareOverlay').classList.add('open');
+}
+function closeShare() { document.getElementById('shareOverlay').classList.remove('open'); }
+async function saveCloud() {
+  const el = document.getElementById('shareMsg');
+  el.innerHTML = '<div class="msg-info">☁️ 保存中...</div>';
+  try {
+    const saveData = camps.map(({ openTimes, ...rest }) => rest);
+    const id = shareId || 'gmass-' + Math.random().toString(36).slice(2,10);
+    await window.storage.set(id, JSON.stringify(saveData), true);
+    shareId = id; localStorage.setItem('gm_sid', id);
+    document.getElementById('shareId').textContent = id;
+    document.getElementById('shareBox').style.display = 'block';
+    el.innerHTML = '<div class="msg-ok">✓ 保存完了♡ IDをチームに共有してね！</div>';
+  } catch(e) { el.innerHTML = `<div class="msg-err">エラー: ${e.message}</div>`; }
+}
+async function loadCloud() {
+  const id = document.getElementById('shareIn').value.trim();
+  const el = document.getElementById('shareMsg');
+  if (!id) { el.innerHTML = '<div class="msg-err">IDを入力してね！</div>'; return; }
+  el.innerHTML = '<div class="msg-info">📥 読み込み中...</div>';
+  try {
+    const r = await window.storage.get(id, true);
+    if (!r) throw new Error('このIDのデータが見つからないよ');
+    camps = JSON.parse(r.value); shareId = id;
+    localStorage.setItem('gm_sid', id); save(); closeShare(); renderAll();
+  } catch(e) { el.innerHTML = `<div class="msg-err">エラー: ${e.message}</div>`; }
+}
+function copyId() {
+  navigator.clipboard.writeText(document.getElementById('shareId').textContent)
+    .then(() => { document.getElementById('shareMsg').innerHTML = '<div class="msg-ok">✓ コピーしたよ♡</div>'; });
+}
+
+function save() { localStorage.setItem('gm_v9', JSON.stringify(camps)); }
+
+// ══ RENDER ══
+function renderAll() { renderHeader(); renderSidebar(); renderContent(); }
+
+function renderHeader() {
+  document.getElementById('h-n').textContent = camps.length;
+  if (!camps.length) { ['h-open','h-a1','h-a2'].forEach(id => document.getElementById(id).textContent = '—'); return; }
+  document.getElementById('h-open').textContent = pct(avg(camps.map(c => c.openRate||0)));
+  document.getElementById('h-a1').textContent = pct(avg(camps.map(c => c.apptRateSent||0)));
+  const ho = camps.filter(c => (c.opensCount||0) > 0);
+  document.getElementById('h-a2').textContent = ho.length ? pct(avg(ho.map(c => c.apptRateOpen||0))) : '—';
+}
+
+function renderSidebar() {
+  document.getElementById('cnt').textContent = camps.length;
+  const el = document.getElementById('campList');
+  if (!camps.length) { el.innerHTML = '<div style="color:var(--ink3);font-size:12px;text-align:center;padding:12px 0">まだないよ〜！</div>'; return; }
+  el.innerHTML = camps.map((c,i) => `
+    <div class="camp">
+      <div class="camp-top">
+        <div class="camp-subj"><span class="badge ${c.apptFinalized?'bd':'bp'}">${c.apptFinalized?'完了✓':'未確定'}</span>${esc(c.subject)}</div>
+        <div class="camp-acts">
+          <button class="icon-btn" onclick="openEdit(${i})" title="編集・更新">✏️</button>
+          <button class="icon-btn del" onclick="delCamp(${i})" title="削除">🗑️</button>
+        </div>
+      </div>
+      <div class="camp-stats">
+        <div><div class="cs-v cp">${pct(c.openRate)}</div><div class="cs-l">開封率</div></div>
+        <div><div class="cs-v cg">${pct(c.apptRateSent)}</div><div class="cs-l">アポ/送信</div></div>
+        <div><div class="cs-v cgn">${pct(c.apptRateOpen)}</div><div class="cs-l">アポ/開封</div></div>
+      </div>
+      <div class="camp-meta">📅 ${c.weekday||'?'}曜 ${c.hour?c.hour+'時台':''} · 送信${num(c.recipients)}件 · アポ${c.appointments||0}件</div>
+    </div>`).join('');
+}
+
+function renderContent() {
+  const el = document.getElementById('content');
+  document.getElementById('emptyState').style.display = 'none';
+  if (!camps.length) {
+    el.innerHTML = `<div class="empty" style="height:100%">
+      <div class="empty-icon">💌</div>
+      <div style="font-size:16px;font-weight:700;color:var(--ink2)">キャンペーンを追加してね！</div>
+      <div style="font-size:12px;text-align:center;line-height:2;color:var(--ink3)">左のURLフォームにGMassのレポートURLを貼り付けると<br><strong style="color:var(--pink)">APIで全データを自動取得♡</strong><br>アポ数だけ手動で入力してね！</div>
+      <button class="btn btn-ghost" onclick="loadDemo()" style="margin-top:12px">🌸 デモデータで試してみる</button>
+    </div>`;
+    return;
+  }
+
+  const n = camps.length;
+  const totalAppt = sum(camps.map(c => c.appointments||0));
+  const avgOpen = avg(camps.map(c => c.openRate||0));
+  const avgReply = avg(camps.map(c => c.replyRate||0));
+  const avgA1 = avg(camps.map(c => c.apptRateSent||0));
+  const ho = camps.filter(c => (c.opensCount||0) > 0);
+  const avgA2 = ho.length ? avg(ho.map(c => c.apptRateOpen||0)) : 0;
+  const avgBounce = avg(camps.map(c => c.bounceRate||0));
+  const totalR = sum(camps.map(c => c.repliesCount||0));
+  const r2a = totalR > 0 ? totalAppt/totalR : 0;
+  const pending = camps.filter(c => !c.apptFinalized).length;
+
+  el.innerHTML = `<div class="fade-in">
+    ${pending > 0 ? `<div class="note">⏳ <strong>${pending}件</strong>のシーケンスが進行中！完了したら左の<strong>✏️ボタン</strong>→「最新データを取得」+アポ数入力してね♡</div>` : ''}
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-e">📬</div><div class="kpi-l">平均開封率</div><div class="kpi-v kv-p">${pct(avgOpen)}</div><div class="kpi-s">${n}件の平均</div></div>
+      <div class="kpi"><div class="kpi-e">💬</div><div class="kpi-l">平均返信率</div><div class="kpi-v kv-pu">${pct(avgReply)}</div><div class="kpi-s">返信ベース</div></div>
+      <div class="kpi"><div class="kpi-e">🎯</div><div class="kpi-l">アポ率（送信比）</div><div class="kpi-v kv-g">${pct(avgA1)}</div><div class="kpi-s">アポ÷送信数</div></div>
+      <div class="kpi"><div class="kpi-e">✨</div><div class="kpi-l">アポ率（開封比）</div><div class="kpi-v kv-gn">${pct(avgA2)}</div><div class="kpi-s">アポ÷開封数</div></div>
+      <div class="kpi"><div class="kpi-e">💌</div><div class="kpi-l">返信→アポ転換率</div><div class="kpi-v kv-m">${pct(r2a)}</div><div class="kpi-s">お断り除いた実力値</div></div>
+      <div class="kpi"><div class="kpi-e">⚠️</div><div class="kpi-l">平均バウンス率</div><div class="kpi-v kv-c">${pct(avgBounce)}</div><div class="kpi-s">${avgBounce>0.05?'リスト要更新！':'リスト良好♡'}</div></div>
+    </div>
+    <div class="insight">
+      <div class="insight-title">✨ AIインサイト</div>
+      <div id="insightBody">
+        <button class="ai-btn" id="aiBtn" onclick="runAI()">✦ AIでアドバイスを生成する♡</button>
+        <div class="insight-body" style="color:var(--ink3)">ボタンを押すと、データをもとにアポ率向上の具体的なアドバイスを生成するよ！</div>
+      </div>
+    </div>
+    <div class="sec">キャンペーン別ランキング</div>
+    <div class="chart-row">
+      <div class="card"><div class="card-title">📬 開封率ランキング</div><div class="bars">${buildBar('openRate','bf-p')}</div></div>
+      <div class="card"><div class="card-title">🎯 アポ率ランキング（送信比）</div><div class="bars">${buildBar('apptRateSent','bf-g')}</div></div>
+    </div>
+    <div class="chart-row">
+      <div class="card"><div class="card-title">✨ アポ率ランキング（開封比）</div><div class="bars">${buildBar('apptRateOpen','bf-gn')}</div></div>
+      <div class="card"><div class="card-title">⚠️ バウンス率（低い方がGOOD！）</div><div class="bars">${buildBar('bounceRate','bf-c',true)}</div></div>
+    </div>
+    <div class="sec">開封の詳細分析</div>
+    <div class="chart-row">
+      <div class="card"><div class="card-title">📱 デバイス別開封比率</div><div class="donut-w"><svg width="100" height="100" viewBox="0 0 110 110" id="donutSvg"></svg><div id="donutLeg"></div></div><div style="font-size:10px;color:var(--ink3);margin-top:8px">💡 AppleMPPは自動開封のため水増しの可能性あり</div></div>
+      <div class="card"><div class="card-title">🕐 時間帯別開封分布</div><div id="timeChart"></div><div style="font-size:10px;color:var(--ink3);margin-top:8px">💡 実際に読まれている時間帯がわかるよ！</div></div>
+    </div>
+    <div class="chart-row">
+      <div class="card"><div class="card-title">📊 曜日別 開封率 vs アポ率</div><div id="wdChart"></div></div>
+      <div class="card"><div class="card-title">⏱️ 送信から開封までの時間</div><div id="lagChart"></div><div style="font-size:10px;color:var(--ink3);margin-top:8px">💡 追いメールの最適タイミングがわかるよ！</div></div>
+    </div>
+    <div class="sec">送信タイミング分析</div>
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title">🔥 曜日×時間帯 アポ率ヒートマップ</div>
+      <div id="heatmap" style="overflow-x:auto"></div>
+      <div style="font-size:10px;color:var(--ink3);margin-top:8px">💡 データが増えるほど精度UP！グレーはデータなし。</div>
+    </div>
+    <div class="chart-row">
+      <div class="card"><div class="card-title">✍️ 本文の文字数とアポ率</div><div id="lenChart"></div></div>
+      <div class="card"><div class="card-title">💬 返信→アポ転換率の内訳</div><div id="convChart"></div></div>
+    </div>
+    <div class="sec">全キャンペーン一覧</div>
+    <div class="card" style="margin-bottom:20px;overflow-x:auto">
+      <table class="tbl"><thead><tr>
+        <th>#</th><th>状態</th><th>件名</th><th>曜日・時間</th><th>文字数</th>
+        <th>送信数</th><th>開封率</th><th>返信率</th><th>アポ数</th><th>アポ率(送信)</th><th>アポ率(開封)</th><th>返信→アポ</th><th>バウンス</th><th></th>
+      </tr></thead><tbody>${buildRows()}</tbody></table>
+    </div>
+    ${buildSubj()}
+  </div>`;
+  drawDonut(); drawTimeChart(); drawHeatmap(); drawWd(); drawLen(); drawConv(); drawLag();
+}
+
+function buildBar(field, cls, rev=false) {
+  const s = [...camps].sort((a,b) => rev?(a[field]||0)-(b[field]||0):(b[field]||0)-(a[field]||0));
+  const max = Math.max(...s.map(c=>c[field]||0),0.001);
+  return s.map(c => { const v=c[field]||0,w=Math.round((v/max)*100);
+    return `<div class="bar-r"><div class="bar-l">${esc(shortS(c.subject))}</div><div class="bar-t"><div class="bar-f ${cls}" style="width:${w}%">${pct(v)}</div></div></div>`;
+  }).join('');
+}
+
+function buildRows() {
+  return [...camps].sort((a,b)=>(b.apptRateSent||0)-(a.apptRateSent||0)).map((c,i)=>{
+    const idx=camps.indexOf(c);
+    const rk=i<3?`<span class="rank r${i+1}">${i+1}</span>`:`<span class="rank rn">${i+1}</span>`;
+    const lp=c.bodyLength?`<span class="pill ${c.bodyLength<150?'pc':c.bodyLength<350?'pm':'ppu'}">${c.bodyLength}字</span>`:'<span class="pill pgr">—</span>';
+    const r2a=(c.repliesCount||0)>0?pct((c.appointments||0)/c.repliesCount):'—';
+    return `<tr><td>${rk}</td><td><span class="badge ${c.apptFinalized?'bd':'bp'}">${c.apptFinalized?'完了':'未確定'}</span></td>
+      <td style="max-width:130px;font-size:11px">${esc(c.subject)}</td>
+      <td><span class="pill pgr">${c.weekday||'?'}曜 ${c.hour?c.hour+'時':''}</span></td>
+      <td>${lp}</td><td style="font-weight:700">${num(c.recipients)}</td>
+      <td><span class="pill pp">${pct(c.openRate)}</span></td>
+      <td><span class="pill ppu">${pct(c.replyRate)}</span></td>
+      <td style="color:var(--hot);font-weight:700;font-size:14px">${c.appointments||0}</td>
+      <td><span class="pill pg">${pct(c.apptRateSent)}</span></td>
+      <td><span class="pill pgn">${pct(c.apptRateOpen)}</span></td>
+      <td><span class="pill pm">${r2a}</span></td>
+      <td><span class="pill ${(c.bounceRate||0)>0.05?'pc':'pgr'}">${pct(c.bounceRate)}</span></td>
+      <td><button class="icon-btn" onclick="openEdit(${idx})">✏️</button></td></tr>`;
+  }).join('');
+}
+
+function buildSubj() {
+  if(camps.length<2)return'';
+  const s=[...camps].sort((a,b)=>(b.openRate||0)-(a.openRate||0));
+  const best=s[0],worst=s[s.length-1];
+  return `<div class="sec">件名 最強 vs 最弱</div>
+    <div class="chart-row" style="margin-bottom:24px">
+      <div class="card"><div class="card-title">🏆 最高開封率の件名</div>
+        <div style="font-size:13px;font-weight:700;color:var(--hot);margin-bottom:8px;line-height:1.5">${esc(best.subject)}</div>
+        <div style="font-size:11px;color:var(--ink3)">開封率 <strong style="color:var(--hot)">${pct(best.openRate)}</strong> | アポ率(送信) <strong style="color:#ca8a04">${pct(best.apptRateSent)}</strong> | アポ率(開封) <strong style="color:#16a34a">${pct(best.apptRateOpen)}</strong></div>
+        ${best.bodyLength?`<div class="mini">文字数: <strong>${best.bodyLength}字</strong> | 件名文字数: <strong>${best.subject.length}字</strong></div>`:''}
+      </div>
+      <div class="card"><div class="card-title">📉 最低開封率の件名</div>
+        <div style="font-size:13px;font-weight:700;color:#dc2626;margin-bottom:8px;line-height:1.5">${esc(worst.subject)}</div>
+        <div style="font-size:11px;color:var(--ink3)">開封率 <strong style="color:#dc2626">${pct(worst.openRate)}</strong> | アポ率(送信) <strong style="color:#ca8a04">${pct(worst.apptRateSent)}</strong> | アポ率(開封) <strong style="color:#16a34a">${pct(worst.apptRateOpen)}</strong></div>
+        ${worst.bodyLength?`<div class="mini">文字数: <strong>${worst.bodyLength}字</strong> | 件名文字数: <strong>${worst.subject.length}字</strong></div>`:''}
+      </div>
+    </div>`;
+}
+
+function drawDonut() {
+  const svg=document.getElementById('donutSvg'),leg=document.getElementById('donutLeg');
+  if(!svg)return;
+  const tM=sum(camps.map(c=>c.mobileCount||0)),tD=sum(camps.map(c=>c.desktopCount||0)),tA=sum(camps.map(c=>c.appleMPP||0));
+  const total=tM+tD+tA;
+  const m=total>0?tM/total:0.55,d=total>0?tD/total:0.35,a=total>0?tA/total:0.10;
+  const r=38,cx=55,cy=55,sw=14,ci=2*Math.PI*r;
+  svg.innerHTML=`
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#ffd6ec" stroke-width="${sw}"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#ff6eb4" stroke-width="${sw}" stroke-dasharray="${ci*m} ${ci}" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 ${cx} ${cy})"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#c97fff" stroke-width="${sw}" stroke-dasharray="${ci*d} ${ci}" stroke-dashoffset="${-ci*m}" stroke-linecap="round" transform="rotate(-90 ${cx} ${cy})"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#fbbf24" stroke-width="${sw}" stroke-dasharray="${ci*a} ${ci}" stroke-dashoffset="${-(ci*m+ci*d)}" stroke-linecap="round" transform="rotate(-90 ${cx} ${cy})"/>
+    <text x="${cx}" y="${cy-3}" text-anchor="middle" fill="#2d1a2e" font-family="sans-serif" font-size="12" font-weight="700">${Math.round(m*100)}%</text>
+    <text x="${cx}" y="${cy+12}" text-anchor="middle" fill="#b888b8" font-family="sans-serif" font-size="9">スマホ</text>`;
+  leg.innerHTML=`
+    <div class="leg-r"><div class="leg-d" style="background:#ff6eb4"></div><div class="leg-n">スマホ</div><div class="leg-v" style="color:var(--hot)">${Math.round(m*100)}%</div></div>
+    <div class="leg-r"><div class="leg-d" style="background:#c97fff"></div><div class="leg-n">パソコン</div><div class="leg-v" style="color:#9333ea">${Math.round(d*100)}%</div></div>
+    <div class="leg-r"><div class="leg-d" style="background:#fbbf24"></div><div class="leg-n">Apple MPP</div><div class="leg-v" style="color:#92400e">${Math.round(a*100)}%</div></div>
+    ${total===0?'<div style="font-size:10px;color:var(--ink3);margin-top:4px">※ 業界平均の推定値</div>':''}`;
+}
+
+function drawTimeChart() {
+  const el=document.getElementById('timeChart');if(!el)return;
+  const hc=new Array(24).fill(0);let total=0;
+  for(const c of camps)for(const t of(c.openTimes||[])){if(t instanceof Date&&!isNaN(t)){hc[t.getHours()]++;total++;}}
+  if(!total){el.innerHTML='<div style="color:var(--ink3);font-size:11px;text-align:center;padding:10px 0">開封時刻データなし<br>APIのopensデータが取得されると表示されるよ</div>';return;}
+  const max=Math.max(...hc,1);
+  let html='<div>';
+  for(let h=6;h<=22;h++){const v=hc[h];if(!v)continue;const w=Math.round((v/max)*100);
+    html+=`<div class="tl-row"><div class="tl-lbl">${h}時</div><div class="tl-bar-t"><div class="tl-bar-f bf-p" style="width:${w}%">${v}件</div></div></div>`;}
+  html+='</div>';el.innerHTML=html;
+}
+
+function drawLag() {
+  const el=document.getElementById('lagChart');if(!el)return;
+  const slots={'〜1h':0,'1〜6h':0,'6〜24h':0,'1〜3日':0,'3日以上':0};let total=0;
+  for(const c of camps){
+    if(!c.sentDate)continue;const sent=new Date(c.sentDate);
+    for(const t of(c.openTimes||[])){
+      if(!(t instanceof Date)||isNaN(t))continue;
+      const diff=(t-sent)/(1000*60*60);if(diff<0)continue;
+      if(diff<1)slots['〜1h']++;else if(diff<6)slots['1〜6h']++;else if(diff<24)slots['6〜24h']++;else if(diff<72)slots['1〜3日']++;else slots['3日以上']++;
+      total++;
+    }
+  }
+  if(!total){el.innerHTML='<div style="color:var(--ink3);font-size:11px;text-align:center;padding:10px 0">送信日時とopensデータが揃うと表示されるよ</div>';return;}
+  const max=Math.max(...Object.values(slots),1);
+  let html='<div class="bars">';
+  for(const[lbl,v]of Object.entries(slots)){const w=Math.round((v/max)*100);
+    html+=`<div class="bar-r"><div class="bar-l">${lbl}</div><div class="bar-t"><div class="bar-f bf-bl" style="width:${w}%">${v}件(${pct(v/total)})</div></div></div>`;}
+  html+='</div>';el.innerHTML=html;
+}
+
+function drawHeatmap() {
+  const el=document.getElementById('heatmap');if(!el)return;
+  const days=['月','火','水','木','金'],slots=[];
+  for(let h=7;h<=20;h++)slots.push(h);
+  const mat={};for(const t of slots){mat[t]={};for(const d of days)mat[t][d]=[];}
+  for(const c of camps){const s=parseInt(c.hour);if(!isNaN(s)&&mat[s]&&mat[s][c.weekday])mat[s][c.weekday].push(c.apptRateSent||0);}
+  let max=0;for(const t of slots)for(const d of days){const v=mat[t][d];if(v.length)max=Math.max(max,avg(v));}
+  if(max===0)max=0.05;
+  let html=`<div class="hm" style="grid-template-columns:52px repeat(${days.length},1fr)">`;
+  html+='<div class="hm-l"></div>';
+  for(const d of days)html+=`<div class="hm-l">${d}曜</div>`;
+  for(const t of slots){
+    html+=`<div class="hm-l t">${t}時</div>`;
+    for(const d of days){
+      const vals=mat[t][d];
+      if(!vals.length){html+=`<div class="hm-c" style="background:var(--pink3)"><span class="hm-tip">データなし</span></div>`;}
+      else{const v=avg(vals),i=v/max,a=0.2+i*0.8,rr=Math.round(255-i*30),g=Math.round(110-i*80),b=Math.round(180-i*60);
+        html+=`<div class="hm-c" style="background:rgba(${rr},${g},${b},${a})"><span class="hm-tip">アポ率 ${pct(v)}（${vals.length}件）</span>${pct(v)}</div>`;}
+    }
+  }
+  html+='</div>';el.innerHTML=html;
+}
+
+function drawWd() {
+  const el=document.getElementById('wdChart');if(!el)return;
+  const days=['月','火','水','木','金'],dd={};
+  for(const d of days)dd[d]={opens:[],appts:[]};
+  for(const c of camps){if(dd[c.weekday]){dd[c.weekday].opens.push(c.openRate||0);dd[c.weekday].appts.push(c.apptRateSent||0);}}
+  const mO=Math.max(...days.map(d=>dd[d].opens.length?avg(dd[d].opens):0),0.001);
+  const mA=Math.max(...days.map(d=>dd[d].appts.length?avg(dd[d].appts):0),0.001);
+  let html='<div style="display:flex;flex-direction:column;gap:6px">';
+  for(const d of days){
+    const{opens,appts}=dd[d];
+    if(!opens.length&&!appts.length){html+=`<div style="display:flex;align-items:center;gap:8px"><div style="width:26px;font-size:11px;font-weight:700;color:var(--ink3)">${d}曜</div><div style="font-size:10px;color:var(--ink3)">データなし</div></div>`;continue;}
+    const avgO=opens.length?avg(opens):0,avgA=appts.length?avg(appts):0;
+    html+=`<div style="display:flex;align-items:center;gap:8px"><div style="width:26px;font-size:11px;font-weight:700;color:var(--ink2)">${d}曜</div><div style="flex:1;display:flex;flex-direction:column;gap:2px">
+      <div style="display:flex;align-items:center;gap:5px"><div style="width:32px;font-size:9px;color:var(--hot)">開封</div><div style="flex:1;background:var(--pink3);border-radius:30px;height:13px;overflow:hidden"><div class="bar-f bf-p" style="width:${Math.round((avgO/mO)*100)}%;font-size:9px;min-width:28px">${pct(avgO)}</div></div></div>
+      <div style="display:flex;align-items:center;gap:5px"><div style="width:32px;font-size:9px;color:#ca8a04">アポ</div><div style="flex:1;background:#fef3c7;border-radius:30px;height:13px;overflow:hidden"><div class="bar-f bf-g" style="width:${Math.round((avgA/mA)*100)}%;font-size:9px;min-width:28px">${pct(avgA)}</div></div></div>
+    </div></div>`;
+  }
+  html+='</div>';el.innerHTML=html;
+}
+
+function drawLen() {
+  const el=document.getElementById('lenChart');if(!el)return;
+  const wl=camps.filter(c=>c.bodyLength&&c.bodyLength>0);
+  if(!wl.length){el.innerHTML='<div style="color:var(--ink3);font-size:11px;text-align:center;padding:10px 0">本文を登録すると自動で文字数分析されるよ！</div>';return;}
+  const grps={'〜150字':[],'151〜300字':[],'301〜500字':[],'501字〜':[]};
+  for(const c of wl){const l=c.bodyLength;if(l<=150)grps['〜150字'].push(c.apptRateSent||0);else if(l<=300)grps['151〜300字'].push(c.apptRateSent||0);else if(l<=500)grps['301〜500字'].push(c.apptRateSent||0);else grps['501字〜'].push(c.apptRateSent||0);}
+  const entries=Object.entries(grps).filter(([,v])=>v.length>0);
+  if(!entries.length)return;
+  const max=Math.max(...entries.map(([,v])=>avg(v)),0.001);
+  let html='<div class="bars">';
+  for(const[lbl,vals]of Object.entries(grps)){if(!vals.length)continue;const v=avg(vals),w=Math.round((v/max)*100);
+    html+=`<div class="bar-r"><div class="bar-l">${lbl}</div><div class="bar-t"><div class="bar-f bf-pu" style="width:${w}%">${pct(v)}</div></div></div>`;}
+  html+='</div>';
+  const best=entries.sort(([,a],[,b])=>avg(b)-avg(a))[0];
+  html+=`<div class="mini" style="margin-top:8px">💡 今のデータでは<strong>「${best[0]}」</strong>がアポ率が高いよ！</div>`;
+  el.innerHTML=html;
+}
+
+function drawConv() {
+  const el=document.getElementById('convChart');if(!el)return;
+  const fin=camps.filter(c=>(c.repliesCount||0)>0&&c.apptFinalized);
+  if(!fin.length){el.innerHTML='<div style="color:var(--ink3);font-size:11px;text-align:center;padding:10px 0">アポ数を確定済みにすると<br>返信→アポの転換率が表示されるよ！</div>';return;}
+  const totalR=sum(fin.map(c=>c.repliesCount)),totalA=sum(fin.map(c=>c.appointments||0));
+  const totalNo=totalR-totalA,conv=totalR>0?totalA/totalR:0;
+  el.innerHTML=`<div style="display:flex;gap:14px;align-items:center;margin-bottom:10px">
+    <div style="text-align:center"><div style="font-size:24px;font-weight:900;color:var(--hot)">${pct(conv)}</div><div style="font-size:10px;color:var(--ink3)">返信→アポ転換率</div></div>
+    <div style="flex:1">
+      <div style="margin-bottom:6px"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px"><span style="color:#16a34a;font-weight:700">✓ アポ</span><span style="font-weight:700">${totalA}件</span></div><div style="background:#dcfce7;border-radius:30px;height:14px;overflow:hidden"><div class="bar-f bf-gn" style="width:${Math.round(conv*100)}%;min-width:26px">${totalA}</div></div></div>
+      <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px"><span style="color:#dc2626;font-weight:700">✕ お断り等</span><span style="font-weight:700">${totalNo}件</span></div><div style="background:#fee2e2;border-radius:30px;height:14px;overflow:hidden"><div class="bar-f bf-c" style="width:${Math.round((1-conv)*100)}%;min-width:26px">${totalNo}</div></div></div>
+    </div>
+  </div>
+  <div class="mini">💡 転換率が低い場合は<strong>本文・CTAの見直し</strong>が有効だよ♡</div>`;
+}
+
+// ══ AI ══
+async function runAI() {
+  const btn=document.getElementById('aiBtn'),bodyEl=document.getElementById('insightBody');
+  if(!btn)return;btn.disabled=true;
+  bodyEl.innerHTML=`<div style="display:flex;align-items:center;gap:10px;color:var(--ink3);font-size:12px"><div class="spinner"></div>AIが分析中だよ〜！ちょっと待ってね✨</div>`;
+  const totalR=sum(camps.map(c=>c.repliesCount||0)),totalA=sum(camps.map(c=>c.appointments||0));
+  const tM=sum(camps.map(c=>c.mobileCount||0)),tD=sum(camps.map(c=>c.desktopCount||0));
+  const summary=camps.map((c,i)=>`キャンペーン${i+1}: 件名「${c.subject}」 送信${c.recipients}件 開封率${pct(c.openRate)} 返信率${pct(c.replyRate)} アポ${c.appointments||0}件 アポ率(送信比)${pct(c.apptRateSent)} アポ率(開封比)${pct(c.apptRateOpen)} 曜日:${c.weekday} 時間:${c.hour?c.hour+'時':'不明'} 文字数:${c.bodyLength||'不明'}字 バウンス:${pct(c.bounceRate)} ${c.bodyText?'本文: '+c.bodyText.slice(0,200):''}`).join('\n');
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:700,messages:[{role:'user',content:`BtoB営業メール専門家として以下のGMassキャンペーンデータを分析し、アポ率向上のアドバイスを日本語400字以内で。返信→アポ転換率(総返信${totalR}件中アポ${totalA}件)、デバイス比率(スマホ${tM}件/PC${tD}件)も含めて。①件名と開封率の傾向 ②最適な送信タイミング ③本文の文字数 ④返信がアポにならない原因の仮説 ⑤今すぐ試すべき改善アクション3つ\n\n${summary}`}]})});
+    const data=await res.json();
+    const text=data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+    bodyEl.innerHTML=`<div class="insight-body">${text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>`;
+  }catch(e){bodyEl.innerHTML=`<div style="color:#dc2626;font-size:12px">エラー: ${e.message}</div>`;}
+}
+
+// ══ DEMO ══
+function loadDemo(){
+  camps=[
+    {campaignId:'demo1',subject:'【ベンナビ】初期費用ゼロで始められる件のご案内',recipients:180,opensCount:54,repliesCount:8,bouncesCount:4,clicksCount:3,openRate:.30,replyRate:.044,bounceRate:.022,appointments:3,apptRateSent:.0167,apptRateOpen:.0556,weekday:'火',hour:'10',bodyLength:220,bodyText:'',mobileCount:32,desktopCount:18,appleMPP:4,openTimes:[],sentDate:'2026-03-18T01:00:00Z',addedAt:new Date().toISOString(),apptFinalized:true},
+    {campaignId:'demo2',subject:'{name}先生、初期費用なしで試せるプランができました',recipients:200,opensCount:78,repliesCount:14,bouncesCount:5,clicksCount:5,openRate:.39,replyRate:.07,bounceRate:.025,appointments:6,apptRateSent:.030,apptRateOpen:.0769,weekday:'木',hour:'10',bodyLength:170,bodyText:'',mobileCount:50,desktopCount:24,appleMPP:4,openTimes:[],sentDate:'2026-03-20T01:00:00Z',addedAt:new Date().toISOString(),apptFinalized:true},
+    {campaignId:'demo3',subject:'弁護士事務所向け集客ソリューションのご提案',recipients:150,opensCount:27,repliesCount:3,bouncesCount:9,clicksCount:1,openRate:.18,replyRate:.02,bounceRate:.06,appointments:0,apptRateSent:0,apptRateOpen:0,weekday:'月',hour:'9',bodyLength:450,bodyText:'',mobileCount:16,desktopCount:11,appleMPP:0,openTimes:[],sentDate:'2026-03-15T23:00:00Z',addedAt:new Date().toISOString(),apptFinalized:false},
+    {campaignId:'demo4',subject:'先生のご事務所、新規案件を増やすお手伝いができます',recipients:210,opensCount:88,repliesCount:18,bouncesCount:6,clicksCount:7,openRate:.419,replyRate:.086,bounceRate:.029,appointments:8,apptRateSent:.038,apptRateOpen:.0909,weekday:'水',hour:'11',bodyLength:190,bodyText:'',mobileCount:55,desktopCount:28,appleMPP:5,openTimes:[],sentDate:'2026-03-19T02:00:00Z',addedAt:new Date().toISOString(),apptFinalized:true},
+  ];
+  save();renderAll();
+}
+
+// ══ UTILS ══
+function pct(v){if(v==null||isNaN(v))return'—';return(v*100).toFixed(1)+'%';}
+function num(v){return v!=null?v.toLocaleString():'—';}
+function avg(arr){if(!arr.length)return 0;return arr.reduce((a,b)=>a+b,0)/arr.length;}
+function sum(arr){return arr.reduce((a,b)=>a+b,0);}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function shortS(s){if(!s)return'—';return s.length>14?s.slice(0,14)+'…':s;}
+function fmtDate(iso){try{const d=new Date(iso);return`${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()} ${d.getHours()}時`;}catch{return'—';}}
+</script>
+</body>
+</html>
