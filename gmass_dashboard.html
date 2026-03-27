@@ -148,6 +148,17 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
 .tag-item{display:inline-flex;align-items:center;gap:3px;background:#e0f2fe;color:#0369a1;border-radius:20px;padding:2px 8px;font-size:10px;font-weight:700}
 .tag-item .tag-x{cursor:pointer;font-size:12px;line-height:1;opacity:.6}
 .tag-item .tag-x:hover{opacity:1;color:#dc2626}
+.rlog-month{background:white;border:2px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow)}
+.rlog-month-hd{padding:10px 14px;font-size:12px;font-weight:700;color:var(--ink2);cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,var(--pink4),#f0e8ff);user-select:none}
+.rlog-month-hd:hover{background:var(--pink3)}
+.rlog-month-bd{padding:0}
+.rlog-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-top:1px solid var(--pink3);font-size:11px;transition:background .15s}
+.rlog-item:hover{background:var(--pink4)}
+.rlog-date{color:var(--ink3);font-size:10px;flex-shrink:0;width:70px}
+.rlog-title{flex:1;font-weight:700;color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rlog-acts{display:flex;gap:2px;flex-shrink:0}
+.rlog-badge{display:inline-block;padding:1px 6px;border-radius:20px;font-size:9px;font-weight:700;margin-right:5px}
+.rlog-badge.manual{background:#fce7f3;color:#be185d}
 </style>
 </head>
 <body>
@@ -355,8 +366,24 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
     <div class="modal-title">📊 分析レポート</div>
     <div id="reportContent" class="report-box"></div>
     <div class="modal-btns" style="margin-top:12px">
-      <button class="btn btn-pink" style="flex:1" onclick="copyReport()">📋 コピー</button>
+      <button class="btn btn-mint" style="flex:1" onclick="saveReportToLog()">💾 履歴に保存</button>
+      <button class="btn btn-pink" onclick="copyReport()">📋 コピー</button>
       <button class="btn btn-ghost" onclick="document.getElementById('reportOverlay').classList.remove('open')">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<!-- REPORT LOG EDIT MODAL -->
+<div class="overlay" id="rlogEditOverlay">
+  <div class="modal" style="width:500px">
+    <div class="modal-title" id="rlogEditTitle">📝 レポートを編集</div>
+    <div class="form">
+      <div class="f"><label>タイトル</label><input type="text" id="rlog-e-title" placeholder="例：1Q分析レポート"/></div>
+      <div class="f"><label>内容</label><textarea id="rlog-e-body" rows="12" style="font-size:11px;line-height:1.8"></textarea></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-mint" style="flex:1" onclick="saveRlogEdit()">保存</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('rlogEditOverlay').classList.remove('open')">キャンセル</button>
     </div>
   </div>
 </div>
@@ -728,7 +755,13 @@ ${abHtml}
     <th></th>
   </tr></thead><tbody>${buildRows()}</tbody></table>
 </div>
-</div>`;}
+
+<div class="sec">📁 レポート履歴</div>
+<div style="margin-bottom:10px"><button class="btn btn-pu" onclick="openNewRlog()">📝 新規レポート作成</button></div>
+<div id="rlogArea"></div>
+
+</div>`;
+renderRlog();}
 
 let tblOpen=true;
 function toggleTbl(){tblOpen=!tblOpen;document.getElementById('tblCard').style.display=tblOpen?'block':'none';document.getElementById('tblFoldIcon').textContent=tblOpen?'▼':'▶';}
@@ -748,6 +781,134 @@ function buildRows(){return getSorted().map(c=>{const i=c._i;return`<tr>
 <td><span class="pill ${(c.bounceRate||0)>0.05?'pc':'pgr'}">${P(c.bounceRate)}</span></td>
 <td><button class="icon-btn" onclick="refreshCamp(${i})" title="API更新">🔄</button><button class="icon-btn" onclick="showReport(${i})">📊</button><button class="icon-btn" onclick="openEdit(${i})">✏️</button></td>
 </tr>`;}).join('');}
+
+// ══ REPORT LOG ══
+let reportLog=[];
+let rlogEditIdx=-1;
+function loadReportLog(){try{const s=localStorage.getItem('gm_rlog');if(s)reportLog=JSON.parse(s);}catch(e){}}
+function saveReportLog(){try{localStorage.setItem('gm_rlog',JSON.stringify(reportLog));}catch(e){}}
+loadReportLog();
+
+function addReportLog(title,body){
+  reportLog.push({id:Date.now(),date:new Date().toISOString(),title:title,body:body});
+  saveReportLog();
+}
+
+function saveReportToLog(){
+  const body=document.getElementById('reportContent').textContent;
+  const firstLine=body.split('\n').find(l=>l.trim())||'分析レポート';
+  const title=prompt('レポートのタイトルを入力:',FD(new Date().toISOString())+' 分析レポート');
+  if(title===null)return;
+  addReportLog(title||FD(new Date().toISOString())+' 分析レポート',body);
+  document.getElementById('reportOverlay').classList.remove('open');
+  renderAll();
+  alert('✓ 履歴に保存しました');
+}
+
+function openNewRlog(){
+  rlogEditIdx=-1;
+  document.getElementById('rlogEditTitle').textContent='📝 新規レポート作成';
+  document.getElementById('rlog-e-title').value=FD(new Date().toISOString())+' ';
+  document.getElementById('rlog-e-body').value='';
+  document.getElementById('rlogEditOverlay').classList.add('open');
+}
+
+function openEditRlog(id){
+  const idx=reportLog.findIndex(r=>r.id===id);
+  if(idx<0)return;
+  rlogEditIdx=idx;
+  document.getElementById('rlogEditTitle').textContent='✏️ レポートを編集';
+  document.getElementById('rlog-e-title').value=reportLog[idx].title;
+  document.getElementById('rlog-e-body').value=reportLog[idx].body;
+  document.getElementById('rlogEditOverlay').classList.add('open');
+}
+
+function saveRlogEdit(){
+  const title=document.getElementById('rlog-e-title').value.trim();
+  const body=document.getElementById('rlog-e-body').value;
+  if(!title){alert('タイトルを入力してね');return;}
+  if(rlogEditIdx<0){
+    addReportLog(title,body);
+  }else{
+    reportLog[rlogEditIdx].title=title;
+    reportLog[rlogEditIdx].body=body;
+    saveReportLog();
+  }
+  document.getElementById('rlogEditOverlay').classList.remove('open');
+  renderAll();
+}
+
+function deleteRlog(id){
+  if(!confirm('このレポートを削除する？'))return;
+  reportLog=reportLog.filter(r=>r.id!==id);
+  saveReportLog();
+  renderAll();
+}
+
+function copyRlog(id){
+  const r=reportLog.find(x=>x.id===id);
+  if(r)navigator.clipboard.writeText(r.body).then(()=>alert('コピーしました'));
+}
+
+function renderRlog(){
+  const el=document.getElementById('rlogArea');
+  if(!el)return;
+  if(!reportLog.length){el.innerHTML='<div style="color:var(--ink3);font-size:11px;text-align:center;padding:16px;background:white;border:2px solid var(--border);border-radius:14px">まだレポートがないよ。「📊 全体分析レポート生成」で作成して「💾 履歴に保存」するか、「📝 新規レポート作成」してね♡</div>';return;}
+
+  // 月ごとにグループ化
+  const months={};
+  [...reportLog].sort((a,b)=>new Date(b.date)-new Date(a.date)).forEach(r=>{
+    const d=new Date(r.date);
+    const key=d.getFullYear()+'年'+(d.getMonth()+1)+'月';
+    if(!months[key])months[key]=[];
+    months[key].push(r);
+  });
+
+  el.innerHTML=Object.entries(months).map(([month,items])=>`
+    <div class="rlog-month">
+      <div class="rlog-month-hd" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none';this.querySelector('.rlog-arrow').textContent=this.nextElementSibling.style.display==='none'?'▶':'▼'">
+        <span>📁 ${month} <span style="font-weight:400;color:var(--ink3)">${items.length}件</span></span>
+        <span class="rlog-arrow">▼</span>
+      </div>
+      <div class="rlog-month-bd">
+        ${items.map(r=>{
+          const d=new Date(r.date);
+          const dateStr=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+          return`<div class="rlog-item">
+            <span class="rlog-badge manual">手動</span>
+            <span class="rlog-date">${dateStr}</span>
+            <span class="rlog-title">${E(r.title)}</span>
+            <div class="rlog-acts">
+              <button class="icon-btn" onclick="copyRlog(${r.id})" title="コピー">📋</button>
+              <button class="icon-btn" onclick="openEditRlog(${r.id})" title="編集">✏️</button>
+              <button class="icon-btn del" onclick="deleteRlog(${r.id})" title="削除">🗑️</button>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// 全体分析の保存時にも履歴に追加
+const _origGenFull=genFullAnalysis;
+genFullAnalysis=function(){_origGenFull();
+  // 保存ボタンを結果エリアに追加
+  setTimeout(()=>{
+    const area=document.getElementById('fullAnalysisResult');
+    if(area&&!area.querySelector('.rlog-save-btn')){
+      const btn=document.createElement('button');
+      btn.className='btn btn-mint rlog-save-btn';
+      btn.style.cssText='margin-top:6px;font-size:11px;padding:6px 12px';
+      btn.textContent='💾 履歴に保存';
+      btn.onclick=()=>{
+        const body=area.querySelector('.report-box').textContent;
+        const title=prompt('タイトル:',FD(new Date().toISOString())+' 全体分析レポート');
+        if(title!==null){addReportLog(title||FD(new Date().toISOString())+' 全体分析',body);renderAll();alert('✓ 保存しました');}
+      };
+      area.appendChild(btn);
+    }
+  },100);
+};
 
 // ══ DEMO ══
 function loadDemo(){camps=[
