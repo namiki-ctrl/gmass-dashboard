@@ -518,12 +518,119 @@ ${c.memo?`【メモ】\n${c.memo}`:''}`;
 function showReport(i){document.getElementById('reportContent').textContent=genReport(i);document.getElementById('reportOverlay').classList.add('open');}
 function copyReport(){navigator.clipboard.writeText(document.getElementById('reportContent').textContent).then(()=>alert('コピーしました'));}
 
+// ══ REFRESH SINGLE CAMPAIGN ══
+async function refreshCamp(i){const c=camps[i];const gu=getGasUrl();if(!gu){alert('先にApps Script URLを設定してね');return;}if(!c.campaignId){alert('このキャンペーンにはcampaignIdがないよ（手動登録の場合はCSVで更新してね）');return;}
+const btn=event.target;btn.style.animation='spin .7s linear infinite';btn.style.pointerEvents='none';
+try{
+// キャンペーン一覧から該当のものを探して数値を更新
+const data=await fetchJsonp(gu+'?action=campaigns');
+if(data.ok&&data.campaigns){const fresh=data.campaigns.find(x=>x.campaignId===c.campaignId);
+if(fresh){const nn=fresh.recipients||1;
+camps[i]={...c,recipients:fresh.recipients,opens:fresh.opens,replies:fresh.replies,bounces:fresh.bounces,clicks:fresh.clicks,unsubscribes:fresh.unsubscribes||0,openRate:fresh.openRate,replyRate:fresh.replyRate,bounceRate:fresh.bounceRate,clickRate:fresh.clickRate,
+apptRateSent:nn>0?(c.appointments||0)/nn:0,apptRateOpen:fresh.opens>0?(c.appointments||0)/fresh.opens:0};
+// 開封詳細も更新
+try{const od=await fetchJsonp(gu+'?action=opens&campaignId='+c.campaignId);
+if(od.ok){camps[i].openTimes=od.openTimes||[];camps[i].openCounts=od.openCounts||[];camps[i].avgOpenCount=od.avgOpenCount||0;camps[i].maxOpenCount=od.maxOpenCount||0;if(od.openers){camps[i].opens=od.openers;camps[i].openRate=nn>0?od.openers/nn:0;}}}catch(e){}
+save();renderAll();alert('✓ 更新完了！');}else{alert('キャンペーンが見つからなかった');}}else{alert('API取得に失敗');}
+}catch(e){alert('エラー: '+e.message);}finally{btn.style.animation='';btn.style.pointerEvents='';}}
+
+// ══ AI FULL ANALYSIS ══
+function genFullAnalysis(){if(!camps.length){alert('キャンペーンを登録してね');return;}
+const n=camps.length;const avgOpen=A(camps.map(c=>c.openRate||0));const avgReply=A(camps.map(c=>c.replyRate||0));const avgBounce=A(camps.map(c=>c.bounceRate||0));const avgA1=A(camps.map(c=>c.apptRateSent||0));const totalAppt=S(camps.map(c=>c.appointments||0));const totalSent=S(camps.map(c=>c.recipients||0));const totalUnsub=S(camps.map(c=>c.unsubscribes||0));
+const best=camps.reduce((a,b)=>(b.openRate||0)>(a.openRate||0)?b:a);const worst=camps.reduce((a,b)=>(b.openRate||0)<(a.openRate||0)?b:a);const bestAppt=camps.reduce((a,b)=>(b.apptRateSent||0)>(a.apptRateSent||0)?b:a);
+
+// セグメント別
+const segs={};camps.forEach(c=>{buildTags(c).forEach(t=>{if(!segs[t])segs[t]={opens:[],appts:[],replies:[],n:0};segs[t].opens.push(c.openRate||0);segs[t].appts.push(c.apptRateSent||0);segs[t].replies.push(c.replyRate||0);segs[t].n++;});});
+const segReport=Object.entries(segs).filter(([,v])=>v.n>=2).map(([k,v])=>`  ${k}（${v.n}件）: 開封率${P(A(v.opens))} 返信率${P(A(v.replies))} アポ率${P(A(v.appts))}`).join('\n');
+
+// 時間帯別
+const hourData={};camps.forEach(c=>{const h=parseInt(c.hour);if(!isNaN(h)){if(!hourData[h])hourData[h]=[];hourData[h].push(c.openRate||0);}});
+const bestHour=Object.entries(hourData).sort((a,b)=>A(b[1])-A(a[1]))[0];
+
+// 返信内訳
+const allRb=camps.filter(c=>c.replyBreakdown);const tA=S(allRb.map(c=>c.replyBreakdown.apo||0)),tD=S(allRb.map(c=>c.replyBreakdown.decline||0)),tM=S(allRb.map(c=>c.replyBreakdown.maybe||0)),tS=S(allRb.map(c=>c.replyBreakdown.stop||0));
+
+let report=`═══════════════════════════════════
+📊 GMass営業メール 全体分析レポート
+═══════════════════════════════════
+
+【サマリー】
+分析対象：${n}キャンペーン（総送信数 ${N(totalSent)}件）
+総アポ獲得：${totalAppt}件（送信比 ${P(totalSent>0?totalAppt/totalSent:0)}）
+総配信停止：${totalUnsub}件
+
+【平均指標】
+開封率：${P(avgOpen)}
+返信率：${P(avgReply)}
+アポ率（送信比）：${P(avgA1)}
+バウンス率：${P(avgBounce)}${avgBounce>0.05?' ⚠️ 高い！':''}
+
+【返信の内訳（全体）】
+アポ：${tA}件 / お断り：${tD}件 / 検討中：${tM}件 / 配信停止：${tS}件
+${(tA+tD+tM+tS)>0?`アポ転換率：${P(tA/(tA+tD+tM+tS))}`:''}
+
+【ベスト・ワースト】
+🏆 最高開封率：「${best.subject}」（${P(best.openRate)}）
+📉 最低開封率：「${worst.subject}」（${P(worst.openRate)}）
+🎯 最高アポ率：「${bestAppt.subject}」（${P(bestAppt.apptRateSent)}）
+
+${bestHour?`【最適送信時間】\n${bestHour[0]}時台が最も開封率が高い（${P(A(bestHour[1]))}、${bestHour[1].length}件）`:''}
+
+${segReport?`【セグメント別成果】\n${segReport}`:''}
+
+【個別キャンペーン分析】
+${camps.map((c,i)=>{const rb=c.replyBreakdown||{};const tags=buildTags(c).join(', ');
+return`
+── キャンペーン${i+1} ──
+件名：${c.subject}
+送信先：${tags||'未設定'} / ${c.weekday||'?'}曜${c.hour?c.hour+'時':''} / ${c.stage||1}通目
+送信${N(c.recipients)} → 開封${P(c.openRate)} → 返信${P(c.replyRate)} → アポ${c.appointments||0}件
+クリック${c.clicks||0} / 配信停止${c.unsubscribes||0} / バウンス${P(c.bounceRate)}
+${rb.apo||rb.decline||rb.maybe||rb.stop?`返信内訳: アポ${rb.apo||0} お断り${rb.decline||0} 検討中${rb.maybe||0} 配信停止${rb.stop||0}`:''}
+${c.memo?`メモ: ${c.memo}`:''}
+${(c.bounceRate||0)>0.05?'⚠️ バウンス率高→リストクリーニング必要':''}${c.openRate<0.2?'⚠️ 開封率低→件名改善が最優先':''}${(c.appointments||0)===0&&c.apptFinalized?'⚠️ アポ0→本文CTA見直し':''}`;}).join('\n')}
+
+【総合アドバイス】
+${avgOpen<0.25?'・開封率が全体的に低め。件名のパーソナライズ（{name}等）やA/Bテストを強化すべき。\n':''}${avgBounce>0.05?'・バウンス率が高い。リストのクリーニングを最優先で実施すべき。\n':''}${totalUnsub>10?'・配信停止が多め。送信頻度の見直しや、リストの鮮度を確認。\n':''}${avgA1<0.005?'・アポ率が低め。本文のCTAを強化（日程候補提示、具体的オファー）。\n':''}${tM>tA?'・「検討中」が多い。フォローアップのタイミングと内容を見直そう。\n':''}・最も効果的な件名パターンを分析して横展開する
+・開封率の高い時間帯（${bestHour?bestHour[0]+'時台':'未判明'}）に送信を集中させる
+`;
+
+document.getElementById('fullAnalysisResult').innerHTML=`<div class="report-box" style="margin-top:10px">${E(report).replace(/\n/g,'<br>')}</div><div style="margin-top:6px;display:flex;gap:6px"><button class="btn btn-ghost" onclick="navigator.clipboard.writeText(document.getElementById('fullAnalysisResult').querySelector('.report-box').textContent).then(()=>alert('コピーしました'))">📋 コピー</button></div>`;}
+
+function copyForClaude(){if(!camps.length){alert('キャンペーンを登録してね');return;}
+const stats=camps.map((c,i)=>{const rb=c.replyBreakdown||{};const tags=buildTags(c).join(', ');
+return`【キャンペーン${i+1}】${c.stage>1?`(${c.stage}通目) `:''}
+件名：${c.subject}
+リスト元：${tags||'未設定'}
+送信日時：${c.weekday||'?'}曜${c.hour?c.hour+'時':''}
+送信${c.recipients}件 開封率${P(c.openRate)} クリック${c.clicks||0}件 配信停止${c.unsubscribes||0}件
+返信${c.replies||0}件(${P(c.replyRate)}) → アポ${rb.apo||0} お断り${rb.decline||0} 検討中${rb.maybe||0} 配信停止${rb.stop||0}
+バウンス${c.bounces||0}件(${P(c.bounceRate)}) アポ${c.appointments||0}件(送信比${P(c.apptRateSent)})
+${c.bodyLength?`本文${c.bodyLength}字`:''}${c.memo?` メモ:${c.memo}`:''}`;}).join('\n\n');
+
+const sel=camps.filter(c=>c.bodyText);const bodies=sel.length?'\n\n=== 本文テキスト ===\n'+sel.map(c=>`【${c.subject}】\n${c.bodyText}`).join('\n---\n'):'';
+
+const txt=`以下は弁護士向け営業メール（GMass）のキャンペーンデータです。
+各キャンペーンを分析して、以下の観点でアドバイスをください：
+
+1. 各キャンペーンごとの分析（送信完了率、クリック率、オープン率、返信率、アポ率）
+2. 件名のA/Bテスト結果の考察
+3. セグメント別（リスト元別）の成果比較
+4. 最適な送信時間帯の提案
+5. 次回キャンペーンの具体的な改善案（件名案、本文構成、CTA）
+6. 返信内訳（お断り・検討中が多い場合の対策）
+
+=== キャンペーンデータ ===
+${stats}${bodies}`;
+
+navigator.clipboard.writeText(txt).then(()=>{alert('✓ コピーしました！Claudeに貼り付けてね♡');});}
+
 // ══ RENDER ══
 function renderAll(){renderHeader();renderSidebar();renderContent();}
 function renderHeader(){document.getElementById('h-n').textContent=camps.length;if(!camps.length){['h-open','h-click','h-a1','h-a2'].forEach(id=>document.getElementById(id).textContent='—');return;}document.getElementById('h-open').textContent=P(A(camps.map(c=>c.openRate||0)));document.getElementById('h-click').textContent=P(A(camps.map(c=>c.clickRate||0)));document.getElementById('h-a1').textContent=P(A(camps.map(c=>c.apptRateSent||0)));const ho=camps.filter(c=>(c.opens||0)>0);document.getElementById('h-a2').textContent=ho.length?P(A(ho.map(c=>c.apptRateOpen||0))):'—';}
 
 function renderSidebar(){document.getElementById('cnt').textContent=camps.length;const el=document.getElementById('campList');if(!camps.length){el.innerHTML='<div style="color:var(--ink3);font-size:12px;text-align:center;padding:12px 0">まだないよ〜！</div>';return;}
-const SHOW=3;const items=camps.map((c,i)=>`<div class="camp"><div class="camp-top"><div class="camp-subj" title="${E(c.subject)}">${c.stage>1?`<span class="badge bstage">${c.stage}通目</span>`:''}${E(c.subject)}</div><div class="camp-acts"><button class="icon-btn" onclick="showReport(${i})">📊</button><button class="icon-btn" onclick="openEdit(${i})">✏️</button><button class="icon-btn del" onclick="delCamp(${i})">🗑️</button></div></div><div class="camp-stats"><div><div class="cs-v cp">${P(c.openRate)}</div><div class="cs-l">開封率</div></div><div><div class="cs-v cg">${P(c.apptRateSent)}</div><div class="cs-l">アポ/送信</div></div></div><div class="camp-meta">${tagsHtml(c)}${c.weekday||'?'}曜${c.hour?c.hour+'時':''} · ${N(c.recipients)}件 · アポ${c.appointments||0}</div></div>`);
+const SHOW=3;const items=camps.map((c,i)=>`<div class="camp"><div class="camp-top"><div class="camp-subj" title="${E(c.subject)}">${c.stage>1?`<span class="badge bstage">${c.stage}通目</span>`:''}${E(c.subject)}</div><div class="camp-acts"><button class="icon-btn" onclick="refreshCamp(${i})" title="API更新">🔄</button><button class="icon-btn" onclick="showReport(${i})">📊</button><button class="icon-btn" onclick="openEdit(${i})">✏️</button><button class="icon-btn del" onclick="delCamp(${i})">🗑️</button></div></div><div class="camp-stats"><div><div class="cs-v cp">${P(c.openRate)}</div><div class="cs-l">開封率</div></div><div><div class="cs-v cg">${P(c.apptRateSent)}</div><div class="cs-l">アポ/送信</div></div></div><div class="camp-meta">${tagsHtml(c)}${c.weekday||'?'}曜${c.hour?c.hour+'時':''} · ${N(c.recipients)}件 · アポ${c.appointments||0}</div></div>`);
 if(items.length<=SHOW){el.innerHTML=items.join('');}else{el.innerHTML=items.slice(0,SHOW).join('')+`<div id="campFolded" style="display:none">${items.slice(SHOW).join('')}</div><button class="fold-toggle" id="campFoldBtn" onclick="toggleCampFold()">▼ 残り${items.length-SHOW}件を表示</button>`;}
 }
 function toggleCampFold(){const f=document.getElementById('campFolded'),b=document.getElementById('campFoldBtn');if(f.style.display==='none'){f.style.display='block';b.textContent='▲ 折りたたむ';}else{f.style.display='none';b.textContent=`▼ 残り${camps.length-3}件を表示`;}}
@@ -570,6 +677,16 @@ ${pending>0?`<div class="note">⏳ <strong>${pending}件</strong>進行中</div>
   <div class="kpi"><div class="kpi-e">⚠️</div><div class="kpi-l">バウンス率</div><div class="kpi-v kv-c">${P(avgBounce)}</div></div>
   <div class="kpi"><div class="kpi-e">📊</div><div class="kpi-l">総アポ</div><div class="kpi-v kv-g">${totalAppt}</div></div>
   <div class="kpi"><div class="kpi-e">🚫</div><div class="kpi-l">総配信停止</div><div class="kpi-v kv-c">${S(camps.map(c=>c.unsubscribes||0))}</div></div>
+</div>
+
+<div class="ai-box" style="background:linear-gradient(135deg,var(--pink4),#f0ebff);border:2px solid var(--border2);border-radius:16px;padding:16px;margin-bottom:20px">
+  <div style="font-size:13px;font-weight:700;color:var(--hot);margin-bottom:8px">🤖 AI全体分析</div>
+  <div style="font-size:11px;color:var(--ink2);line-height:1.8;margin-bottom:10px">全キャンペーンのデータを分析して、あなたが手動でやっていた分析レポートを自動生成します。</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn btn-pu" onclick="genFullAnalysis()">📊 全体分析レポート生成</button>
+    <button class="btn btn-pink" onclick="copyForClaude()">🤖 Claudeに分析を依頼（コピー）</button>
+  </div>
+  <div id="fullAnalysisResult"></div>
 </div>
 
 <div class="sec">ランキング TOP3</div>
@@ -629,7 +746,7 @@ function buildRows(){return getSorted().map(c=>{const i=c._i;return`<tr>
 <td><span class="pill ppu">${P(c.replyRate)}</span></td>
 <td style="color:var(--hot);font-weight:700">${c.appointments||0}</td>
 <td><span class="pill ${(c.bounceRate||0)>0.05?'pc':'pgr'}">${P(c.bounceRate)}</span></td>
-<td><button class="icon-btn" onclick="showReport(${i})">📊</button><button class="icon-btn" onclick="openEdit(${i})">✏️</button></td>
+<td><button class="icon-btn" onclick="refreshCamp(${i})" title="API更新">🔄</button><button class="icon-btn" onclick="showReport(${i})">📊</button><button class="icon-btn" onclick="openEdit(${i})">✏️</button></td>
 </tr>`;}).join('');}
 
 // ══ DEMO ══
