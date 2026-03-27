@@ -40,7 +40,13 @@ function doGet(e) {
     result = { error: err.message || String(err) };
   }
 
-  return ContentService.createTextOutput(JSON.stringify(result))
+  const json = JSON.stringify(result);
+  const callback = e && e.parameter && e.parameter.callback;
+  if (callback) {
+    return ContentService.createTextOutput(callback + '(' + json + ')')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return ContentService.createTextOutput(json)
     .setMimeType(ContentService.MimeType.JSON);
 }
 

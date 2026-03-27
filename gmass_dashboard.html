@@ -452,7 +452,7 @@ if (!loadedFromUrl) loadFromStorage();
 renderAll();
 setTimeout(loadGasUrl, 100);
 
-// ══ GMASS API INTEGRATION ══
+// ══ GMASS API INTEGRATION (JSONP) ══
 function getGasUrl() {
   const url = document.getElementById('gas-url').value.trim();
   if (url) {
@@ -462,14 +462,40 @@ function getGasUrl() {
   return url;
 }
 
+function fetchJsonp(url) {
+  return new Promise((resolve, reject) => {
+    const cbName = '_gmcb_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    const timeout = setTimeout(() => {
+      delete window[cbName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+      reject(new Error('タイムアウト（30秒）'));
+    }, 30000);
+    window[cbName] = function(data) {
+      clearTimeout(timeout);
+      delete window[cbName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+      resolve(data);
+    };
+    const sep = url.includes('?') ? '&' : '?';
+    const script = document.createElement('script');
+    script.src = url + sep + 'callback=' + cbName;
+    script.onerror = function() {
+      clearTimeout(timeout);
+      delete window[cbName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+      reject(new Error('スクリプト読み込み失敗'));
+    };
+    document.head.appendChild(script);
+  });
+}
+
 async function testGasConnection() {
   const url = getGasUrl();
   const msgEl = document.getElementById('gas-msg');
   if (!url) { msgEl.innerHTML = '<div class="msg-err">URLを入力してね</div>'; return; }
   msgEl.innerHTML = '<div class="msg-info">接続テスト中...</div>';
   try {
-    const res = await fetch(url + '?action=test');
-    const data = await res.json();
+    const data = await fetchJsonp(url + '?action=test');
     if (data.ok) {
       msgEl.innerHTML = '<div class="msg-ok">✓ ' + data.message + '</div>';
     } else {
@@ -491,8 +517,7 @@ async function fetchFromGMass() {
   document.getElementById('fetchBtn').disabled = true;
 
   try {
-    const res = await fetch(url + '?action=campaigns');
-    const data = await res.json();
+    const data = await fetchJsonp(url + '?action=campaigns');
 
     if (!data.ok) throw new Error(data.error || 'APIエラー');
     if (!data.campaigns || data.campaigns.length === 0) {
@@ -585,8 +610,7 @@ async function importSelectedGMass() {
     // 開封詳細を取得（APIがあれば）
     if (gasUrl && c.campaignId) {
       try {
-        const res = await fetch(gasUrl + '?action=opens&campaignId=' + c.campaignId);
-        const openData = await res.json();
+        const openData = await fetchJsonp(gasUrl + '?action=opens&campaignId=' + c.campaignId);
         if (openData.ok) {
           camp.openTimes = (openData.openTimes || []);
           camp.openCounts = (openData.openCounts || []);
