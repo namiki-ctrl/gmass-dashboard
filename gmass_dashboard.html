@@ -30,7 +30,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
 .panel{background:white;border:2px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
 .panel-hd{background:linear-gradient(135deg,var(--pink4),#f0e8ff);padding:9px 14px;font-size:11px;font-weight:700;color:var(--ink2);display:flex;justify-content:space-between;align-items:center}
 .panel-bd{padding:14px}
-.drop-zone{border:2.5px dashed var(--border2);border-radius:12px;padding:14px 12px;text-align:center;cursor:pointer;transition:all .2s;background:var(--pink4);user-select:none;-webkit-user-select:none;margin-bottom:8px}
+.drop-zone{border:2.5px dashed var(--border2);border-radius:12px;padding:14px 12px;text-align:center;cursor:pointer;transition:all .2s;background:var(--pink4);user-select:none;margin-bottom:8px}
 .drop-zone:hover,.drop-zone.over{border-color:var(--hot);background:var(--pink3)}
 .drop-zone.loaded{border-color:var(--mint);background:#f0fdf4;border-style:solid}
 .dz-icon{font-size:22px;margin-bottom:4px;display:block;pointer-events:none}
@@ -43,7 +43,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
 .f input:focus,.f select:focus,.f textarea:focus{border-color:var(--pink)}
 .f select option{background:white}
 .f-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.f-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.f-row4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px}
 .f-hint{font-size:10px;color:var(--ink3);margin-top:2px;line-height:1.5}
 .btn{border:none;border-radius:30px;cursor:pointer;font-size:12px;font-family:'Noto Sans JP',sans-serif;font-weight:700;padding:8px 16px;transition:all .15s;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:6px}
 .btn:hover{transform:translateY(-1px);filter:brightness(1.05)}
@@ -66,7 +66,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
 .camp:last-child{margin-bottom:0}
 .camp:hover{border-color:var(--pink);box-shadow:var(--shadow)}
 .camp-top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;margin-bottom:6px}
-.camp-subj{font-size:11px;font-weight:700;line-height:1.4;flex:1}
+.camp-subj{font-size:11px;font-weight:700;line-height:1.4;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .camp-acts{display:flex;gap:2px;flex-shrink:0}
 .camp-stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px}
 .cs-v{font-size:13px;font-weight:700}.cs-l{font-size:9px;color:var(--ink3);text-transform:uppercase}
@@ -112,15 +112,12 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
 .tbl td{padding:8px 10px;border-bottom:1px solid var(--pink3);font-size:11px;vertical-align:middle}
 .tbl tr:last-child td{border-bottom:none}
 .tbl tr:hover td{background:var(--pink4)}
+.tbl .subj-cell{max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}
 .pill{display:inline-block;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700}
 .pp{background:#fce7f3;color:#be185d}.pm{background:#d1fae5;color:#065f46}
 .pg{background:#fef3c7;color:#92400e}.ppu{background:#ede9fe;color:#6d28d9}
 .pgn{background:#dcfce7;color:#166534}.pc{background:#fee2e2;color:#991b1b}
 .pgr{background:var(--pink4);color:var(--ink3)}.pbl{background:#dbeafe;color:#1e40af}
-.ai-box{background:linear-gradient(135deg,var(--pink4),#f0ebff);border:2px solid var(--border2);border-radius:16px;padding:16px;margin-bottom:20px}
-.ai-box-title{font-size:13px;font-weight:700;color:var(--hot);margin-bottom:10px}
-.spinner{width:13px;height:13px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
 .note{background:#fef9c3;border:2px solid #fde047;border-radius:12px;padding:10px 14px;font-size:11px;color:#713f12;line-height:1.8;margin-bottom:16px}
 .alert-bounce{background:#fee2e2;border:2px solid #fca5a5;border-radius:12px;padding:10px 14px;font-size:11px;color:#991b1b;line-height:1.8;margin-bottom:16px}
 .mini{background:var(--pink4);border:2px solid var(--border);border-radius:10px;padding:9px 12px;font-size:11px;color:var(--ink2);line-height:1.7;margin-top:8px}
@@ -139,14 +136,18 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
 .fade-in{animation:fi .3s ease forwards}
 @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .step-badge{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;font-size:10px;font-weight:700;background:var(--pink);color:white;margin-right:5px;flex-shrink:0}
-.file-guide{background:var(--pink4);border:2px solid var(--border);border-radius:10px;padding:10px 12px;font-size:11px;color:var(--ink2);line-height:1.8;margin-bottom:10px}
-.file-guide strong{color:var(--hot)}
 .gas-status{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
 .gas-status.on{background:#4ade80}.gas-status.off{background:var(--ink3)}
 .report-box{background:white;border:2px solid var(--border);border-radius:12px;padding:14px;font-size:11px;color:var(--ink2);line-height:2;white-space:pre-wrap;max-height:400px;overflow-y:auto;margin-top:10px}
-.report-box strong{color:var(--ink)}
-.seg-tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:9px;font-weight:700;background:#e0f2fe;color:#0369a1;margin-right:3px}
-.ab-link{font-size:9px;color:var(--purple);cursor:pointer;text-decoration:underline}
+.seg-tag{display:inline-block;padding:1px 6px;border-radius:20px;font-size:9px;font-weight:700;background:#e0f2fe;color:#0369a1;margin-right:2px;margin-bottom:2px}
+.fold-toggle{background:none;border:none;font-size:10px;color:var(--pink);cursor:pointer;font-weight:700;padding:4px 0;font-family:'Noto Sans JP',sans-serif}
+.fold-toggle:hover{text-decoration:underline}
+.tag-input-wrap{display:flex;flex-wrap:wrap;gap:4px;background:var(--pink4);border:2px solid var(--border);border-radius:9px;padding:5px 8px;min-height:34px;cursor:text}
+.tag-input-wrap:focus-within{border-color:var(--pink)}
+.tag-input-wrap input{border:none;background:none;outline:none;font-size:11px;font-family:'Noto Sans JP',sans-serif;color:var(--ink);min-width:60px;flex:1;padding:2px 0}
+.tag-item{display:inline-flex;align-items:center;gap:3px;background:#e0f2fe;color:#0369a1;border-radius:20px;padding:2px 8px;font-size:10px;font-weight:700}
+.tag-item .tag-x{cursor:pointer;font-size:12px;line-height:1;opacity:.6}
+.tag-item .tag-x:hover{opacity:1;color:#dc2626}
 </style>
 </head>
 <body>
@@ -180,11 +181,11 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
       <div class="panel">
         <div class="panel-hd">💗 キャンペーン追加（手動）</div>
         <div class="panel-bd">
-          <div class="drop-zone" id="dz1"><span class="dz-icon">📋</span><div class="dz-main">① キャンペーンCSVをドロップ</div><div class="dz-sub">Opens・Replied・Bounced列が入ったファイル</div></div>
+          <div class="drop-zone" id="dz1"><span class="dz-icon">📋</span><div class="dz-main">キャンペーンCSVをドロップ</div><div class="dz-sub">Opens・Replied・Bounced列が入ったファイル</div></div>
           <input type="file" id="fi1" accept=".xlsx,.xls,.csv" style="display:none">
           <div id="msg1"></div>
           <div id="step2area" style="display:none;margin-top:10px">
-            <div class="drop-zone" id="dz2"><span class="dz-icon">📊</span><div class="dz-main">② Open RateのExcelをドロップ（任意）</div><div class="dz-sub">時間帯・開封回数分析に使うよ</div></div>
+            <div class="drop-zone" id="dz2"><span class="dz-icon">📊</span><div class="dz-main">Open RateのExcelをドロップ（任意）</div></div>
             <input type="file" id="fi2" accept=".xlsx,.xls,.csv" style="display:none">
             <div id="msg2"></div>
           </div>
@@ -192,29 +193,42 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
             <div id="prev1" class="preview"></div>
             <div id="prev2" class="preview" style="display:none;margin-top:6px"></div>
             <div class="form" style="margin-top:10px">
-              <div class="f"><label>✦ 件名（1通目）</label><input type="text" id="f-subj" placeholder="例：【ベンナビ】初期費用ゼロのご案内"/></div>
-              <div class="f"><label>📋 リスト元（ターゲット層）</label><input type="text" id="f-list" placeholder="例：ベンナビ無料掲載顧客、きんとん外全て"/></div>
+              <div class="f"><label>✦ 件名</label><input type="text" id="f-subj"/></div>
+              <div style="font-size:10px;font-weight:700;color:var(--ink2);margin-bottom:2px">📋 リスト元（タグで入力 → Enterで追加）</div>
+              <div class="f-row">
+                <div class="f"><label>地域</label><input type="text" id="f-area" placeholder="例：東京"/></div>
+                <div class="f"><label>他社広告</label><select id="f-ads"><option value="">未選択</option><option>あり</option><option>なし</option></select></div>
+              </div>
+              <div class="f-row">
+                <div class="f"><label>ポータル名</label><input type="text" id="f-portal" placeholder="例：弁護士ドットコム"/></div>
+                <div class="f"><label>分野</label><input type="text" id="f-field" placeholder="例：相続、離婚"/></div>
+              </div>
+              <div class="f"><label>その他タグ</label><input type="text" id="f-tags" placeholder="例：きんとん外、無料掲載顧客"/></div>
               <div class="f-row">
                 <div class="f"><label>送信曜日</label><select id="f-day"><option value="">選択</option><option>月</option><option>火</option><option>水</option><option>木</option><option>金</option></select></div>
-                <div class="f"><label>送信時間（時）</label><select id="f-hour"><option value="">選択</option><option value="6">6時</option><option value="7">7時</option><option value="8">8時</option><option value="9">9時</option><option value="10">10時</option><option value="11">11時</option><option value="12">12時</option><option value="13">13時</option><option value="14">14時</option><option value="15">15時</option><option value="16">16時</option><option value="17">17時</option><option value="18">18時</option><option value="19">19時</option><option value="20">20時</option></select></div>
+                <div class="f"><label>送信時間</label><select id="f-hour"><option value="">選択</option><option value="6">6時</option><option value="7">7時</option><option value="8">8時</option><option value="9">9時</option><option value="10">10時</option><option value="11">11時</option><option value="12">12時</option><option value="13">13時</option><option value="14">14時</option><option value="15">15時</option><option value="16">16時</option><option value="17">17時</option><option value="18">18時</option><option value="19">19時</option><option value="20">20時</option></select></div>
               </div>
-              <div class="f"><label>🔢 シーケンス（何通目？）</label><select id="f-stage"><option value="1">1通目</option><option value="2">2通目</option><option value="3">3通目</option></select></div>
               <div class="f-row">
-                <div class="f"><label>🎯 アポ獲得数</label><input type="number" id="f-appt" placeholder="0" min="0" value="0"/></div>
-                <div class="f"><label>💬 返信数</label><input type="number" id="f-replies" placeholder="0" min="0" value="0"/></div>
+                <div class="f"><label>🔢 何通目？</label><select id="f-stage"><option value="1">1通目</option><option value="2">2通目</option><option value="3">3通目</option></select></div>
+                <div class="f"><label>🎯 アポ数</label><input type="number" id="f-appt" min="0" value="0"/></div>
+              </div>
+              <div class="f-row">
+                <div class="f"><label>💬 返信数</label><input type="number" id="f-replies" min="0" value="0"/></div>
+                <div class="f"><label>🚫 配信停止数</label><input type="number" id="f-unsub" min="0" value="0"/></div>
               </div>
               <div style="font-size:10px;font-weight:700;color:var(--ink2);margin-top:4px">💬 返信の内訳（任意）</div>
-              <div class="f-row3">
-                <div class="f"><label>アポ</label><input type="number" id="f-rApo" placeholder="0" min="0" value="0"/></div>
-                <div class="f"><label>お断り</label><input type="number" id="f-rDecline" placeholder="0" min="0" value="0"/></div>
-                <div class="f"><label>不要</label><input type="number" id="f-rRemove" placeholder="0" min="0" value="0"/></div>
+              <div class="f-row4">
+                <div class="f"><label>アポ</label><input type="number" id="f-rApo" min="0" value="0"/></div>
+                <div class="f"><label>お断り</label><input type="number" id="f-rDecline" min="0" value="0"/></div>
+                <div class="f"><label>検討中</label><input type="number" id="f-rMaybe" min="0" value="0"/></div>
+                <div class="f"><label>配信停止</label><input type="number" id="f-rStop" min="0" value="0"/></div>
               </div>
               <div class="f" style="display:flex;align-items:center;gap:8px;background:var(--pink4);border:2px solid var(--border);border-radius:9px;padding:8px 10px">
                 <input type="checkbox" id="f-finalized" style="width:16px;height:16px;cursor:pointer;flex-shrink:0">
                 <label for="f-finalized" style="font-size:11px;color:var(--ink2);cursor:pointer;margin:0">シーケンス完了・アポ数確定済み</label>
               </div>
-              <div class="f"><label>📝 本文テキスト <span id="f-body-count" style="font-weight:400;color:var(--pink)"></span></label><textarea id="f-body" rows="3" placeholder="本文を貼り付け" oninput="syncLen()"></textarea></div>
-              <div class="f"><label>📌 メモ（自由記入）</label><textarea id="f-memo" rows="2" placeholder="例：相続アクセスが夏季より年始1.5倍になるよ！"></textarea></div>
+              <div class="f"><label>📝 本文 <span id="f-body-count" style="font-weight:400;color:var(--pink)"></span></label><textarea id="f-body" rows="2" oninput="syncLen()"></textarea></div>
+              <div class="f"><label>📌 メモ</label><textarea id="f-memo" rows="2" placeholder="分析メモや次回改善点"></textarea></div>
               <button class="btn btn-mint btn-full" onclick="confirmAdd()">✓ 登録する♡</button>
             </div>
           </div>
@@ -225,12 +239,12 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
           <span>💖 登録済み（<span id="cnt">0</span>件）</span>
           <div style="display:flex;gap:4px">
             <button class="btn btn-ghost" onclick="loadDemo()" style="padding:3px 9px;font-size:10px;border-radius:20px">デモ</button>
-            <button class="btn btn-ghost" onclick="exportCSV()" style="padding:3px 9px;font-size:10px;border-radius:20px">📥 CSV</button>
-            <button class="btn btn-ghost" onclick="openShare()" style="padding:3px 9px;font-size:10px;border-radius:20px">🔗 共有</button>
+            <button class="btn btn-ghost" onclick="exportCSV()" style="padding:3px 9px;font-size:10px;border-radius:20px">📥</button>
+            <button class="btn btn-ghost" onclick="openShare()" style="padding:3px 9px;font-size:10px;border-radius:20px">🔗</button>
           </div>
         </div>
         <div class="panel-bd" style="padding:10px">
-          <div id="campList"><div style="color:var(--ink3);font-size:12px;text-align:center;padding:12px 0">まだないよ〜！</div></div>
+          <div id="campList"></div>
         </div>
       </div>
     </div>
@@ -239,10 +253,6 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
     <div class="empty" id="emptyState">
       <div class="empty-icon">💌</div>
       <div style="font-size:16px;font-weight:700;color:var(--ink2)">キャンペーンを追加してね！</div>
-      <div style="max-width:400px;font-size:12px;color:var(--ink3);line-height:2.2;text-align:left;background:white;border:2px solid var(--border);border-radius:16px;padding:16px;box-shadow:var(--shadow)">
-        <div style="margin-bottom:8px"><span class="step-badge">✨</span><strong style="color:var(--hot)">おすすめ：GMass API連携</strong><br><span style="font-size:11px;margin-left:23px;display:block">左のAPI設定にURLを入れれば、ボタン1つで自動取得！</span></div>
-        <div style="margin-bottom:8px;border-top:1px dashed var(--border);padding-top:8px"><span class="step-badge">1</span><strong style="color:var(--ink)">手動の場合：CSVをドロップ</strong></div>
-      </div>
       <button class="btn btn-ghost" onclick="loadDemo()" style="margin-top:6px">🌸 デモデータで試してみる</button>
     </div>
   </div>
@@ -250,42 +260,51 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
 
 <!-- EDIT MODAL -->
 <div class="overlay" id="editOverlay">
-  <div class="modal" style="width:460px">
-    <div class="modal-title">✏️ 編集・データ更新</div>
+  <div class="modal" style="width:480px">
+    <div class="modal-title">✏️ 編集</div>
     <div class="form">
       <div class="f"><label>件名</label><input type="text" id="e-subj" readonly style="opacity:.6"/></div>
-      <div class="f"><label>📋 リスト元（ターゲット層）</label><input type="text" id="e-list" placeholder="例：ベンナビ無料掲載顧客"/></div>
+      <div style="font-size:10px;font-weight:700;color:var(--ink2);margin-bottom:2px">📋 リスト元</div>
       <div class="f-row">
-        <div class="f"><label>送信曜日</label><select id="e-day"><option value="">選択</option><option>月</option><option>火</option><option>水</option><option>木</option><option>金</option></select></div>
-        <div class="f"><label>送信時間（時）</label><select id="e-hour"><option value="">選択</option><option value="6">6時</option><option value="7">7時</option><option value="8">8時</option><option value="9">9時</option><option value="10">10時</option><option value="11">11時</option><option value="12">12時</option><option value="13">13時</option><option value="14">14時</option><option value="15">15時</option><option value="16">16時</option><option value="17">17時</option><option value="18">18時</option><option value="19">19時</option><option value="20">20時</option></select></div>
+        <div class="f"><label>地域</label><input type="text" id="e-area"/></div>
+        <div class="f"><label>他社広告</label><select id="e-ads"><option value="">未選択</option><option>あり</option><option>なし</option></select></div>
       </div>
       <div class="f-row">
-        <div class="f"><label>🔢 シーケンス</label><select id="e-stage"><option value="1">1通目</option><option value="2">2通目</option><option value="3">3通目</option></select></div>
+        <div class="f"><label>ポータル名</label><input type="text" id="e-portal"/></div>
+        <div class="f"><label>分野</label><input type="text" id="e-field"/></div>
+      </div>
+      <div class="f"><label>その他タグ</label><input type="text" id="e-tags"/></div>
+      <div class="f-row">
+        <div class="f"><label>送信曜日</label><select id="e-day"><option value="">選択</option><option>月</option><option>火</option><option>水</option><option>木</option><option>金</option></select></div>
+        <div class="f"><label>送信時間</label><select id="e-hour"><option value="">選択</option><option value="6">6時</option><option value="7">7時</option><option value="8">8時</option><option value="9">9時</option><option value="10">10時</option><option value="11">11時</option><option value="12">12時</option><option value="13">13時</option><option value="14">14時</option><option value="15">15時</option><option value="16">16時</option><option value="17">17時</option><option value="18">18時</option><option value="19">19時</option><option value="20">20時</option></select></div>
+      </div>
+      <div class="f-row">
+        <div class="f"><label>🔢 何通目</label><select id="e-stage"><option value="1">1通目</option><option value="2">2通目</option><option value="3">3通目</option></select></div>
         <div class="f"><label>🔗 A/Bテスト相手</label><select id="e-ab"><option value="">なし</option></select></div>
       </div>
       <div class="f-row">
-        <div class="f"><label>💬 返信数</label><input type="number" id="e-replies" min="0" placeholder="0"/></div>
-        <div class="f"><label>🎯 アポ獲得数</label><input type="number" id="e-appt" min="0"/></div>
+        <div class="f"><label>💬 返信数</label><input type="number" id="e-replies" min="0"/></div>
+        <div class="f"><label>🎯 アポ数</label><input type="number" id="e-appt" min="0"/></div>
       </div>
+      <div class="f"><label>🚫 配信停止数</label><input type="number" id="e-unsub" min="0" value="0"/></div>
       <div style="font-size:10px;font-weight:700;color:var(--ink2);margin-top:4px">💬 返信の内訳</div>
-      <div class="f-row3">
+      <div class="f-row4">
         <div class="f"><label>アポ</label><input type="number" id="e-rApo" min="0" value="0"/></div>
         <div class="f"><label>お断り</label><input type="number" id="e-rDecline" min="0" value="0"/></div>
-        <div class="f"><label>不要</label><input type="number" id="e-rRemove" min="0" value="0"/></div>
+        <div class="f"><label>検討中</label><input type="number" id="e-rMaybe" min="0" value="0"/></div>
+        <div class="f"><label>配信停止</label><input type="number" id="e-rStop" min="0" value="0"/></div>
       </div>
       <div class="f" style="display:flex;align-items:center;gap:8px;background:var(--pink4);border:2px solid var(--border);border-radius:9px;padding:8px 10px">
         <input type="checkbox" id="e-finalized" style="width:16px;height:16px;cursor:pointer;flex-shrink:0">
         <label for="e-finalized" style="font-size:11px;color:var(--ink2);cursor:pointer;margin:0">シーケンス完了・アポ数確定済み</label>
       </div>
-      <div class="f"><label>📝 本文テキスト <span id="e-body-count" style="font-weight:400;color:var(--pink)"></span></label><textarea id="e-body" rows="3" oninput="syncEditLen()"></textarea></div>
-      <div class="f"><label>📌 メモ（自由記入）</label><textarea id="e-memo" rows="3" placeholder="分析結果や次回改善点をメモ"></textarea></div>
-      <div class="f"><label>🤖 AIメモを追加</label><textarea id="e-aimemo" rows="2" placeholder="Claudeの分析結果をコピペ"></textarea></div>
+      <div class="f"><label>📝 本文 <span id="e-body-count" style="font-weight:400;color:var(--pink)"></span></label><textarea id="e-body" rows="2" oninput="syncEditLen()"></textarea></div>
+      <div class="f"><label>📌 メモ</label><textarea id="e-memo" rows="3"></textarea></div>
+      <div class="f"><label>🤖 AIメモ追加</label><textarea id="e-aimemo" rows="2" placeholder="Claudeの分析結果をコピペ"></textarea></div>
       <div id="e-aimemo-history"></div>
       <div style="margin-top:8px;padding-top:10px;border-top:2px solid var(--border)">
-        <div style="font-size:10px;font-weight:700;color:var(--ink2);margin-bottom:6px">📂 最新データで更新</div>
-        <div class="drop-zone" id="updZone" style="padding:10px"><span class="dz-icon" style="font-size:18px">📋</span><div class="dz-main" style="font-size:11px">キャンペーンCSVをドロップ</div></div>
-        <input type="file" id="updFileIn" accept=".xlsx,.xls,.csv" style="display:none">
-        <div id="updMsg"></div>
+        <div class="drop-zone" id="updZone" style="padding:8px"><span class="dz-icon" style="font-size:16px">📋</span><div class="dz-main" style="font-size:11px">CSVで数値を更新</div></div>
+        <input type="file" id="updFileIn" accept=".xlsx,.xls,.csv" style="display:none"><div id="updMsg"></div>
       </div>
     </div>
     <div class="modal-btns">
@@ -299,22 +318,15 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
 <div class="overlay" id="shareOverlay">
   <div class="modal" style="width:480px">
     <div class="modal-title">📋 共有・Claude分析</div>
-    <div id="campCheckList" style="background:var(--pink4);border:2px solid var(--border);border-radius:10px;padding:8px;max-height:160px;overflow-y:auto;margin-bottom:10px"></div>
-    <button class="btn btn-pink btn-full" onclick="copyAnalysisText()" style="font-size:13px;padding:10px">📋 Claudeに依頼するテキストをコピー</button>
+    <div id="campCheckList" style="background:var(--pink4);border:2px solid var(--border);border-radius:10px;padding:8px;max-height:140px;overflow-y:auto;margin-bottom:10px"></div>
+    <button class="btn btn-pink btn-full" onclick="copyAnalysisText()">📋 Claudeに依頼するテキストをコピー</button>
     <div id="analysisMsg" style="margin-top:6px"></div>
-    <div style="margin-top:14px;padding-top:12px;border-top:2px solid var(--border)">
-      <button class="btn btn-ghost btn-full" onclick="genShareUrl()" style="font-size:11px">🔗 共有URLを生成</button>
-      <div id="shareUrlArea" style="display:none;margin-top:8px">
-        <div class="share-url-box" id="shareUrlBox" onclick="copyShareUrl()"></div>
-        <div id="shareUrlMsg" style="margin-top:4px"></div>
-      </div>
+    <div style="margin-top:12px;padding-top:12px;border-top:2px solid var(--border)">
+      <button class="btn btn-ghost btn-full" onclick="genShareUrl()">🔗 共有URL生成</button>
+      <div id="shareUrlArea" style="display:none;margin-top:8px"><div class="share-url-box" id="shareUrlBox" onclick="copyShareUrl()"></div><div id="shareUrlMsg" style="margin-top:4px"></div></div>
     </div>
     <div style="margin-top:12px;padding-top:12px;border-top:2px solid var(--border)">
-      <div style="display:flex;gap:6px">
-        <input type="text" id="importUrlIn" placeholder="共有URLをここに貼り付け" style="flex:1;font-size:11px"/>
-        <button class="btn btn-mint" onclick="importFromUrl()" style="padding:7px 12px;border-radius:20px;font-size:11px">読込</button>
-      </div>
-      <div id="importMsg"></div>
+      <div style="display:flex;gap:6px"><input type="text" id="importUrlIn" placeholder="共有URLを貼り付け" style="flex:1;font-size:11px"/><button class="btn btn-mint" onclick="importFromUrl()" style="padding:7px 12px;border-radius:20px;font-size:11px">読込</button></div><div id="importMsg"></div>
     </div>
     <div class="modal-btns" style="margin-top:12px"><button class="btn btn-ghost btn-full" onclick="closeShare()">閉じる</button></div>
   </div>
@@ -350,225 +362,249 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
 </div>
 
 <script>
-let camps=[], editIdx=-1, pend1=null, pend2=null, updPend=null, gmassData=[];
-let sortCol=null, sortAsc=true;
+let camps=[],editIdx=-1,pend1=null,pend2=null,updPend=null,gmassData=[];
+let sortCol=null,sortAsc=true;
 
 // ══ UTILS ══
-function pct(v){if(v==null||isNaN(v))return'—';return(v*100).toFixed(1)+'%';}
-function num(v){return v!=null?v.toLocaleString():'—';}
-function avg(a){if(!a.length)return 0;return a.reduce((x,y)=>x+y,0)/a.length;}
-function sum(a){return a.reduce((x,y)=>x+y,0);}
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function shortS(s,n=14){if(!s)return'—';return s.length>n?s.slice(0,n)+'…':s;}
-function fmtDate(iso){try{const d=new Date(iso);return`${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`;}catch{return'—';}}
+const P=v=>(v==null||isNaN(v))?'—':(v*100).toFixed(1)+'%';
+const N=v=>v!=null?v.toLocaleString():'—';
+const A=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:0;
+const S=a=>a.reduce((x,y)=>x+y,0);
+const E=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const SS=(s,n=14)=>!s?'—':s.length>n?s.slice(0,n)+'…':s;
+const FD=iso=>{try{const d=new Date(iso);return`${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`;}catch{return'—';}};
+
+// ══ LIST SOURCE HELPERS ══
+function buildTags(c){
+  const t=[];
+  const ls=c.listSource||{};
+  if(ls.area)t.push(ls.area);
+  if(ls.ads)t.push('他社広告:'+ls.ads);
+  if(ls.portal)t.push(ls.portal);
+  if(ls.field)t.push(ls.field);
+  if(ls.tags)ls.tags.split(/[,、]/).map(x=>x.trim()).filter(Boolean).forEach(x=>t.push(x));
+  // 旧形式の文字列対応
+  if(typeof c.listSource==='string'&&c.listSource)return [c.listSource];
+  return t;
+}
+function tagsHtml(c){return buildTags(c).map(t=>`<span class="seg-tag">${E(t)}</span>`).join('');}
+function getLS(prefix){
+  return{area:document.getElementById(prefix+'-area').value.trim(),ads:document.getElementById(prefix+'-ads').value,portal:document.getElementById(prefix+'-portal').value.trim(),field:document.getElementById(prefix+'-field').value.trim(),tags:document.getElementById(prefix+'-tags').value.trim()};
+}
+function setLS(prefix,ls){
+  if(!ls||typeof ls==='string'){document.getElementById(prefix+'-area').value='';document.getElementById(prefix+'-ads').value='';document.getElementById(prefix+'-portal').value='';document.getElementById(prefix+'-field').value='';document.getElementById(prefix+'-tags').value=typeof ls==='string'?ls:'';return;}
+  document.getElementById(prefix+'-area').value=ls.area||'';
+  document.getElementById(prefix+'-ads').value=ls.ads||'';
+  document.getElementById(prefix+'-portal').value=ls.portal||'';
+  document.getElementById(prefix+'-field').value=ls.field||'';
+  document.getElementById(prefix+'-tags').value=ls.tags||'';
+}
+function getRB(prefix){return{apo:parseInt(document.getElementById(prefix+'-rApo').value)||0,decline:parseInt(document.getElementById(prefix+'-rDecline').value)||0,maybe:parseInt(document.getElementById(prefix+'-rMaybe').value)||0,stop:parseInt(document.getElementById(prefix+'-rStop').value)||0};}
+function setRB(prefix,rb){rb=rb||{};document.getElementById(prefix+'-rApo').value=rb.apo||0;document.getElementById(prefix+'-rDecline').value=rb.decline||0;document.getElementById(prefix+'-rMaybe').value=rb.maybe||0;document.getElementById(prefix+'-rStop').value=rb.stop||0;}
 
 // ══ DATA LOAD ══
-function loadFromUrl(){try{const h=location.hash;if(h&&h.startsWith('#data=')){const j=decodeURIComponent(atob(h.slice(6)));const l=JSON.parse(j);if(Array.isArray(l)&&l.length>0){try{const s=localStorage.getItem('gm_v12');if(s){const lo=JSON.parse(s);camps=l.map((c,i)=>{const lc=lo[i]||{};return{...c,bodyText:lc.bodyText||c.bodyText||'',bodyLength:lc.bodyLength||c.bodyLength||null,aiMemos:lc.aiMemos||c.aiMemos||[],openTimes:lc.openTimes||[],openCounts:lc.openCounts||[],memo:lc.memo||c.memo||'',listSource:lc.listSource||c.listSource||'',replyBreakdown:lc.replyBreakdown||c.replyBreakdown||null,abTestPair:lc.abTestPair||c.abTestPair||''};});}else camps=l.map(c=>({...c,bodyText:c.bodyText||'',aiMemos:c.aiMemos||[],openTimes:[],openCounts:[],memo:c.memo||'',listSource:c.listSource||'',replyBreakdown:c.replyBreakdown||null,abTestPair:c.abTestPair||''}));}catch(e){camps=l;}save();return true;}}}catch(e){}return false;}
-function loadFromStorage(){try{const s=localStorage.getItem('gm_v12');if(s){camps=JSON.parse(s);return true;}}catch(e){}try{const s=localStorage.getItem('gm_v11');if(s){camps=JSON.parse(s);return true;}}catch(e){}return false;}
+function loadFromUrl(){try{const h=location.hash;if(h&&h.startsWith('#data=')){const j=decodeURIComponent(atob(h.slice(6)));const l=JSON.parse(j);if(Array.isArray(l)&&l.length>0){try{const s=localStorage.getItem('gm_v13');if(s){const lo=JSON.parse(s);camps=l.map((c,i)=>{const lc=lo[i]||{};return{...c,bodyText:lc.bodyText||c.bodyText||'',aiMemos:lc.aiMemos||c.aiMemos||[],openTimes:lc.openTimes||[],openCounts:lc.openCounts||[],memo:lc.memo||c.memo||'',listSource:lc.listSource||c.listSource||{},replyBreakdown:lc.replyBreakdown||c.replyBreakdown||{},abTestPair:lc.abTestPair||c.abTestPair||''};});}else camps=l.map(c=>({...c,bodyText:c.bodyText||'',aiMemos:c.aiMemos||[],openTimes:[],openCounts:[],memo:c.memo||'',listSource:c.listSource||{},replyBreakdown:c.replyBreakdown||{},abTestPair:c.abTestPair||''}));}catch(e){camps=l;}save();return true;}}}catch(e){}return false;}
+function loadFromStorage(){for(const k of['gm_v13','gm_v12','gm_v11']){try{const s=localStorage.getItem(k);if(s){camps=JSON.parse(s);return true;}}catch(e){}}return false;}
 function loadGasUrl(){try{const u=localStorage.getItem('gm_gas_url');if(u){document.getElementById('gas-url').value=u;document.getElementById('gasIndicator').classList.replace('off','on');}}catch(e){}}
-const loadedFromUrl=loadFromUrl();if(!loadedFromUrl)loadFromStorage();
-renderAll();setTimeout(loadGasUrl,100);
+const loadedFromUrl=loadFromUrl();if(!loadedFromUrl)loadFromStorage();renderAll();setTimeout(loadGasUrl,100);
 
 // ══ SAVE ══
-function save(){try{localStorage.setItem('gm_v12',JSON.stringify(camps));}catch(e){}try{const d=camps.map(({openTimes,openCounts,bodyText,aiMemos,...r})=>r);history.replaceState(null,'',location.pathname+'#data='+btoa(encodeURIComponent(JSON.stringify(d))));}catch(e){}}
+function save(){try{localStorage.setItem('gm_v13',JSON.stringify(camps));}catch(e){}try{const d=camps.map(({openTimes,openCounts,bodyText,aiMemos,...r})=>r);history.replaceState(null,'',location.pathname+'#data='+btoa(encodeURIComponent(JSON.stringify(d))));}catch(e){}}
 
 // ══ JSONP ══
-function fetchJsonp(url){return new Promise((resolve,reject)=>{const cb='_gm_'+Date.now()+'_'+Math.random().toString(36).slice(2);const to=setTimeout(()=>{delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);reject(new Error('タイムアウト'));},30000);window[cb]=function(d){clearTimeout(to);delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);resolve(d);};const sep=url.includes('?')?'&':'?';const sc=document.createElement('script');sc.src=url+sep+'callback='+cb;sc.onerror=function(){clearTimeout(to);delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);reject(new Error('読み込み失敗'));};document.head.appendChild(sc);});}
+function fetchJsonp(url){return new Promise((res,rej)=>{const cb='_gm_'+Date.now()+'_'+Math.random().toString(36).slice(2);const to=setTimeout(()=>{delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);rej(new Error('タイムアウト'));},30000);window[cb]=d=>{clearTimeout(to);delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);res(d);};const sc=document.createElement('script');sc.src=url+(url.includes('?')?'&':'?')+'callback='+cb;sc.onerror=()=>{clearTimeout(to);delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);rej(new Error('読み込み失敗'));};document.head.appendChild(sc);});}
 
 // ══ GMASS API ══
 function getGasUrl(){const u=document.getElementById('gas-url').value.trim();if(u){localStorage.setItem('gm_gas_url',u);document.getElementById('gasIndicator').classList.replace('off','on');}return u;}
 async function testGas(){const u=getGasUrl(),m=document.getElementById('gas-msg');if(!u){m.innerHTML='<div class="msg-err">URLを入力してね</div>';return;}m.innerHTML='<div class="msg-info">接続テスト中...</div>';try{const d=await fetchJsonp(u+'?action=test');m.innerHTML=d.ok?'<div class="msg-ok">✓ '+d.message+'</div>':'<div class="msg-err">'+(d.message||d.error)+'</div>';}catch(e){m.innerHTML='<div class="msg-err">接続失敗: '+e.message+'</div>';}}
 async function fetchFromGMass(){const u=getGasUrl(),m=document.getElementById('gas-msg'),l=document.getElementById('gas-loading');if(!u){m.innerHTML='<div class="msg-err">URLを入力してね</div>';return;}m.innerHTML='';l.style.display='block';document.getElementById('fetchBtn').disabled=true;try{const d=await fetchJsonp(u+'?action=campaigns');if(!d.ok)throw new Error(d.error||'APIエラー');if(!d.campaigns||!d.campaigns.length){m.innerHTML='<div class="msg-info">キャンペーンが見つからなかった</div>';l.style.display='none';document.getElementById('fetchBtn').disabled=false;return;}gmassData=d.campaigns;l.style.display='none';document.getElementById('fetchBtn').disabled=false;showGmassModal();}catch(e){l.style.display='none';document.getElementById('fetchBtn').disabled=false;m.innerHTML='<div class="msg-err">取得失敗: '+e.message+'</div>';}}
-function showGmassModal(){const el=document.getElementById('gmassCampList');const existing=new Set(camps.map(c=>c.subject));el.innerHTML=gmassData.map((c,i)=>{const ex=existing.has(c.subject);return`<label style="display:flex;align-items:flex-start;gap:8px;padding:6px 4px;cursor:${ex?'not-allowed':'pointer'};border-radius:6px;font-size:11px;color:${ex?'var(--ink3)':'var(--ink2)'};opacity:${ex?'.5':'1'}"><input type="checkbox" class="gmass-chk" data-idx="${i}" ${ex?'disabled':''} ${ex?'':'checked'} style="width:14px;height:14px;flex-shrink:0;margin-top:2px"><div><div style="font-weight:700">${esc(c.subject)} ${ex?'<span style="color:var(--mint);font-size:9px">登録済み</span>':''}</div><div style="font-size:10px;color:var(--ink3);margin-top:2px">送信${num(c.recipients)} 開封${pct(c.openRate)} 返信${c.replies}件 クリック${c.clicks}件</div></div></label>`;}).join('');document.getElementById('gmassImportMsg').innerHTML='';document.getElementById('gmassOverlay').classList.add('open');}
+function showGmassModal(){const el=document.getElementById('gmassCampList');const existing=new Set(camps.map(c=>c.subject));el.innerHTML=gmassData.map((c,i)=>{const ex=existing.has(c.subject);return`<label style="display:flex;align-items:flex-start;gap:8px;padding:6px 4px;cursor:${ex?'not-allowed':'pointer'};border-radius:6px;font-size:11px;opacity:${ex?'.5':'1'}"><input type="checkbox" class="gmass-chk" data-idx="${i}" ${ex?'disabled checked':''} style="width:14px;height:14px;flex-shrink:0;margin-top:2px"><div><div style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:380px">${E(c.subject)} ${ex?'<span style="color:var(--mint);font-size:9px">登録済み</span>':''} ${c.stage>1?`<span class="badge bstage">${c.stage}通目</span>`:''}</div><div style="font-size:10px;color:var(--ink3)">送信${N(c.recipients)} 開封${P(c.openRate)} 返信${c.replies}件</div></div></label>`;}).join('');document.getElementById('gmassImportMsg').innerHTML='';document.getElementById('gmassOverlay').classList.add('open');}
 function gmassSelectAll(v){document.querySelectorAll('.gmass-chk:not(:disabled)').forEach(e=>e.checked=v);}
 function closeGmassModal(){document.getElementById('gmassOverlay').classList.remove('open');}
-async function importSelectedGMass(){const cks=document.querySelectorAll('.gmass-chk:checked');if(!cks.length){document.getElementById('gmassImportMsg').innerHTML='<div class="msg-err">選択してね</div>';return;}const gu=getGasUrl();let n=0;for(const ck of cks){const i=parseInt(ck.dataset.idx),c=gmassData[i];if(!c)continue;let wd='',hr='';if(c.creationTime){try{const d=new Date(c.creationTime);wd=['日','月','火','水','木','金','土'][d.getDay()]||'';hr=String(d.getHours());}catch(e){}}const camp={...c,weekday:wd,hour:hr,appointments:0,apptRateSent:0,apptRateOpen:0,apptFinalized:false,bodyText:'',bodyLength:null,aiMemos:[],openTimes:[],openCounts:[],avgOpenCount:0,maxOpenCount:0,memo:'',listSource:'',replyBreakdown:null,abTestPair:'',stage:c.stage||1,addedAt:new Date().toISOString()};if(gu&&c.campaignId){try{const od=await fetchJsonp(gu+'?action=opens&campaignId='+c.campaignId);if(od.ok){camp.openTimes=od.openTimes||[];camp.openCounts=od.openCounts||[];camp.avgOpenCount=od.avgOpenCount||0;camp.maxOpenCount=od.maxOpenCount||0;if(od.openers)camp.opens=od.openers;camp.openRate=camp.recipients>0?camp.opens/camp.recipients:0;}}catch(e){}}camps.push(camp);n++;}save();renderAll();closeGmassModal();document.getElementById('gas-msg').innerHTML=`<div class="msg-ok">✓ ${n}件インポートしたよ♡</div>`;}
+async function importSelectedGMass(){const cks=[...document.querySelectorAll('.gmass-chk:checked:not(:disabled)')];if(!cks.length){document.getElementById('gmassImportMsg').innerHTML='<div class="msg-err">選択してね</div>';return;}const gu=getGasUrl();let n=0;for(const ck of cks){const i=parseInt(ck.dataset.idx),c=gmassData[i];if(!c)continue;let wd='',hr='';if(c.creationTime){try{const d=new Date(c.creationTime);wd=['日','月','火','水','木','金','土'][d.getDay()]||'';hr=String(d.getHours());}catch(e){}}const camp={...c,weekday:wd,hour:hr,appointments:0,apptRateSent:0,apptRateOpen:0,apptFinalized:false,bodyText:'',bodyLength:null,aiMemos:[],openTimes:[],openCounts:[],avgOpenCount:0,maxOpenCount:0,memo:'',listSource:{},replyBreakdown:{},abTestPair:'',stage:c.stage||1,unsubscribes:c.unsubscribes||0,addedAt:new Date().toISOString()};if(gu&&c.campaignId){try{const od=await fetchJsonp(gu+'?action=opens&campaignId='+c.campaignId);if(od.ok){camp.openTimes=od.openTimes||[];camp.openCounts=od.openCounts||[];camp.avgOpenCount=od.avgOpenCount||0;camp.maxOpenCount=od.maxOpenCount||0;if(od.openers)camp.opens=od.openers;camp.openRate=camp.recipients>0?camp.opens/camp.recipients:0;}}catch(e){}}camps.push(camp);n++;}save();renderAll();closeGmassModal();document.getElementById('gas-msg').innerHTML=`<div class="msg-ok">✓ ${n}件インポートしたよ♡</div>`;}
 
 // ══ DROP ZONE ══
-function initDrop(zid,iid,fn){const z=document.getElementById(zid),inp=document.getElementById(iid);if(!z||!inp)return;z.addEventListener('click',()=>inp.click());z.addEventListener('dragenter',e=>{e.preventDefault();z.classList.add('over');});z.addEventListener('dragover',e=>{e.preventDefault();});z.addEventListener('dragleave',e=>{z.classList.remove('over');});z.addEventListener('drop',e=>{e.preventDefault();z.classList.remove('over');if(e.dataTransfer.files[0])fn(e.dataTransfer.files[0]);});inp.addEventListener('change',()=>{if(inp.files[0])fn(inp.files[0]);inp.value='';});}
-initDrop('dz1','fi1',file=>{parseFile(file,(rows,err)=>{const m=document.getElementById('msg1');if(err){m.innerHTML=`<div class="msg-err">${err}</div>`;return;}const d=parseCampCSV(rows);if(!d){m.innerHTML='<div class="msg-err">列が認識できなかったよ💦</div>';return;}pend1=d;document.getElementById('dz1').classList.add('loaded');document.getElementById('dz1').querySelector('.dz-main').textContent='✓ '+file.name;document.getElementById('prev1').innerHTML=`<strong>✅ 読み込み完了♡</strong><br>送信:${d.recipients} 開封:${d.opens}(${pct(d.openRate)}) 返信:${d.replies} バウンス:${d.bounces}`;m.innerHTML='<div class="msg-ok">✓ 読み込み完了！</div>';document.getElementById('step2area').style.display='block';document.getElementById('metaForm').style.display='block';});});
-initDrop('dz2','fi2',file=>{parseFile(file,(rows,err)=>{const m=document.getElementById('msg2');if(err){m.innerHTML=`<div class="msg-err">${err}</div>`;return;}const d=parseOpenRate(rows);if(!d){m.innerHTML='<div class="msg-err">列が認識できなかったよ💦</div>';return;}pend2=d;document.getElementById('dz2').classList.add('loaded');document.getElementById('dz2').querySelector('.dz-main').textContent='✓ '+file.name;document.getElementById('prev2').innerHTML=`<strong>✅ 開封データ読み込み完了♡</strong>`;document.getElementById('prev2').style.display='block';});});
-initDrop('updZone','updFileIn',file=>{parseFile(file,(rows,err)=>{const m=document.getElementById('updMsg');if(err){m.innerHTML=`<div class="msg-err">${err}</div>`;return;}const d=parseCampCSV(rows);if(!d){m.innerHTML='<div class="msg-err">キャンペーンCSVを使ってね</div>';return;}updPend=d;const c=camps[editIdx];m.innerHTML=`<div class="msg-ok">✓ 送信:${c.recipients}→${d.recipients} 開封率:${pct(c.openRate)}→${pct(d.openRate)}</div>`;document.getElementById('updZone').classList.add('loaded');});});
+function initDrop(zid,iid,fn){const z=document.getElementById(zid),inp=document.getElementById(iid);if(!z||!inp)return;z.addEventListener('click',()=>inp.click());['dragenter','dragover'].forEach(ev=>z.addEventListener(ev,e=>{e.preventDefault();z.classList.add('over');}));z.addEventListener('dragleave',()=>z.classList.remove('over'));z.addEventListener('drop',e=>{e.preventDefault();z.classList.remove('over');if(e.dataTransfer.files[0])fn(e.dataTransfer.files[0]);});inp.addEventListener('change',()=>{if(inp.files[0])fn(inp.files[0]);inp.value='';});}
+initDrop('dz1','fi1',file=>{parseFile(file,(rows,err)=>{const m=document.getElementById('msg1');if(err){m.innerHTML=`<div class="msg-err">${err}</div>`;return;}const d=parseCampCSV(rows);if(!d){m.innerHTML='<div class="msg-err">列が認識できなかったよ💦</div>';return;}pend1=d;document.getElementById('dz1').classList.add('loaded');document.getElementById('dz1').querySelector('.dz-main').textContent='✓ '+file.name;document.getElementById('prev1').innerHTML=`<strong>✅ 読み込み完了</strong> 送信:${d.recipients} 開封:${d.opens}(${P(d.openRate)}) バウンス:${d.bounces}`;m.innerHTML='<div class="msg-ok">✓ OK！</div>';document.getElementById('step2area').style.display='block';document.getElementById('metaForm').style.display='block';});});
+initDrop('dz2','fi2',file=>{parseFile(file,(rows,err)=>{const m=document.getElementById('msg2');if(err){m.innerHTML=`<div class="msg-err">${err}</div>`;return;}const d=parseOpenRate(rows);if(!d){m.innerHTML='<div class="msg-err">列が認識できなかったよ💦</div>';return;}pend2=d;document.getElementById('dz2').classList.add('loaded');document.getElementById('dz2').querySelector('.dz-main').textContent='✓ '+file.name;document.getElementById('prev2').innerHTML='<strong>✅ 開封データ読み込み完了</strong>';document.getElementById('prev2').style.display='block';});});
+initDrop('updZone','updFileIn',file=>{parseFile(file,(rows,err)=>{const m=document.getElementById('updMsg');if(err){m.innerHTML=`<div class="msg-err">${err}</div>`;return;}const d=parseCampCSV(rows);if(!d){m.innerHTML='<div class="msg-err">CSV使ってね</div>';return;}updPend=d;const c=camps[editIdx];m.innerHTML=`<div class="msg-ok">✓ 送信:${c.recipients}→${d.recipients} 開封率:${P(c.openRate)}→${P(d.openRate)}</div>`;document.getElementById('updZone').classList.add('loaded');});});
 
 // ══ PARSE ══
 function parseFile(file,cb){const ext=file.name.split('.').pop().toLowerCase();if(!['xlsx','xls','csv'].includes(ext)){cb(null,'xlsx/csv を選んでね');return;}const r=new FileReader();r.onerror=()=>cb(null,'読み込み失敗');r.onload=ev=>{try{let rows;if(ext==='csv'){rows=ev.target.result.split('\n').map(line=>{const cells=[];let cur='',inQ=false;for(const ch of line){if(ch==='"')inQ=!inQ;else if((ch===','||ch==='\t')&&!inQ){cells.push(cur.trim());cur='';}else cur+=ch;}cells.push(cur.trim());return cells;}).filter(r=>r.some(c=>c!==''));}else{const wb=XLSX.read(ev.target.result,{type:'array'});rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1});}cb(rows,null);}catch(e){cb(null,e.message);}};ext==='csv'?r.readAsText(file,'UTF-8'):r.readAsArrayBuffer(file);}
-function parseCampCSV(rows){if(!rows||rows.length<2)return null;const h=rows[0].map(x=>String(x||'').toLowerCase().trim());const fc=ns=>{for(const n of ns){const i=h.findIndex(x=>x.includes(n));if(i>=0)return i;}return -1;};const cols={opened:fc(['opens','opened','open']),clicked:fc(['clicks','clicked','click']),replied:fc(['replied','reply','replies']),bounced:fc(['bounced','bounce','bounces'])};if(cols.opened<0&&cols.replied<0)return null;const data=rows.slice(1).filter(r=>r.some(x=>String(x||'').trim()!==''));const N=data.length;if(!N)return null;const cn=col=>col<0?0:data.reduce((acc,r)=>{const v=r[col];if(v==null||v==='')return acc;const n=Number(v);if(!isNaN(n))return acc+(n>0?1:0);return acc+(['yes','true','y','✓','x'].includes(String(v).toLowerCase().trim())?1:0);},0);return{recipients:N,opens:cn(cols.opened),replies:cn(cols.replied),bounces:cn(cols.bounced),clicks:cn(cols.clicked),openRate:N>0?cn(cols.opened)/N:0,replyRate:N>0?cn(cols.replied)/N:0,bounceRate:N>0?cn(cols.bounced)/N:0,clickRate:N>0?cn(cols.clicked)/N:0};}
+function parseCampCSV(rows){if(!rows||rows.length<2)return null;const h=rows[0].map(x=>String(x||'').toLowerCase().trim());const fc=ns=>{for(const n of ns){const i=h.findIndex(x=>x.includes(n));if(i>=0)return i;}return-1;};const cols={opened:fc(['opens','opened','open']),clicked:fc(['clicks','clicked','click']),replied:fc(['replied','reply','replies']),bounced:fc(['bounced','bounce','bounces'])};if(cols.opened<0&&cols.replied<0)return null;const data=rows.slice(1).filter(r=>r.some(x=>String(x||'').trim()!==''));const NN=data.length;if(!NN)return null;const cn=col=>col<0?0:data.reduce((acc,r)=>{const v=r[col];if(v==null||v==='')return acc;const n=Number(v);if(!isNaN(n))return acc+(n>0?1:0);return acc+(['yes','true','y','✓','x'].includes(String(v).toLowerCase().trim())?1:0);},0);return{recipients:NN,opens:cn(cols.opened),replies:cn(cols.replied),bounces:cn(cols.bounced),clicks:cn(cols.clicked),openRate:NN>0?cn(cols.opened)/NN:0,replyRate:NN>0?cn(cols.replied)/NN:0,bounceRate:NN>0?cn(cols.bounced)/NN:0,clickRate:NN>0?cn(cols.clicked)/NN:0};}
 function parseOpenRate(rows){if(!rows||rows.length<2)return null;const h=rows[0].map(x=>String(x||'').toLowerCase().trim());const fc=ns=>{for(const n of ns){const i=h.findIndex(x=>x.includes(n));if(i>=0)return i;}return-1;};const rc=fc(['mostrecentopen','most_recent','recent_open','opened','date']);const cc=fc(['numberoopens','numberofopens','number_of_opens','opens','count']);if(rc<0&&cc<0)return null;const data=rows.slice(1).filter(r=>r.some(x=>String(x||'').trim()!==''));const ot=[],oc=[];for(const r of data){if(rc>=0&&r[rc]){try{const v=r[rc];const d=typeof v==='number'?new Date(Math.round((v-25569)*86400*1000)):new Date(String(v));if(!isNaN(d.getTime()))ot.push(d);}catch(e){}}if(cc>=0){const v=parseInt(r[cc]||'0');if(!isNaN(v)&&v>0)oc.push(v);}}return{openers:data.length,openTimes:ot,openCounts:oc,avgOpenCount:oc.length?oc.reduce((a,b)=>a+b,0)/oc.length:0,maxOpenCount:oc.length?Math.max(...oc):0};}
 
 // ══ ADD ══
-function syncLen(){const t=document.getElementById('f-body').value;document.getElementById('f-body-count').textContent=t.trim().length>0?`${t.trim().length}文字`:'';}
-function syncEditLen(){const t=document.getElementById('e-body').value;document.getElementById('e-body-count').textContent=t.trim().length>0?`${t.trim().length}文字`:'';}
-function confirmAdd(){if(!pend1)return;const ap=parseInt(document.getElementById('f-appt').value)||0;const mr=parseInt(document.getElementById('f-replies').value)||0;const fin=document.getElementById('f-finalized').checked;const bt=document.getElementById('f-body').value||'';const N=pend1.recipients||1;const actualO=pend2?pend2.openers:pend1.opens;const actualR=mr>0?mr:pend1.replies;const rb={apo:parseInt(document.getElementById('f-rApo').value)||0,decline:parseInt(document.getElementById('f-rDecline').value)||0,remove:parseInt(document.getElementById('f-rRemove').value)||0};
-camps.push({...pend1,opens:actualO,replies:actualR,openRate:N>0?actualO/N:0,replyRate:N>0?actualR/N:0,openTimes:pend2?pend2.openTimes.map(d=>d.toISOString()):[],openCounts:pend2?pend2.openCounts:[],avgOpenCount:pend2?pend2.avgOpenCount:0,maxOpenCount:pend2?pend2.maxOpenCount:0,subject:document.getElementById('f-subj').value.trim()||'（件名未入力）',listSource:document.getElementById('f-list').value.trim(),weekday:document.getElementById('f-day').value||'不明',hour:document.getElementById('f-hour').value||null,stage:parseInt(document.getElementById('f-stage').value)||1,appointments:ap,apptRateSent:N>0?ap/N:0,apptRateOpen:actualO>0?ap/actualO:0,apptFinalized:fin,bodyText:bt,bodyLength:bt.trim().length||null,memo:document.getElementById('f-memo').value||'',aiMemos:[],replyBreakdown:rb,abTestPair:'',addedAt:new Date().toISOString()});
-save();pend1=null;pend2=null;document.getElementById('metaForm').style.display='none';document.getElementById('step2area').style.display='none';document.getElementById('msg1').innerHTML='';document.getElementById('msg2').innerHTML='';document.getElementById('prev1').innerHTML='';document.getElementById('prev2').style.display='none';document.getElementById('dz1').classList.remove('loaded');document.getElementById('dz1').querySelector('.dz-main').textContent='① キャンペーンCSVをドロップ';document.getElementById('dz2').classList.remove('loaded');document.getElementById('dz2').querySelector('.dz-main').textContent='② Open RateのExcelをドロップ（任意）';['f-subj','f-appt','f-replies','f-body','f-memo','f-list','f-rApo','f-rDecline','f-rRemove'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});['f-day','f-hour'].forEach(id=>document.getElementById(id).value='');document.getElementById('f-stage').value='1';document.getElementById('f-finalized').checked=false;document.getElementById('f-body-count').textContent='';renderAll();}
+function syncLen(){const t=document.getElementById('f-body').value;document.getElementById('f-body-count').textContent=t.trim().length>0?t.trim().length+'文字':'';}
+function syncEditLen(){const t=document.getElementById('e-body').value;document.getElementById('e-body-count').textContent=t.trim().length>0?t.trim().length+'文字':'';}
+function confirmAdd(){if(!pend1)return;const ap=parseInt(document.getElementById('f-appt').value)||0;const mr=parseInt(document.getElementById('f-replies').value)||0;const fin=document.getElementById('f-finalized').checked;const bt=document.getElementById('f-body').value||'';const nn=pend1.recipients||1;const actualO=pend2?pend2.openers:pend1.opens;const actualR=mr>0?mr:pend1.replies;const unsub=parseInt(document.getElementById('f-unsub').value)||0;
+camps.push({...pend1,opens:actualO,replies:actualR,openRate:nn>0?actualO/nn:0,replyRate:nn>0?actualR/nn:0,openTimes:pend2?pend2.openTimes.map(d=>d.toISOString()):[],openCounts:pend2?pend2.openCounts:[],avgOpenCount:pend2?pend2.avgOpenCount:0,maxOpenCount:pend2?pend2.maxOpenCount:0,subject:document.getElementById('f-subj').value.trim()||'（件名未入力）',listSource:getLS('f'),weekday:document.getElementById('f-day').value||'不明',hour:document.getElementById('f-hour').value||null,stage:parseInt(document.getElementById('f-stage').value)||1,appointments:ap,apptRateSent:nn>0?ap/nn:0,apptRateOpen:actualO>0?ap/actualO:0,apptFinalized:fin,bodyText:bt,bodyLength:bt.trim().length||null,memo:document.getElementById('f-memo').value||'',aiMemos:[],replyBreakdown:getRB('f'),abTestPair:'',unsubscribes:unsub,addedAt:new Date().toISOString()});
+save();pend1=null;pend2=null;document.getElementById('metaForm').style.display='none';document.getElementById('step2area').style.display='none';['msg1','msg2','prev1'].forEach(id=>document.getElementById(id).innerHTML='');document.getElementById('prev2').style.display='none';document.getElementById('dz1').classList.remove('loaded');document.getElementById('dz1').querySelector('.dz-main').textContent='キャンペーンCSVをドロップ';document.getElementById('dz2').classList.remove('loaded');document.getElementById('dz2').querySelector('.dz-main').textContent='Open RateのExcelをドロップ（任意）';['f-subj','f-appt','f-replies','f-body','f-memo','f-area','f-portal','f-field','f-tags','f-rApo','f-rDecline','f-rMaybe','f-rStop','f-unsub'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=el.type==='number'?'0':'';});['f-day','f-hour','f-ads'].forEach(id=>document.getElementById(id).value='');document.getElementById('f-stage').value='1';document.getElementById('f-finalized').checked=false;document.getElementById('f-body-count').textContent='';renderAll();}
 
 // ══ EDIT ══
-function openEdit(i){editIdx=i;const c=camps[i];document.getElementById('e-subj').value=c.subject||'';document.getElementById('e-list').value=c.listSource||'';document.getElementById('e-day').value=c.weekday||'';document.getElementById('e-hour').value=c.hour||'';document.getElementById('e-stage').value=c.stage||1;document.getElementById('e-appt').value=c.appointments||0;document.getElementById('e-replies').value=c.replies||0;document.getElementById('e-finalized').checked=c.apptFinalized||false;document.getElementById('e-body').value=c.bodyText||'';document.getElementById('e-memo').value=c.memo||'';document.getElementById('e-aimemo').value='';
-const rb=c.replyBreakdown||{};document.getElementById('e-rApo').value=rb.apo||0;document.getElementById('e-rDecline').value=rb.decline||0;document.getElementById('e-rRemove').value=rb.remove||0;
-// A/Bテスト相手のドロップダウン
-const abSel=document.getElementById('e-ab');abSel.innerHTML='<option value="">なし</option>'+camps.map((cc,ci)=>ci!==i?`<option value="${ci}" ${c.abTestPair===cc.subject?'selected':''}>${shortS(cc.subject,20)}</option>`:'').join('');
+function openEdit(i){editIdx=i;const c=camps[i];document.getElementById('e-subj').value=c.subject||'';setLS('e',c.listSource);document.getElementById('e-day').value=c.weekday||'';document.getElementById('e-hour').value=c.hour||'';document.getElementById('e-stage').value=c.stage||1;document.getElementById('e-appt').value=c.appointments||0;document.getElementById('e-replies').value=c.replies||0;document.getElementById('e-unsub').value=c.unsubscribes||0;document.getElementById('e-finalized').checked=c.apptFinalized||false;document.getElementById('e-body').value=c.bodyText||'';document.getElementById('e-memo').value=c.memo||'';document.getElementById('e-aimemo').value='';setRB('e',c.replyBreakdown);
+const abSel=document.getElementById('e-ab');abSel.innerHTML='<option value="">なし</option>'+camps.map((cc,ci)=>ci!==i?`<option value="${ci}" ${c.abTestPair===cc.subject?'selected':''}>${SS(cc.subject,25)}</option>`:'').join('');
 const memos=c.aiMemos||[];const histEl=document.getElementById('e-aimemo-history');
-if(memos.length>0){const sorted=[...memos].map((m,oi)=>({...m,oi})).sort((a,b)=>new Date(b.date)-new Date(a.date));histEl.innerHTML=`<div style="font-size:10px;font-weight:700;color:var(--ink2);margin-top:8px">📌 過去のメモ（${memos.length}件）</div>`+sorted.map(m=>`<details style="background:var(--pink4);border:2px solid var(--border);border-radius:10px;margin-bottom:4px;overflow:hidden"><summary style="padding:7px 10px;cursor:pointer;font-size:10px;font-weight:700;color:var(--ink2);list-style:none;display:flex;justify-content:space-between"><span>${fmtDate(m.date)}</span><button onclick="event.preventDefault();event.stopPropagation();deleteMemo(${editIdx},${m.oi})" style="background:#fee2e2;border:none;border-radius:20px;padding:2px 7px;font-size:9px;color:#991b1b;cursor:pointer;font-weight:700">削除</button></summary><div style="padding:8px 10px;border-top:1px solid var(--border);font-size:10px;color:var(--ink2);line-height:1.8;white-space:pre-wrap">${esc(m.text)}</div></details>`).join('');}else histEl.innerHTML='';
-const bl=(c.bodyText||'').trim().length;document.getElementById('e-body-count').textContent=bl>0?`${bl}文字`:'';document.getElementById('updMsg').innerHTML='';updPend=null;document.getElementById('updZone').classList.remove('loaded');document.getElementById('editOverlay').classList.add('open');}
+histEl.innerHTML=memos.length?`<div style="font-size:10px;font-weight:700;color:var(--ink2);margin-top:8px">📌 メモ（${memos.length}件）</div>`+[...memos].map((m,oi)=>({...m,oi})).sort((a,b)=>new Date(b.date)-new Date(a.date)).map(m=>`<details style="background:var(--pink4);border:2px solid var(--border);border-radius:10px;margin-bottom:4px"><summary style="padding:6px 10px;cursor:pointer;font-size:10px;font-weight:700;color:var(--ink2);list-style:none;display:flex;justify-content:space-between"><span>${FD(m.date)}</span><button onclick="event.preventDefault();event.stopPropagation();deleteMemo(${editIdx},${m.oi})" style="background:#fee2e2;border:none;border-radius:20px;padding:2px 7px;font-size:9px;color:#991b1b;cursor:pointer;font-weight:700">削除</button></summary><div style="padding:8px 10px;border-top:1px solid var(--border);font-size:10px;line-height:1.8;white-space:pre-wrap">${E(m.text)}</div></details>`).join(''):'';
+syncEditLen();document.getElementById('updMsg').innerHTML='';updPend=null;document.getElementById('updZone').classList.remove('loaded');document.getElementById('editOverlay').classList.add('open');}
 function closeEdit(){document.getElementById('editOverlay').classList.remove('open');editIdx=-1;updPend=null;}
-function saveEdit(){if(editIdx<0)return;const c=camps[editIdx];const ap=parseInt(document.getElementById('e-appt').value)||0;const mr=parseInt(document.getElementById('e-replies').value)||0;const fin=document.getElementById('e-finalized').checked;const bt=document.getElementById('e-body').value||'';const mt=document.getElementById('e-aimemo').value.trim();const base=updPend||c;const N=base.recipients||1;const actualO=base.opens||0;const actualR=mr>0?mr:(base.replies||0);const memos=c.aiMemos||[];if(mt){const last=memos[memos.length-1];if(!last||last.text!==mt)memos.push({date:new Date().toISOString(),text:mt});}
-const rb={apo:parseInt(document.getElementById('e-rApo').value)||0,decline:parseInt(document.getElementById('e-rDecline').value)||0,remove:parseInt(document.getElementById('e-rRemove').value)||0};
+function saveEdit(){if(editIdx<0)return;const c=camps[editIdx];const ap=parseInt(document.getElementById('e-appt').value)||0;const mr=parseInt(document.getElementById('e-replies').value)||0;const fin=document.getElementById('e-finalized').checked;const bt=document.getElementById('e-body').value||'';const mt=document.getElementById('e-aimemo').value.trim();const base=updPend||c;const nn=base.recipients||1;const actualO=base.opens||0;const actualR=mr>0?mr:(base.replies||0);const memos=c.aiMemos||[];if(mt){const last=memos[memos.length-1];if(!last||last.text!==mt)memos.push({date:new Date().toISOString(),text:mt});}
 const abIdx=document.getElementById('e-ab').value;const abPair=abIdx!==''?camps[parseInt(abIdx)]?.subject||'':'';
-camps[editIdx]={...c,...(updPend||{}),opens:actualO,openRate:N>0?actualO/N:0,weekday:document.getElementById('e-day').value||c.weekday,hour:document.getElementById('e-hour').value||c.hour,stage:parseInt(document.getElementById('e-stage').value)||c.stage||1,appointments:ap,replies:actualR,replyRate:N>0?actualR/N:0,bodyText:bt,bodyLength:bt.trim().length||null,apptRateSent:N>0?ap/N:0,apptRateOpen:actualO>0?ap/actualO:0,apptFinalized:fin,aiMemos:memos,memo:document.getElementById('e-memo').value||'',listSource:document.getElementById('e-list').value.trim(),replyBreakdown:rb,abTestPair:abPair};save();closeEdit();renderAll();}
-function delCamp(i){if(!confirm('「'+(camps[i].subject||'')+'」を削除する？'))return;camps.splice(i,1);save();renderAll();}
+const unsub=parseInt(document.getElementById('e-unsub').value)||0;
+camps[editIdx]={...c,...(updPend||{}),opens:actualO,openRate:nn>0?actualO/nn:0,weekday:document.getElementById('e-day').value||c.weekday,hour:document.getElementById('e-hour').value||c.hour,stage:parseInt(document.getElementById('e-stage').value)||c.stage||1,appointments:ap,replies:actualR,replyRate:nn>0?actualR/nn:0,bodyText:bt,bodyLength:bt.trim().length||null,apptRateSent:nn>0?ap/nn:0,apptRateOpen:actualO>0?ap/actualO:0,apptFinalized:fin,aiMemos:memos,memo:document.getElementById('e-memo').value||'',listSource:getLS('e'),replyBreakdown:getRB('e'),abTestPair:abPair,unsubscribes:unsub};save();closeEdit();renderAll();}
+function delCamp(i){if(!confirm('「'+SS(camps[i].subject,20)+'」を削除する？'))return;camps.splice(i,1);save();renderAll();}
 function deleteMemo(ci,mi){if(!confirm('削除する？'))return;camps[ci].aiMemos.splice(mi,1);save();openEdit(ci);}
 
 // ══ SHARE ══
-function openShare(){document.getElementById('shareUrlArea').style.display='none';document.getElementById('analysisMsg').innerHTML='';document.getElementById('importMsg').innerHTML='';document.getElementById('importUrlIn').value='';const el=document.getElementById('campCheckList');el.innerHTML=camps.length?camps.map((c,i)=>`<label style="display:flex;align-items:center;gap:8px;padding:5px 4px;cursor:pointer;border-radius:6px;font-size:11px;color:var(--ink2)"><input type="checkbox" id="chk_${i}" ${c.bodyText?'':'disabled'} style="width:14px;height:14px"><span>${esc(c.subject)}${c.bodyText?' <span style="color:var(--mint);font-size:9px">📝本文あり</span>':''}</span></label>`).join(''):'<div style="color:var(--ink3);font-size:11px;text-align:center;padding:8px">なし</div>';document.getElementById('shareOverlay').classList.add('open');}
-function copyAnalysisText(){const m=document.getElementById('analysisMsg');const stats=camps.map((c,i)=>`キャンペーン${i+1}: 件名「${c.subject}」 リスト元:${c.listSource||'不明'} ${c.stage||1}通目 送信${c.recipients}件 開封率${pct(c.openRate)} クリック率${pct(c.clickRate||0)} 返信率${pct(c.replyRate)} アポ${c.appointments||0}件 配信停止${c.unsubscribes||0}件 バウンス率${pct(c.bounceRate)} 曜日:${c.weekday||'?'}曜${c.hour?c.hour+'時':''} 文字数:${c.bodyLength||'不明'}字`).join('\n');const sel=camps.filter((c,i)=>{const ck=document.getElementById(`chk_${i}`);return ck&&ck.checked&&c.bodyText;});const bodies=sel.length>0?'\n\n=== 本文 ===\n'+sel.map(c=>`【${c.subject}】\n${c.bodyText}`).join('\n---\n'):'';const txt=`=== GMass営業メール統計 ===\n${stats}${bodies}\n\nキャンペーン全体を分析して、アポ率向上のアドバイスをください。`;navigator.clipboard.writeText(txt).then(()=>{m.innerHTML='<div class="msg-ok">✓ コピーしたよ♡</div>';});}
+function openShare(){document.getElementById('shareUrlArea').style.display='none';document.getElementById('analysisMsg').innerHTML='';document.getElementById('importMsg').innerHTML='';document.getElementById('importUrlIn').value='';const el=document.getElementById('campCheckList');el.innerHTML=camps.length?camps.map((c,i)=>`<label style="display:flex;align-items:center;gap:8px;padding:4px;cursor:pointer;font-size:11px"><input type="checkbox" id="chk_${i}" ${c.bodyText?'':'disabled'} style="width:14px;height:14px"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${E(c.subject)}</span></label>`).join(''):'<div style="color:var(--ink3);text-align:center;padding:8px;font-size:11px">なし</div>';document.getElementById('shareOverlay').classList.add('open');}
+function copyAnalysisText(){const m=document.getElementById('analysisMsg');const stats=camps.map((c,i)=>{const tags=buildTags(c).join(', ');return`キャンペーン${i+1}: 件名「${c.subject}」 リスト元:${tags||'不明'} ${c.stage||1}通目 送信${c.recipients}件 開封率${P(c.openRate)} クリック率${P(c.clickRate||0)} 配信停止${c.unsubscribes||0}件 返信率${P(c.replyRate)} アポ${c.appointments||0}件 バウンス率${P(c.bounceRate)} ${c.weekday||'?'}曜${c.hour?c.hour+'時':''} ${c.bodyLength||'不明'}字`;}).join('\n');const sel=camps.filter((c,i)=>{const ck=document.getElementById(`chk_${i}`);return ck&&ck.checked&&c.bodyText;});const bodies=sel.length?'\n\n=== 本文 ===\n'+sel.map(c=>`【${c.subject}】\n${c.bodyText}`).join('\n---\n'):'';navigator.clipboard.writeText(`=== GMass営業メール統計 ===\n${stats}${bodies}\n\n分析してアポ率向上のアドバイスをください。`).then(()=>{m.innerHTML='<div class="msg-ok">✓ コピーしたよ♡</div>';});}
 function closeShare(){document.getElementById('shareOverlay').classList.remove('open');}
-function genShareUrl(){try{const d=camps.map(({openTimes,openCounts,bodyText,...r})=>r);const url=location.origin+location.pathname+'#data='+btoa(encodeURIComponent(JSON.stringify(d)));document.getElementById('shareUrlBox').textContent=url;document.getElementById('shareUrlArea').style.display='block';}catch(e){}}
-function copyShareUrl(){navigator.clipboard.writeText(document.getElementById('shareUrlBox').textContent).then(()=>{document.getElementById('shareUrlMsg').innerHTML='<div class="msg-ok">✓ コピーしたよ♡</div>';});}
-function importFromUrl(){const input=document.getElementById('importUrlIn').value.trim();const m=document.getElementById('importMsg');try{let enc=input.includes('#data=')?input.split('#data=')[1]:input;const j=decodeURIComponent(atob(enc));const l=JSON.parse(j);if(!Array.isArray(l))throw new Error('形式エラー');camps=l;save();closeShare();renderAll();}catch(e){m.innerHTML=`<div class="msg-err">エラー: ${e.message}</div>`;}}
-
-// ══ CSV EXPORT ══
-function exportCSV(){if(!camps.length)return;const h=['件名','リスト元','通目','送信数','開封数','開封率','クリック数','クリック率','配信停止','返信数','返信率','バウンス数','バウンス率','アポ数','アポ率(送信)','返信→アポ','返信→お断り','返信→不要','曜日','時間','文字数','状態','メモ'];const rows=camps.map(c=>{const rb=c.replyBreakdown||{};return[c.subject,c.listSource||'',c.stage||1,c.recipients,c.opens,pct(c.openRate),c.clicks||0,pct(c.clickRate||0),c.unsubscribes||0,c.replies,pct(c.replyRate),c.bounces,pct(c.bounceRate),c.appointments||0,pct(c.apptRateSent),rb.apo||0,rb.decline||0,rb.remove||0,(c.weekday||'')+'曜',c.hour?c.hour+'時':'',c.bodyLength||'',c.apptFinalized?'完了':'未確定',c.memo||''];});const bom='\uFEFF';const csv=bom+[h,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='gmass_'+new Date().toISOString().split('T')[0]+'.csv';a.click();}
+function genShareUrl(){try{const d=camps.map(({openTimes,openCounts,bodyText,...r})=>r);document.getElementById('shareUrlBox').textContent=location.origin+location.pathname+'#data='+btoa(encodeURIComponent(JSON.stringify(d)));document.getElementById('shareUrlArea').style.display='block';}catch(e){}}
+function copyShareUrl(){navigator.clipboard.writeText(document.getElementById('shareUrlBox').textContent).then(()=>{document.getElementById('shareUrlMsg').innerHTML='<div class="msg-ok">✓ コピー♡</div>';});}
+function importFromUrl(){const input=document.getElementById('importUrlIn').value.trim();const m=document.getElementById('importMsg');try{let enc=input.includes('#data=')?input.split('#data=')[1]:input;camps=JSON.parse(decodeURIComponent(atob(enc)));save();closeShare();renderAll();}catch(e){m.innerHTML=`<div class="msg-err">エラー: ${e.message}</div>`;}}
+function exportCSV(){if(!camps.length)return;const h=['件名','リスト元','通目','送信','開封','開封率','クリック','クリック率','配信停止','返信','返信率','バウンス','バウンス率','アポ','アポ率','返信→アポ','返信→お断り','返信→検討中','返信→配信停止','曜日','時間','文字数','状態','メモ'];const rows=camps.map(c=>{const rb=c.replyBreakdown||{};const tags=buildTags(c).join(', ');return[c.subject,tags,c.stage||1,c.recipients,c.opens,P(c.openRate),c.clicks||0,P(c.clickRate||0),c.unsubscribes||0,c.replies,P(c.replyRate),c.bounces,P(c.bounceRate),c.appointments||0,P(c.apptRateSent),rb.apo||0,rb.decline||0,rb.maybe||0,rb.stop||0,(c.weekday||'')+'曜',c.hour?c.hour+'時':'',c.bodyLength||'',c.apptFinalized?'完了':'未確定',c.memo||''];});const csv='\uFEFF'+[h,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='gmass_'+new Date().toISOString().split('T')[0]+'.csv';a.click();}
 
 // ══ TABLE SORT ══
 function sortTable(col){if(sortCol===col)sortAsc=!sortAsc;else{sortCol=col;sortAsc=col==='subject';}renderAll();}
 function getSorted(){if(!sortCol)return camps.map((c,i)=>({...c,_i:i}));const a=camps.map((c,i)=>({...c,_i:i}));a.sort((x,y)=>{let va=x[sortCol],vb=y[sortCol];if(typeof va==='string')va=va.toLowerCase();if(typeof vb==='string')vb=vb.toLowerCase();if(va==null)va=sortAsc?Infinity:-Infinity;if(vb==null)vb=sortAsc?Infinity:-Infinity;return va<vb?(sortAsc?-1:1):va>vb?(sortAsc?1:-1):0;});return a;}
 function sa(col){return sortCol===col?`<span class="sa">${sortAsc?'▲':'▼'}</span>`:'<span class="sa">⇅</span>';}
 
-// ══ ANALYSIS REPORT GENERATION ══
-function genReport(i){const c=camps[i];const N=c.recipients||1;const bounceOk=N-c.bounces;const deliveryRate=N>0?bounceOk/N:0;const rb=c.replyBreakdown||{};const r2a=(c.replies||0)>0?(c.appointments||0)/c.replies:0;
-const allAvgOpen=avg(camps.map(x=>x.openRate||0));const allAvgReply=avg(camps.map(x=>x.replyRate||0));const allAvgBounce=avg(camps.map(x=>x.bounceRate||0));
-const cmpOpen=c.openRate>allAvgOpen*1.1?'全体平均より高い✓':c.openRate<allAvgOpen*0.9?'全体平均より低い→件名改善を検討':'全体平均と同等';
-const cmpReply=c.replyRate>allAvgReply*1.1?'全体平均より高い✓':c.replyRate<allAvgReply*0.9?'全体平均より低い→本文・CTAの改善を検討':'全体平均と同等';
-
-let report=`【基本情報】
+// ══ REPORT ══
+function genReport(i){const c=camps[i];const nn=c.recipients||1;const deliveryRate=nn>0?(nn-c.bounces)/nn:0;const rb=c.replyBreakdown||{};const tags=buildTags(c).join(', ');const allAvgOpen=A(camps.map(x=>x.openRate||0));const allAvgReply=A(camps.map(x=>x.replyRate||0));
+return`【基本情報】
 件名：${c.subject}
-送信先：${c.listSource||'未設定'}
+送信先：${tags||'未設定'}
 送信日時：${c.weekday||'?'}曜 ${c.hour?c.hour+'時':'不明'}
 シーケンス：${c.stage||1}通目
 本文文字数：${c.bodyLength||'不明'}字
 
 【結果】
-送信数：${num(c.recipients)}
-開封数：${c.opens}（開封率 ${pct(c.openRate)}）
-クリック数：${c.clicks||0}（クリック率 ${pct(c.clickRate||0)}）
+送信数：${N(c.recipients)}
+開封：${c.opens}（${P(c.openRate)}）
+クリック：${c.clicks||0}（${P(c.clickRate||0)}）
 配信停止：${c.unsubscribes||0}件
-返信数：${c.replies||0}（返信率 ${pct(c.replyRate)}）
-バウンス数：${c.bounces}（バウンス率 ${pct(c.bounceRate)}）
-アポ数：${c.appointments||0}
+返信：${c.replies||0}（${P(c.replyRate)}）
+バウンス：${c.bounces}（${P(c.bounceRate)}）
+アポ：${c.appointments||0}
+
+【返信の内訳】
+アポ：${rb.apo||0}件 / お断り：${rb.decline||0}件 / 検討中：${rb.maybe||0}件 / 配信停止：${rb.stop||0}件
 
 【分析】
-◎送信完了率とエラー率
-送信完了率 ${pct(deliveryRate)}（バウンス ${c.bounces}件）
-${(c.bounceRate||0)>0.05?'⚠️ バウンス率5%超！リストのクリーニングが必要。':'✓ バウンス率は許容範囲内。リストはまだ使える。'}
+◎送信完了率
+${P(deliveryRate)}（バウンス${c.bounces}件）
+${(c.bounceRate||0)>0.05?'⚠️ バウンス率5%超！リストクリーニング必要。':'✓ 許容範囲内。'}
 
 ◎クリック率
-${(c.clicks||0)>0?`クリック ${c.clicks}件（${pct(c.clickRate||0)}）`:'クリック 0件'}
-${(c.unsubscribes||0)>0?`⚠️ 配信停止が${c.unsubscribes}件 → URLなしの場合、クリック≒配信停止の可能性あり`:''}
-${(c.clicks||0)===0?'URLを設置していない場合はクリック数=配信停止数の可能性。':''}
+${(c.clicks||0)>0?`${c.clicks}件（${P(c.clickRate||0)}）`:'0件'}
+${(c.unsubscribes||0)>0?`⚠️ 配信停止${c.unsubscribes}件 → URLなしの場合クリック≒配信停止の可能性`:''}
 
 ◎オープン率
-開封率 ${pct(c.openRate)}（${cmpOpen}）
-${c.openRate<0.2?'→ 件名の改善が最優先。パーソナライズ（{name}等）を検討。':c.openRate<0.35?'→ まずまず。件名のA/Bテストでさらに改善できるかも。':'→ 良好！この件名パターンは効果的。'}
+${P(c.openRate)}（全体平均${P(allAvgOpen)}と比較: ${c.openRate>allAvgOpen*1.1?'高い✓':c.openRate<allAvgOpen*0.9?'低い→件名改善':'同等'}）
+${c.openRate<0.2?'→ 件名の改善が最優先':c.openRate<0.35?'→ A/Bテストでさらに改善可能':'→ 良好！'}
 
 ◎返信率
-返信率 ${pct(c.replyRate)}（${cmpReply}）
-${rb.apo||rb.decline||rb.remove?`内訳：アポ${rb.apo||0}件 / お断り${rb.decline||0}件 / 不要${rb.remove||0}件`:'（返信の内訳は未入力）'}
-${r2a>0?`返信→アポ転換率：${pct(r2a)}`:''}
+${P(c.replyRate)}（全体平均${P(allAvgReply)}と比較: ${c.replyRate>allAvgReply*1.1?'高い✓':c.replyRate<allAvgReply*0.9?'低い→本文改善':'同等'}）
 
 ◎アポ率
-送信比アポ率 ${pct(c.apptRateSent)}（${c.appointments||0}件 / ${c.recipients}件送信）
-${(c.appointments||0)===0?'→ アポ0件。本文のCTA（行動喚起）を見直し、日程提示等を検討。':c.apptRateSent<0.005?'→ コストゼロでのアポとしては健闘。本文の作り込みでさらに改善を。':'→ 良い数字！このアプローチを他のリストでも試してみよう。'}
+送信比${P(c.apptRateSent)}（${c.appointments||0}件/${c.recipients}件）
+${(c.appointments||0)===0?'→ 本文のCTAを見直し。日程提示を検討。':c.apptRateSent<0.005?'→ コストゼロでのアポとしては健闘。':'→ 良い数字！'}
 
 【次回改善したいところ】
-${c.openRate<0.3?'・件名：もっと開封率を上げられるものに（パーソナライズ、具体的数字、緊急性）\n':''}${(c.clicks||0)===0&&(c.unsubscribes||0)>0?'・クリック：URLを設置するかどうか検討（現在は配信停止がクリックに含まれている可能性）\n':''}${(c.appointments||0)===0?'・アポを取りに行く内容に（日程候補の提示、具体的なオファー）\n':''}${c.replyRate<0.02?'・返信率を上げる工夫（質問形式、選択肢の提示）\n':''}${(c.bounceRate||0)>0.05?'・リストのクリーニング（バウンス率が高い）\n':''}`;
-return report;}
+${c.openRate<0.3?'・件名改善（パーソナライズ、具体的数字）\n':''}${(c.unsubscribes||0)>2?'・配信停止が多い→内容やリストの見直し\n':''}${(c.appointments||0)===0?'・アポを取りに行く内容に（日程候補提示）\n':''}${(c.bounceRate||0)>0.05?'・リストクリーニング\n':''}
 
+${c.memo?`【メモ】\n${c.memo}`:''}`;
+}
 function showReport(i){document.getElementById('reportContent').textContent=genReport(i);document.getElementById('reportOverlay').classList.add('open');}
-function copyReport(){navigator.clipboard.writeText(document.getElementById('reportContent').textContent).then(()=>{alert('コピーしました！');});}
+function copyReport(){navigator.clipboard.writeText(document.getElementById('reportContent').textContent).then(()=>alert('コピーしました'));}
 
 // ══ RENDER ══
 function renderAll(){renderHeader();renderSidebar();renderContent();}
-function renderHeader(){document.getElementById('h-n').textContent=camps.length;if(!camps.length){['h-open','h-click','h-a1','h-a2'].forEach(id=>document.getElementById(id).textContent='—');return;}document.getElementById('h-open').textContent=pct(avg(camps.map(c=>c.openRate||0)));document.getElementById('h-click').textContent=pct(avg(camps.map(c=>c.clickRate||0)));document.getElementById('h-a1').textContent=pct(avg(camps.map(c=>c.apptRateSent||0)));const ho=camps.filter(c=>(c.opens||0)>0);document.getElementById('h-a2').textContent=ho.length?pct(avg(ho.map(c=>c.apptRateOpen||0))):'—';}
+function renderHeader(){document.getElementById('h-n').textContent=camps.length;if(!camps.length){['h-open','h-click','h-a1','h-a2'].forEach(id=>document.getElementById(id).textContent='—');return;}document.getElementById('h-open').textContent=P(A(camps.map(c=>c.openRate||0)));document.getElementById('h-click').textContent=P(A(camps.map(c=>c.clickRate||0)));document.getElementById('h-a1').textContent=P(A(camps.map(c=>c.apptRateSent||0)));const ho=camps.filter(c=>(c.opens||0)>0);document.getElementById('h-a2').textContent=ho.length?P(A(ho.map(c=>c.apptRateOpen||0))):'—';}
+
 function renderSidebar(){document.getElementById('cnt').textContent=camps.length;const el=document.getElementById('campList');if(!camps.length){el.innerHTML='<div style="color:var(--ink3);font-size:12px;text-align:center;padding:12px 0">まだないよ〜！</div>';return;}
-el.innerHTML=camps.map((c,i)=>`<div class="camp"><div class="camp-top"><div class="camp-subj"><span class="badge ${c.apptFinalized?'bd':'bp'}">${c.apptFinalized?'完了✓':'未確定'}</span>${c.stage>1?`<span class="badge bstage">${c.stage}通目</span>`:''}${esc(c.subject)}</div><div class="camp-acts"><button class="icon-btn" onclick="showReport(${i})" title="分析レポート">📊</button><button class="icon-btn" onclick="openEdit(${i})" title="編集">✏️</button><button class="icon-btn del" onclick="delCamp(${i})" title="削除">🗑️</button></div></div><div class="camp-stats"><div><div class="cs-v cp">${pct(c.openRate)}</div><div class="cs-l">開封率</div></div><div><div class="cs-v cg">${pct(c.apptRateSent)}</div><div class="cs-l">アポ/送信</div></div></div><div class="camp-meta">${c.listSource?`<span class="seg-tag">${esc(c.listSource)}</span>`:''}📅 ${c.weekday||'?'}曜 ${c.hour?c.hour+'時':''} · 送信${num(c.recipients)}件 · アポ${c.appointments||0}件</div>${c.memo?`<div style="font-size:10px;color:var(--ink2);margin-top:4px;padding:4px 6px;background:var(--pink4);border-radius:6px;line-height:1.5">📌 ${esc(shortS(c.memo,40))}</div>`:''}</div>`).join('');}
+const SHOW=3;const items=camps.map((c,i)=>`<div class="camp"><div class="camp-top"><div class="camp-subj" title="${E(c.subject)}">${c.stage>1?`<span class="badge bstage">${c.stage}通目</span>`:''}${E(c.subject)}</div><div class="camp-acts"><button class="icon-btn" onclick="showReport(${i})">📊</button><button class="icon-btn" onclick="openEdit(${i})">✏️</button><button class="icon-btn del" onclick="delCamp(${i})">🗑️</button></div></div><div class="camp-stats"><div><div class="cs-v cp">${P(c.openRate)}</div><div class="cs-l">開封率</div></div><div><div class="cs-v cg">${P(c.apptRateSent)}</div><div class="cs-l">アポ/送信</div></div></div><div class="camp-meta">${tagsHtml(c)}${c.weekday||'?'}曜${c.hour?c.hour+'時':''} · ${N(c.recipients)}件 · アポ${c.appointments||0}</div></div>`);
+if(items.length<=SHOW){el.innerHTML=items.join('');}else{el.innerHTML=items.slice(0,SHOW).join('')+`<div id="campFolded" style="display:none">${items.slice(SHOW).join('')}</div><button class="fold-toggle" id="campFoldBtn" onclick="toggleCampFold()">▼ 残り${items.length-SHOW}件を表示</button>`;}
+}
+function toggleCampFold(){const f=document.getElementById('campFolded'),b=document.getElementById('campFoldBtn');if(f.style.display==='none'){f.style.display='block';b.textContent='▲ 折りたたむ';}else{f.style.display='none';b.textContent=`▼ 残り${camps.length-3}件を表示`;}}
 
 function renderContent(){const el=document.getElementById('content');const emptyEl=document.getElementById('emptyState');const old=document.getElementById('dashContent');if(old)old.remove();if(!camps.length){emptyEl.style.display='flex';return;}emptyEl.style.display='none';const w=document.createElement('div');w.id='dashContent';el.appendChild(w);
-const n=camps.length,totalAppt=sum(camps.map(c=>c.appointments||0));const avgOpen=avg(camps.map(c=>c.openRate||0)),avgClick=avg(camps.map(c=>c.clickRate||0)),avgReply=avg(camps.map(c=>c.replyRate||0));const avgA1=avg(camps.map(c=>c.apptRateSent||0));const ho=camps.filter(c=>(c.opens||0)>0);const avgA2=ho.length?avg(ho.map(c=>c.apptRateOpen||0)):0;const avgBounce=avg(camps.map(c=>c.bounceRate||0));const pending=camps.filter(c=>!c.apptFinalized).length;
-// バウンスアラート
-const highB=camps.filter(c=>(c.bounceRate||0)>0.05);let ba='';if(highB.length)ba=`<div class="alert-bounce">⚠️ <strong>バウンス率が高いキャンペーン：</strong>${highB.map(c=>`「${shortS(c.subject)}」(${pct(c.bounceRate)})`).join('、')}<br>💡 リストクリーニングを検討してね。</div>`;
+const n=camps.length,totalAppt=S(camps.map(c=>c.appointments||0));const avgOpen=A(camps.map(c=>c.openRate||0)),avgClick=A(camps.map(c=>c.clickRate||0)),avgReply=A(camps.map(c=>c.replyRate||0));const avgA1=A(camps.map(c=>c.apptRateSent||0));const ho=camps.filter(c=>(c.opens||0)>0);const avgA2=ho.length?A(ho.map(c=>c.apptRateOpen||0)):0;const avgBounce=A(camps.map(c=>c.bounceRate||0));const pending=camps.filter(c=>!c.apptFinalized).length;
+const highB=camps.filter(c=>(c.bounceRate||0)>0.05);let ba='';if(highB.length)ba=`<div class="alert-bounce">⚠️ <strong>バウンス率高：</strong>${highB.map(c=>`「${SS(c.subject,12)}」(${P(c.bounceRate)})`).join('、')}</div>`;
 
-// セグメント別分析
-const segs={};camps.forEach(c=>{const s=c.listSource||'未設定';if(!segs[s])segs[s]={opens:[],appts:[],n:0};segs[s].opens.push(c.openRate||0);segs[s].appts.push(c.apptRateSent||0);segs[s].n++;});
-const segHtml=Object.keys(segs).length>1?Object.entries(segs).map(([k,v])=>`<div class="bar-r"><div class="bar-l">${esc(shortS(k,10))}<br><span style="font-size:9px;color:var(--ink3)">${v.n}件</span></div><div style="flex:1;display:flex;flex-direction:column;gap:2px"><div class="bar-t" style="height:14px"><div class="bar-f bf-p" style="width:${Math.round((avg(v.opens)/Math.max(avg(v.opens),0.001))*100)}%;font-size:9px;min-width:30px">開封${pct(avg(v.opens))}</div></div><div class="bar-t" style="height:14px"><div class="bar-f bf-g" style="width:${Math.max(Math.round(avg(v.appts)*1000),5)}%;font-size:9px;min-width:30px">アポ${pct(avg(v.appts))}</div></div></div></div>`).join(''):'<div style="color:var(--ink3);font-size:11px;text-align:center;padding:10px">リスト元を2種類以上登録すると比較できるよ！</div>';
+// セグメント別
+const segs={};camps.forEach(c=>{buildTags(c).forEach(t=>{if(!segs[t])segs[t]={opens:[],appts:[],n:0};segs[t].opens.push(c.openRate||0);segs[t].appts.push(c.apptRateSent||0);segs[t].n++;});});
+const segEntries=Object.entries(segs).sort((a,b)=>b[1].n-a[1].n).slice(0,6);
+const segMax=Math.max(...segEntries.map(([,v])=>A(v.opens)),0.001);
+const segHtml=segEntries.length>1?segEntries.map(([k,v])=>`<div class="bar-r"><div class="bar-l">${E(SS(k,8))}<br><span style="font-size:9px;color:var(--ink3)">${v.n}件</span></div><div style="flex:1"><div class="bar-t" style="height:15px"><div class="bar-f bf-p" style="width:${Math.round((A(v.opens)/segMax)*100)}%;font-size:9px;min-width:30px">開封${P(A(v.opens))}</div></div><div class="bar-t" style="height:15px;margin-top:2px"><div class="bar-f bf-g" style="width:${Math.max(Math.round(A(v.appts)*2000),3)}%;font-size:9px;min-width:30px">アポ${P(A(v.appts))}</div></div></div></div>`).join(''):'<div style="color:var(--ink3);font-size:11px;text-align:center;padding:10px">リスト元を入力すると比較できるよ！</div>';
 
-// A/Bテスト比較
-const abPairs=[];camps.forEach((c,i)=>{if(c.abTestPair){const j=camps.findIndex(x=>x.subject===c.abTestPair);if(j>=0&&j>i)abPairs.push([i,j]);}});
-let abHtml='';if(abPairs.length>0){abHtml=abPairs.map(([a,b])=>{const ca=camps[a],cb=camps[b];return`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px"><div style="background:var(--pink4);border-radius:10px;padding:8px;font-size:11px"><strong>A:</strong> ${esc(shortS(ca.subject,20))}<br>開封${pct(ca.openRate)} 返信${pct(ca.replyRate)} アポ${ca.appointments||0}</div><div style="background:#f0e8ff;border-radius:10px;padding:8px;font-size:11px"><strong>B:</strong> ${esc(shortS(cb.subject,20))}<br>開封${pct(cb.openRate)} 返信${pct(cb.replyRate)} アポ${cb.appointments||0}</div></div>`;}).join('');}
-
-// 送信時間×開封率（ヒートマップ代替）
+// 送信時間×開封率
 const hourData={};camps.forEach(c=>{const h=parseInt(c.hour);if(!isNaN(h)){if(!hourData[h])hourData[h]={opens:[],n:0};hourData[h].opens.push(c.openRate||0);hourData[h].n++;}});
-const hourEntries=Object.entries(hourData).sort((a,b)=>parseInt(a[0])-parseInt(b[0]));const maxHourOpen=Math.max(...hourEntries.map(([,v])=>avg(v.opens)),0.001);
-const sendTimeHtml=hourEntries.length>0?hourEntries.map(([h,v])=>{const ao=avg(v.opens),w=Math.round((ao/maxHourOpen)*100);return`<div class="bar-r"><div class="bar-l">${h}時<br><span style="font-size:9px;color:var(--ink3)">${v.n}件</span></div><div class="bar-t"><div class="bar-f bf-p" style="width:${w}%">${pct(ao)}</div></div></div>`;}).join(''):'<div style="color:var(--ink3);font-size:11px;text-align:center;padding:10px">送信時間を設定すると表示されるよ！</div>';
+const hourEntries=Object.entries(hourData).sort((a,b)=>parseInt(a[0])-parseInt(b[0]));const maxHO=Math.max(...hourEntries.map(([,v])=>A(v.opens)),0.001);
+const sendTimeHtml=hourEntries.length?hourEntries.map(([h,v])=>`<div class="bar-r"><div class="bar-l">${h}時(${v.n}件)</div><div class="bar-t"><div class="bar-f bf-p" style="width:${Math.round((A(v.opens)/maxHO)*100)}%">${P(A(v.opens))}</div></div></div>`).join(''):'<div style="color:var(--ink3);font-size:11px;text-align:center;padding:10px">送信時間を設定してね</div>';
 
-// 時間帯別開封分布（コンパクト版）
-const timeGrps={'早朝(6-8時)':0,'午前(9-11時)':0,'昼(12-14時)':0,'午後(15-17時)':0,'夕方(18-20時)':0,'夜(21時〜)':0};let timeTotal=0;
-camps.forEach(c=>(c.openTimes||[]).forEach(t=>{try{const h=new Date(t).getHours();if(h>=6&&h<=8)timeGrps['早朝(6-8時)']++;else if(h>=9&&h<=11)timeGrps['午前(9-11時)']++;else if(h>=12&&h<=14)timeGrps['昼(12-14時)']++;else if(h>=15&&h<=17)timeGrps['午後(15-17時)']++;else if(h>=18&&h<=20)timeGrps['夕方(18-20時)']++;else timeGrps['夜(21時〜)']++;timeTotal++;}catch(e){}}));
-const timeMax=Math.max(...Object.values(timeGrps),1);
-const timeHtml=timeTotal>0?Object.entries(timeGrps).filter(([,v])=>v>0).map(([k,v])=>`<div class="bar-r"><div class="bar-l">${k}</div><div class="bar-t"><div class="bar-f bf-pu" style="width:${Math.round((v/timeMax)*100)}%">${v}件(${pct(v/timeTotal)})</div></div></div>`).join(''):'<div style="color:var(--ink3);font-size:11px;text-align:center;padding:10px">Open Rateデータがあると表示されるよ！</div>';
+// 時間帯別開封（コンパクト）
+const tg={'早朝(6-8時)':0,'午前(9-11時)':0,'昼(12-14時)':0,'午後(15-17時)':0,'夕方(18-20時)':0,'夜(21時〜)':0};let tt=0;
+camps.forEach(c=>(c.openTimes||[]).forEach(t=>{try{const h=new Date(t).getHours();if(h>=6&&h<=8)tg['早朝(6-8時)']++;else if(h<=11)tg['午前(9-11時)']++;else if(h<=14)tg['昼(12-14時)']++;else if(h<=17)tg['午後(15-17時)']++;else if(h<=20)tg['夕方(18-20時)']++;else tg['夜(21時〜)']++;tt++;}catch(e){}}));
+const tMax=Math.max(...Object.values(tg),1);
+const timeHtml=tt>0?Object.entries(tg).filter(([,v])=>v>0).map(([k,v])=>`<div class="bar-r"><div class="bar-l">${k}</div><div class="bar-t"><div class="bar-f bf-pu" style="width:${Math.round((v/tMax)*100)}%">${v}件(${P(v/tt)})</div></div></div>`).join(''):'<div style="color:var(--ink3);font-size:11px;text-align:center;padding:10px">Open Rateデータが必要</div>';
 
 // 返信分類
-const allRb=camps.filter(c=>c.replyBreakdown&&(c.replyBreakdown.apo||c.replyBreakdown.decline||c.replyBreakdown.remove));let replyClassHtml='';
-if(allRb.length){const tA=sum(allRb.map(c=>c.replyBreakdown.apo||0)),tD=sum(allRb.map(c=>c.replyBreakdown.decline||0)),tR=sum(allRb.map(c=>c.replyBreakdown.remove||0)),tAll=tA+tD+tR;
-replyClassHtml=`<div style="display:flex;gap:12px;align-items:center"><div style="flex:1"><div style="margin-bottom:4px;display:flex;justify-content:space-between;font-size:11px"><span style="color:#16a34a;font-weight:700">✓ アポ</span><strong>${tA}件(${pct(tAll>0?tA/tAll:0)})</strong></div><div class="bar-t" style="height:14px"><div class="bar-f bf-gn" style="width:${tAll>0?Math.round(tA/tAll*100):0}%;min-width:20px">${tA}</div></div><div style="margin:4px 0;display:flex;justify-content:space-between;font-size:11px"><span style="color:#d97706;font-weight:700">△ お断り</span><strong>${tD}件</strong></div><div class="bar-t" style="height:14px"><div class="bar-f bf-g" style="width:${tAll>0?Math.round(tD/tAll*100):0}%;min-width:20px">${tD}</div></div><div style="margin-top:4px;display:flex;justify-content:space-between;font-size:11px"><span style="color:#dc2626;font-weight:700">✕ 不要</span><strong>${tR}件</strong></div><div class="bar-t" style="height:14px"><div class="bar-f bf-c" style="width:${tAll>0?Math.round(tR/tAll*100):0}%;min-width:20px">${tR}</div></div></div></div>`;}else{replyClassHtml='<div style="color:var(--ink3);font-size:11px;text-align:center;padding:10px">✏️で返信の内訳を入力すると表示されるよ！</div>';}
+const allRb=camps.filter(c=>c.replyBreakdown&&(c.replyBreakdown.apo||c.replyBreakdown.decline||c.replyBreakdown.maybe||c.replyBreakdown.stop));
+let rcHtml='';if(allRb.length){const tA=S(allRb.map(c=>c.replyBreakdown.apo||0)),tD=S(allRb.map(c=>c.replyBreakdown.decline||0)),tM=S(allRb.map(c=>c.replyBreakdown.maybe||0)),tS=S(allRb.map(c=>c.replyBreakdown.stop||0)),tAll=tA+tD+tM+tS||1;
+rcHtml=[{l:'✓ アポ',v:tA,cls:'bf-gn',c:'#16a34a'},{l:'✕ お断り',v:tD,cls:'bf-g',c:'#d97706'},{l:'△ 検討中',v:tM,cls:'bf-bl',c:'#2563eb'},{l:'🚫 配信停止',v:tS,cls:'bf-c',c:'#dc2626'}].map(x=>`<div style="margin-bottom:4px"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px"><span style="color:${x.c};font-weight:700">${x.l}</span><strong>${x.v}件(${P(x.v/tAll)})</strong></div><div class="bar-t" style="height:14px"><div class="bar-f ${x.cls}" style="width:${Math.round(x.v/tAll*100)}%;min-width:20px">${x.v}</div></div></div>`).join('');}else rcHtml='<div style="color:var(--ink3);font-size:11px;text-align:center;padding:10px">✏️で返信内訳を入力してね</div>';
+
+// A/Bテスト
+const abPairs=[];const abSeen=new Set();camps.forEach((c,i)=>{if(c.abTestPair&&!abSeen.has(i)){const j=camps.findIndex(x=>x.subject===c.abTestPair);if(j>=0){abPairs.push([i,j]);abSeen.add(i);abSeen.add(j);}}});
+let abHtml='';if(abPairs.length)abHtml=`<div class="sec">A/Bテスト比較</div>`+abPairs.map(([a,b])=>{const ca=camps[a],cb=camps[b];return`<div class="card" style="margin-bottom:12px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div style="background:var(--pink4);border-radius:10px;padding:8px;font-size:11px"><strong>A:</strong> ${E(SS(ca.subject,25))}<br>開封${P(ca.openRate)} 返信${P(ca.replyRate)} アポ${ca.appointments||0}</div><div style="background:#f0e8ff;border-radius:10px;padding:8px;font-size:11px"><strong>B:</strong> ${E(SS(cb.subject,25))}<br>開封${P(cb.openRate)} 返信${P(cb.replyRate)} アポ${cb.appointments||0}</div></div></div>`;}).join('');
 
 w.innerHTML=`<div class="fade-in">
 ${ba}
-${pending>0?`<div class="note">⏳ <strong>${pending}件</strong>のシーケンスが進行中！完了したら✏️でアポ数を追記してね♡</div>`:''}
+${pending>0?`<div class="note">⏳ <strong>${pending}件</strong>進行中</div>`:''}
 <div class="kpi-grid">
-  <div class="kpi"><div class="kpi-e">📬</div><div class="kpi-l">平均開封率</div><div class="kpi-v kv-p">${pct(avgOpen)}</div><div class="kpi-s">${n}件の平均</div></div>
-  <div class="kpi"><div class="kpi-e">🔗</div><div class="kpi-l">平均クリック率</div><div class="kpi-v kv-bl">${pct(avgClick)}</div><div class="kpi-s">URL+配信停止含む</div></div>
-  <div class="kpi"><div class="kpi-e">💬</div><div class="kpi-l">平均返信率</div><div class="kpi-v kv-pu">${pct(avgReply)}</div></div>
-  <div class="kpi"><div class="kpi-e">🎯</div><div class="kpi-l">アポ率（送信比）</div><div class="kpi-v kv-g">${pct(avgA1)}</div></div>
-  <div class="kpi"><div class="kpi-e">✨</div><div class="kpi-l">アポ率（開封比）</div><div class="kpi-v kv-gn">${pct(avgA2)}</div></div>
-  <div class="kpi"><div class="kpi-e">⚠️</div><div class="kpi-l">平均バウンス率</div><div class="kpi-v kv-c">${pct(avgBounce)}</div><div class="kpi-s">${avgBounce>0.05?'要更新！':'良好♡'}</div></div>
-  <div class="kpi"><div class="kpi-e">📊</div><div class="kpi-l">総アポ数</div><div class="kpi-v kv-g">${totalAppt}</div><div class="kpi-s">${n}件合計</div></div>
-  <div class="kpi"><div class="kpi-e">🚫</div><div class="kpi-l">総配信停止</div><div class="kpi-v kv-c">${sum(camps.map(c=>c.unsubscribes||0))}</div></div>
+  <div class="kpi"><div class="kpi-e">📬</div><div class="kpi-l">平均開封率</div><div class="kpi-v kv-p">${P(avgOpen)}</div></div>
+  <div class="kpi"><div class="kpi-e">🔗</div><div class="kpi-l">平均クリック率</div><div class="kpi-v kv-bl">${P(avgClick)}</div></div>
+  <div class="kpi"><div class="kpi-e">💬</div><div class="kpi-l">平均返信率</div><div class="kpi-v kv-pu">${P(avgReply)}</div></div>
+  <div class="kpi"><div class="kpi-e">🎯</div><div class="kpi-l">アポ率(送信)</div><div class="kpi-v kv-g">${P(avgA1)}</div></div>
+  <div class="kpi"><div class="kpi-e">✨</div><div class="kpi-l">アポ率(開封)</div><div class="kpi-v kv-gn">${P(avgA2)}</div></div>
+  <div class="kpi"><div class="kpi-e">⚠️</div><div class="kpi-l">バウンス率</div><div class="kpi-v kv-c">${P(avgBounce)}</div></div>
+  <div class="kpi"><div class="kpi-e">📊</div><div class="kpi-l">総アポ</div><div class="kpi-v kv-g">${totalAppt}</div></div>
+  <div class="kpi"><div class="kpi-e">🚫</div><div class="kpi-l">総配信停止</div><div class="kpi-v kv-c">${S(camps.map(c=>c.unsubscribes||0))}</div></div>
 </div>
 
 <div class="sec">ランキング TOP3</div>
 <div class="chart-row">
-  <div class="card"><div class="card-title">📬 開封率 TOP3</div><div class="bars">${buildBar('openRate','bf-p',false,3)}</div></div>
-  <div class="card"><div class="card-title">🎯 アポ率 TOP3（送信比）</div><div class="bars">${buildBar('apptRateSent','bf-g',false,3)}</div></div>
+  <div class="card"><div class="card-title">📬 開封率</div><div class="bars">${buildBar('openRate','bf-p',3)}</div></div>
+  <div class="card"><div class="card-title">🎯 アポ率(送信)</div><div class="bars">${buildBar('apptRateSent','bf-g',3)}</div></div>
 </div>
 <div class="chart-row">
-  <div class="card"><div class="card-title">🔗 クリック率 TOP3</div><div class="bars">${buildBar('clickRate','bf-bl',false,3)}</div></div>
-  <div class="card"><div class="card-title">💬 返信率 TOP3</div><div class="bars">${buildBar('replyRate','bf-pu',false,3)}</div></div>
+  <div class="card"><div class="card-title">🔗 クリック率</div><div class="bars">${buildBar('clickRate','bf-bl',3)}</div></div>
+  <div class="card"><div class="card-title">💬 返信率</div><div class="bars">${buildBar('replyRate','bf-pu',3)}</div></div>
 </div>
 
-<div class="sec">送信時間 × 開封率分析</div>
+<div class="sec">送信時間 × 開封率</div>
 <div class="chart-row">
-  <div class="card"><div class="card-title">🕐 送信時間別 平均開封率</div><div class="bars">${sendTimeHtml}</div><div class="mini">どの時間に送ると開封率が高いかが分かるよ！</div></div>
-  <div class="card"><div class="card-title">📊 開封された時間帯の分布</div><div class="bars">${timeHtml}</div></div>
+  <div class="card"><div class="card-title">🕐 送信時間別 平均開封率</div><div class="bars">${sendTimeHtml}</div></div>
+  <div class="card"><div class="card-title">📊 開封された時間帯</div><div class="bars">${timeHtml}</div></div>
 </div>
 
 <div class="sec">セグメント × 返信分析</div>
 <div class="chart-row">
-  <div class="card"><div class="card-title">📋 リスト元（セグメント）別成果</div><div class="bars">${segHtml}</div></div>
-  <div class="card"><div class="card-title">💬 返信の内訳（アポ/お断り/不要）</div>${replyClassHtml}</div>
+  <div class="card"><div class="card-title">📋 セグメント別成果</div><div class="bars">${segHtml}</div></div>
+  <div class="card"><div class="card-title">💬 返信の内訳</div>${rcHtml}</div>
 </div>
 
-${abPairs.length>0?`<div class="sec">A/Bテスト比較</div><div class="card" style="margin-bottom:20px">${abHtml}</div>`:''}
+${abHtml}
 
-<div class="sec">全キャンペーン一覧</div>
-<div class="card" style="margin-bottom:20px;overflow-x:auto">
+<div class="sec"><span style="cursor:pointer" onclick="toggleTbl()">全キャンペーン一覧 <span id="tblFoldIcon">▼</span></span></div>
+<div class="card" style="margin-bottom:20px;overflow-x:auto" id="tblCard">
   <table class="tbl"><thead><tr>
     <th>状態</th>
     <th onclick="sortTable('subject')" class="${sortCol==='subject'?'srt':''}">件名 ${sa('subject')}</th>
     <th>リスト元</th>
     <th onclick="sortTable('recipients')" class="${sortCol==='recipients'?'srt':''}">送信 ${sa('recipients')}</th>
     <th onclick="sortTable('openRate')" class="${sortCol==='openRate'?'srt':''}">開封率 ${sa('openRate')}</th>
-    <th onclick="sortTable('clickRate')" class="${sortCol==='clickRate'?'srt':''}">クリック ${sa('clickRate')}</th>
-    <th>配信停止</th>
+    <th>クリック</th><th>配信停止</th>
     <th onclick="sortTable('replyRate')" class="${sortCol==='replyRate'?'srt':''}">返信率 ${sa('replyRate')}</th>
     <th onclick="sortTable('appointments')" class="${sortCol==='appointments'?'srt':''}">アポ ${sa('appointments')}</th>
     <th onclick="sortTable('bounceRate')" class="${sortCol==='bounceRate'?'srt':''}">バウンス ${sa('bounceRate')}</th>
@@ -577,30 +613,32 @@ ${abPairs.length>0?`<div class="sec">A/Bテスト比較</div><div class="card" s
 </div>
 </div>`;}
 
-function buildBar(field,cls,rev=false,limit=null){const s=[...camps].sort((a,b)=>rev?(a[field]||0)-(b[field]||0):(b[field]||0)-(a[field]||0));const top=limit?s.slice(0,limit):s;const max=Math.max(...top.map(c=>c[field]||0),0.001);return top.map((c,i)=>{const v=c[field]||0,w=Math.round((v/max)*100);const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';return`<div class="bar-r"><div class="bar-l">${medal} ${esc(shortS(c.subject))}</div><div class="bar-t"><div class="bar-f ${cls}" style="width:${w}%">${pct(v)}</div></div></div>`;}).join('');}
+let tblOpen=true;
+function toggleTbl(){tblOpen=!tblOpen;document.getElementById('tblCard').style.display=tblOpen?'block':'none';document.getElementById('tblFoldIcon').textContent=tblOpen?'▼':'▶';}
 
-function buildRows(){return getSorted().map(c=>{const i=c._i;const rb=c.replyBreakdown||{};return`<tr>
+function buildBar(field,cls,limit){const s=[...camps].sort((a,b)=>(b[field]||0)-(a[field]||0)).slice(0,limit);const max=Math.max(...s.map(c=>c[field]||0),0.001);return s.map((c,i)=>{const v=c[field]||0,w=Math.round((v/max)*100);const medal=['🥇','🥈','🥉'][i]||'';return`<div class="bar-r"><div class="bar-l">${medal} ${E(SS(c.subject,10))}</div><div class="bar-t"><div class="bar-f ${cls}" style="width:${w}%">${P(v)}</div></div></div>`;}).join('');}
+
+function buildRows(){return getSorted().map(c=>{const i=c._i;return`<tr>
 <td><span class="badge ${c.apptFinalized?'bd':'bp'}">${c.apptFinalized?'完了':'未確定'}</span>${c.stage>1?`<span class="badge bstage">${c.stage}通目</span>`:''}</td>
-<td style="max-width:130px;font-size:11px">${esc(c.subject)}${c.abTestPair?` <span class="ab-link" onclick="event.stopPropagation()">A/B</span>`:''}</td>
-<td>${c.listSource?`<span class="seg-tag">${esc(shortS(c.listSource,8))}</span>`:''}</td>
-<td style="font-weight:700">${num(c.recipients)}</td>
-<td><span class="pill pp">${pct(c.openRate)}</span></td>
-<td><span class="pill pbl">${pct(c.clickRate||0)}</span></td>
-<td>${(c.unsubscribes||0)>0?`<span class="pill pc">${c.unsubscribes}件</span>`:'<span class="pill pgr">0</span>'}</td>
-<td><span class="pill ppu">${pct(c.replyRate)}</span></td>
-<td style="color:var(--hot);font-weight:700;font-size:14px">${c.appointments||0}</td>
-<td><span class="pill ${(c.bounceRate||0)>0.05?'pc':'pgr'}">${pct(c.bounceRate)}</span></td>
-<td><button class="icon-btn" onclick="showReport(${i})" title="レポート">📊</button><button class="icon-btn" onclick="openEdit(${i})" title="編集">✏️</button></td>
+<td class="subj-cell" title="${E(c.subject)}">${E(c.subject)}</td>
+<td>${tagsHtml(c)}</td>
+<td style="font-weight:700">${N(c.recipients)}</td>
+<td><span class="pill pp">${P(c.openRate)}</span></td>
+<td><span class="pill pbl">${P(c.clickRate||0)}</span></td>
+<td>${(c.unsubscribes||0)>0?`<span class="pill pc">${c.unsubscribes}</span>`:'<span class="pill pgr">0</span>'}</td>
+<td><span class="pill ppu">${P(c.replyRate)}</span></td>
+<td style="color:var(--hot);font-weight:700">${c.appointments||0}</td>
+<td><span class="pill ${(c.bounceRate||0)>0.05?'pc':'pgr'}">${P(c.bounceRate)}</span></td>
+<td><button class="icon-btn" onclick="showReport(${i})">📊</button><button class="icon-btn" onclick="openEdit(${i})">✏️</button></td>
 </tr>`;}).join('');}
 
 // ══ DEMO ══
 function loadDemo(){camps=[
-{subject:'【ベンナビ】初期費用ゼロで始められる件のご案内',recipients:500,opens:200,replies:8,bounces:15,clicks:7,unsubscribes:3,openRate:.40,replyRate:.016,bounceRate:.03,clickRate:.014,appointments:2,apptRateSent:.004,apptRateOpen:.01,weekday:'火',hour:'10',bodyLength:220,bodyText:'弁護士先生、はじめまして。ベンナビにて初期費用ゼロで始められるプランをご用意しております。',openTimes:[],openCounts:[1,1,2,1,3],avgOpenCount:1.6,maxOpenCount:3,aiMemos:[],addedAt:new Date().toISOString(),apptFinalized:true,stage:1,listSource:'きんとん外全て',memo:'相続のアクセスが夏季より年始の方が1.5倍になるよ！と訴求',replyBreakdown:{apo:2,decline:3,remove:3},abTestPair:''},
-{subject:'{name}先生：初期費用なしで試せるプランができました',recipients:500,opens:195,replies:14,bounces:16,clicks:12,unsubscribes:5,openRate:.39,replyRate:.028,bounceRate:.032,clickRate:.024,appointments:3,apptRateSent:.006,apptRateOpen:.0154,weekday:'火',hour:'10',bodyLength:170,bodyText:'{name}先生、お世話になっております。初期費用なしで試せる新プランができました。',openTimes:[],openCounts:[1,2,1,3,4,1],avgOpenCount:2.0,maxOpenCount:4,aiMemos:[],addedAt:new Date().toISOString(),apptFinalized:true,stage:1,listSource:'きんとん外全て',memo:'件名にパーソナライズ入れたバージョン',replyBreakdown:{apo:3,decline:7,remove:4},abTestPair:'【ベンナビ】初期費用ゼロで始められる件のご案内'},
-{subject:'ベンナビ無料掲載ありがとうございます！年末キャンペーンのお知らせ',recipients:145,opens:55,replies:12,bounces:0,clicks:8,unsubscribes:8,openRate:.379,replyRate:.083,bounceRate:0,clickRate:.055,appointments:0,apptRateSent:0,apptRateOpen:0,weekday:'水',hour:'10',bodyLength:300,bodyText:'いつもベンナビをご利用いただきありがとうございます。年末キャンペーンのご案内です。',openTimes:[],openCounts:[1,2,3,1],avgOpenCount:1.75,maxOpenCount:3,aiMemos:[],addedAt:new Date().toISOString(),apptFinalized:true,stage:1,listSource:'ベンナビ無料掲載顧客',memo:'URLなしのためクリック=配信停止の可能性。返信率は良いが追いきれず。',replyBreakdown:{apo:0,decline:5,remove:7},abTestPair:''},
-{subject:'{name}先生：お打ち合わせの日程調整について',recipients:1270,opens:316,replies:5,bounces:188,clicks:12,unsubscribes:0,openRate:.249,replyRate:.004,bounceRate:.148,clickRate:.009,appointments:1,apptRateSent:.0008,apptRateOpen:.003,weekday:'火',hour:'17',bodyLength:582,bodyText:'',openTimes:[],openCounts:[],avgOpenCount:0,maxOpenCount:0,aiMemos:[],addedAt:new Date().toISOString(),apptFinalized:false,stage:1,listSource:'新規リスト',memo:'バウンス率が高い。リストのクリーニング必要。',replyBreakdown:{apo:1,decline:2,remove:2},abTestPair:''},
+{subject:'【ベンナビ】初期費用ゼロで始められる件のご案内',recipients:500,opens:200,replies:8,bounces:15,clicks:7,unsubscribes:3,openRate:.40,replyRate:.016,bounceRate:.03,clickRate:.014,appointments:2,apptRateSent:.004,apptRateOpen:.01,weekday:'火',hour:'10',bodyLength:220,bodyText:'弁護士先生、はじめまして。ベンナビにて初期費用ゼロのプランをご用意。',openTimes:[],openCounts:[],avgOpenCount:0,maxOpenCount:0,aiMemos:[],addedAt:new Date().toISOString(),apptFinalized:true,stage:1,listSource:{area:'東京',ads:'なし',portal:'',field:'相続',tags:'きんとん外'},memo:'相続アクセスが年始1.5倍と訴求',replyBreakdown:{apo:2,decline:3,maybe:1,stop:2},abTestPair:''},
+{subject:'{name}先生：初期費用なしで試せるプランができました',recipients:500,opens:195,replies:14,bounces:16,clicks:12,unsubscribes:5,openRate:.39,replyRate:.028,bounceRate:.032,clickRate:.024,appointments:3,apptRateSent:.006,apptRateOpen:.015,weekday:'火',hour:'10',bodyLength:170,bodyText:'{name}先生、初期費用なしで試せる新プランができました。',openTimes:[],openCounts:[],avgOpenCount:0,maxOpenCount:0,aiMemos:[],addedAt:new Date().toISOString(),apptFinalized:true,stage:1,listSource:{area:'東京',ads:'なし',portal:'',field:'相続',tags:'きんとん外'},memo:'件名パーソナライズ版（A/Bテスト）',replyBreakdown:{apo:3,decline:7,maybe:2,stop:2},abTestPair:'【ベンナビ】初期費用ゼロで始められる件のご案内'},
+{subject:'ベンナビ無料掲載ありがとうございます！年末キャンペーン',recipients:145,opens:55,replies:12,bounces:0,clicks:8,unsubscribes:8,openRate:.379,replyRate:.083,bounceRate:0,clickRate:.055,appointments:0,apptRateSent:0,apptRateOpen:0,weekday:'水',hour:'10',bodyLength:300,bodyText:'いつもベンナビをご利用いただきありがとうございます。',openTimes:[],openCounts:[],avgOpenCount:0,maxOpenCount:0,aiMemos:[],addedAt:new Date().toISOString(),apptFinalized:true,stage:1,listSource:{area:'全国',ads:'あり',portal:'ベンナビ',field:'',tags:'無料掲載顧客'},memo:'URLなしのためクリック=配信停止の可能性。返信率は良いが追いきれず。',replyBreakdown:{apo:0,decline:3,maybe:2,stop:7},abTestPair:''},
+{subject:'{name}先生：お打ち合わせの日程調整について',recipients:1270,opens:316,replies:5,bounces:188,clicks:12,unsubscribes:0,openRate:.249,replyRate:.004,bounceRate:.148,clickRate:.009,appointments:1,apptRateSent:.0008,apptRateOpen:.003,weekday:'火',hour:'17',bodyLength:582,bodyText:'',openTimes:[],openCounts:[],avgOpenCount:0,maxOpenCount:0,aiMemos:[],addedAt:new Date().toISOString(),apptFinalized:false,stage:1,listSource:{area:'全国',ads:'',portal:'',field:'',tags:'新規リスト'},memo:'バウンス率高い。リストクリーニング必要。',replyBreakdown:{apo:1,decline:2,maybe:0,stop:2},abTestPair:''},
 ];save();renderAll();}
-
 </script>
 </body>
 </html>
