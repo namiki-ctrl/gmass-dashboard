@@ -80,7 +80,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
 .sec{font-size:10px;font-weight:700;color:var(--pink);margin-bottom:12px;display:flex;align-items:center;gap:8px;text-transform:uppercase;letter-spacing:1px}
 .sec::before{content:'♡'}
 .sec::after{content:'';flex:1;height:2px;background:linear-gradient(90deg,var(--pink3),transparent);border-radius:2px}
-.kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:20px}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}
 .kpi{background:white;border:2px solid var(--border);border-radius:14px;padding:12px;text-align:center;box-shadow:var(--shadow);transition:transform .2s}
 .kpi:hover{transform:translateY(-2px)}
 .kpi-e{font-size:18px;margin-bottom:3px}
@@ -89,6 +89,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
 .kpi-s{font-size:9px;color:var(--ink3)}
 .kv-p{color:var(--hot)}.kv-pu{color:#9333ea}.kv-g{color:#ca8a04}
 .kv-gn{color:#16a34a}.kv-m{color:#0d9488}.kv-c{color:#dc2626}
+.kv-bl{color:#2563eb}
 .chart-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
 .card{background:white;border:2px solid var(--border);border-radius:16px;padding:16px;box-shadow:var(--shadow)}
 .card-title{font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:12px}
@@ -109,7 +110,10 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
 .hm-tip{display:none;position:absolute;bottom:110%;left:50%;transform:translateX(-50%);background:var(--ink);color:white;padding:4px 8px;border-radius:7px;font-size:10px;white-space:nowrap;z-index:20;pointer-events:none}
 .hm-c:hover .hm-tip{display:block}
 .tbl{width:100%;border-collapse:collapse}
-.tbl th{font-size:9px;font-weight:700;text-transform:uppercase;color:var(--ink3);padding:7px 10px;border-bottom:2px solid var(--border);text-align:left;letter-spacing:.5px}
+.tbl th{font-size:9px;font-weight:700;text-transform:uppercase;color:var(--ink3);padding:7px 10px;border-bottom:2px solid var(--border);text-align:left;letter-spacing:.5px;cursor:pointer;user-select:none;white-space:nowrap;transition:color .15s}
+.tbl th:hover{color:var(--hot)}
+.tbl th .sort-arrow{font-size:8px;margin-left:2px;opacity:.4}
+.tbl th.sort-active .sort-arrow{opacity:1;color:var(--hot)}
 .tbl td{padding:8px 10px;border-bottom:1px solid var(--pink3);font-size:11px;vertical-align:middle}
 .tbl tr:last-child td{border-bottom:none}
 .tbl tr:hover td{background:var(--pink4)}
@@ -118,6 +122,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
 .pg{background:#fef3c7;color:#92400e}.ppu{background:#ede9fe;color:#6d28d9}
 .pgn{background:#dcfce7;color:#166534}.pc{background:#fee2e2;color:#991b1b}
 .pgr{background:var(--pink4);color:var(--ink3)}
+.pbl{background:#dbeafe;color:#1e40af}
 .rank{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;font-size:11px;font-weight:700}
 .r1{background:#fef3c7;color:#92400e}.r2{background:#f1f5f9;color:#475569}
 .r3{background:#fde8d8;color:#c2410c}.rn{background:var(--pink4);color:var(--ink3)}
@@ -133,6 +138,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
 .memo-text{font-size:12px;color:var(--ink2);line-height:1.8;white-space:pre-wrap}
 .memo-text strong{color:var(--ink)}
 .note{background:#fef9c3;border:2px solid #fde047;border-radius:12px;padding:10px 14px;font-size:11px;color:#713f12;line-height:1.8;margin-bottom:16px}
+.alert-bounce{background:#fee2e2;border:2px solid #fca5a5;border-radius:12px;padding:10px 14px;font-size:11px;color:#991b1b;line-height:1.8;margin-bottom:16px}
 .mini{background:var(--pink4);border:2px solid var(--border);border-radius:10px;padding:9px 12px;font-size:11px;color:var(--ink2);line-height:1.7;margin-top:8px}
 .mini strong{color:var(--hot)}
 .loading-bar{height:3px;background:var(--pink3);border-radius:10px;overflow:hidden;margin:6px 0}
@@ -151,6 +157,8 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
 .step-badge{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;font-size:10px;font-weight:700;background:var(--pink);color:white;margin-right:5px;flex-shrink:0}
 .file-guide{background:var(--pink4);border:2px solid var(--border);border-radius:10px;padding:10px 12px;font-size:11px;color:var(--ink2);line-height:1.8;margin-bottom:10px}
 .file-guide strong{color:var(--hot)}
+.gas-status{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.gas-status.on{background:#4ade80}.gas-status.off{background:var(--ink3)}
 </style>
 </head>
 <body>
@@ -159,6 +167,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
   <div class="hstats">
     <div class="hstat"><div class="hstat-val" id="h-n">0</div><div class="hstat-lbl">キャンペーン</div></div>
     <div class="hstat"><div class="hstat-val" id="h-open">—</div><div class="hstat-lbl">平均開封率</div></div>
+    <div class="hstat"><div class="hstat-val" id="h-click">—</div><div class="hstat-lbl">平均クリック率</div></div>
     <div class="hstat"><div class="hstat-val" id="h-a1">—</div><div class="hstat-lbl">アポ率/送信</div></div>
     <div class="hstat"><div class="hstat-val" id="h-a2">—</div><div class="hstat-lbl">アポ率/開封</div></div>
   </div>
@@ -166,8 +175,23 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
 <div class="layout">
   <div class="sidebar">
     <div class="sb">
+      <!-- GMass API Panel -->
       <div class="panel">
-        <div class="panel-hd">💗 キャンペーン追加</div>
+        <div class="panel-hd"><span><span class="gas-status off" id="gasIndicator"></span>🔌 GMass API連携</span></div>
+        <div class="panel-bd">
+          <div class="f"><label>Apps Script URL</label><input type="text" id="gas-url" placeholder="https://script.google.com/macros/s/..." style="font-size:10px"/></div>
+          <div style="display:flex;gap:6px;margin-top:6px">
+            <button class="btn btn-ghost" onclick="testGasConnection()" style="flex:1;font-size:10px;padding:6px 8px">接続テスト</button>
+            <button class="btn btn-pink" onclick="fetchFromGMass()" id="fetchBtn" style="flex:1;font-size:10px;padding:6px 8px">📡 GMassから取得</button>
+          </div>
+          <div id="gas-msg"></div>
+          <div id="gas-loading" style="display:none"><div class="loading-bar"><div class="loading-fill"></div></div><div style="font-size:10px;color:var(--ink3);text-align:center">取得中...</div></div>
+        </div>
+      </div>
+
+      <!-- Campaign Add Panel -->
+      <div class="panel">
+        <div class="panel-hd">💗 キャンペーン追加（手動）</div>
         <div class="panel-bd">
           <div class="file-guide"><span class="step-badge">1</span><strong>キャンペーンCSV</strong>をドロップ<br><span style="font-size:10px;color:var(--ink3)">Gmail → GMass Reports → [CAMPAIGNS]のメール →「download campaign CSV」</span></div>
           <div class="drop-zone" id="dz1"><span class="dz-icon">📋</span><div class="dz-main">① キャンペーンCSVをドロップ</div><div class="dz-sub">Opens・Replied・Bounced列が入ったファイル</div></div>
@@ -224,6 +248,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
           <span>💖 登録済み（<span id="cnt">0</span>件）</span>
           <div style="display:flex;gap:4px">
             <button class="btn btn-ghost" onclick="loadDemo()" style="padding:3px 9px;font-size:10px;border-radius:20px">デモ</button>
+            <button class="btn btn-ghost" onclick="exportCSV()" style="padding:3px 9px;font-size:10px;border-radius:20px">📥 CSV</button>
             <button class="btn btn-ghost" onclick="openShare()" style="padding:3px 9px;font-size:10px;border-radius:20px">🔗 共有</button>
           </div>
         </div>
@@ -239,7 +264,8 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
       <div class="empty-icon">💌</div>
       <div style="font-size:16px;font-weight:700;color:var(--ink2)">キャンペーンを追加してね！</div>
       <div style="max-width:400px;font-size:12px;color:var(--ink3);line-height:2.2;text-align:left;background:white;border:2px solid var(--border);border-radius:16px;padding:16px;box-shadow:var(--shadow)">
-        <div style="margin-bottom:8px"><span class="step-badge">1</span><strong style="color:var(--ink)">キャンペーンCSVをドロップ</strong><br><span style="font-size:11px;margin-left:23px;display:block">Gmail → GMass Reports → [CAMPAIGNS]のメール →「download campaign CSV」</span></div>
+        <div style="margin-bottom:8px"><span class="step-badge">✨</span><strong style="color:var(--hot)">おすすめ：GMass API連携</strong><br><span style="font-size:11px;margin-left:23px;display:block">左のAPI設定にURLを入れれば、ボタン1つで自動取得！</span></div>
+        <div style="margin-bottom:8px;border-top:1px dashed var(--border);padding-top:8px"><span class="step-badge">1</span><strong style="color:var(--ink)">キャンペーンCSVをドロップ</strong><br><span style="font-size:11px;margin-left:23px;display:block">Gmail → GMass Reports → [CAMPAIGNS]のメール →「download campaign CSV」</span></div>
         <div style="margin-bottom:8px"><span class="step-badge">2</span><strong style="color:var(--ink)">Open RateのExcelをドロップ（任意）</strong><br><span style="font-size:11px;margin-left:23px;display:block">レポートページ → Open Rate → Download as Excel</span></div>
         <div><span class="step-badge">3</span><strong style="color:var(--ink)">件名・アポ数・本文を入力して登録</strong></div>
       </div>
@@ -340,9 +366,24 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
     </div>
   </div>
 </div>
+
+<!-- GMASS IMPORT MODAL -->
+<div class="overlay" id="gmassOverlay">
+  <div class="modal" style="width:520px">
+    <div class="modal-title">📡 GMassキャンペーンをインポート</div>
+    <div style="font-size:11px;color:var(--ink2);line-height:1.8;margin-bottom:12px">
+      取得したキャンペーンを選択してインポートしてね♡<br>
+      既に登録済みのキャンペーンは自動でスキップされるよ。
     </div>
-    <div class="modal-btns" style="margin-top:14px">
-      <button class="btn btn-ghost btn-full" onclick="closeShare()">閉じる</button>
+    <div style="display:flex;gap:6px;margin-bottom:8px">
+      <button class="btn btn-ghost" onclick="gmassSelectAll(true)" style="padding:4px 10px;font-size:10px;border-radius:20px">全選択</button>
+      <button class="btn btn-ghost" onclick="gmassSelectAll(false)" style="padding:4px 10px;font-size:10px;border-radius:20px">全解除</button>
+    </div>
+    <div id="gmassCampList" style="background:var(--pink4);border:2px solid var(--border);border-radius:10px;padding:8px;max-height:350px;overflow-y:auto;margin-bottom:10px"></div>
+    <div id="gmassImportMsg"></div>
+    <div class="modal-btns">
+      <button class="btn btn-mint" style="flex:1" onclick="importSelectedGMass()">選択したキャンペーンをインポート♡</button>
+      <button class="btn btn-ghost" onclick="closeGmassModal()">閉じる</button>
     </div>
   </div>
 </div>
@@ -353,6 +394,8 @@ let editIdx = -1;
 let pend1 = null, pend2 = null;
 let updPend = null;
 let updPend2 = null;
+let gmassData = []; // GMass APIから取得したデータ
+let sortCol = null, sortAsc = true; // テーブルソート状態
 
 // ══ URL DATA LOAD ══
 function loadFromUrl() {
@@ -363,7 +406,6 @@ function loadFromUrl() {
       const json = decodeURIComponent(atob(encoded));
       const loaded = JSON.parse(json);
       if (Array.isArray(loaded) && loaded.length > 0) {
-        // localStorageの本文・メモデータとマージ
         try {
           const saved = localStorage.getItem('gm_v11');
           if (saved) {
@@ -386,7 +428,6 @@ function loadFromUrl() {
   return false;
 }
 
-// ── localStorage fallback ──
 function loadFromStorage() {
   try {
     const saved = localStorage.getItem('gm_v11');
@@ -395,9 +436,178 @@ function loadFromStorage() {
   return false;
 }
 
+// GAS URL をlocalStorageから復元
+function loadGasUrl() {
+  try {
+    const url = localStorage.getItem('gm_gas_url');
+    if (url) {
+      document.getElementById('gas-url').value = url;
+      document.getElementById('gasIndicator').classList.replace('off','on');
+    }
+  } catch(e) {}
+}
+
 const loadedFromUrl = loadFromUrl();
 if (!loadedFromUrl) loadFromStorage();
 renderAll();
+setTimeout(loadGasUrl, 100);
+
+// ══ GMASS API INTEGRATION ══
+function getGasUrl() {
+  const url = document.getElementById('gas-url').value.trim();
+  if (url) {
+    localStorage.setItem('gm_gas_url', url);
+    document.getElementById('gasIndicator').classList.replace('off','on');
+  }
+  return url;
+}
+
+async function testGasConnection() {
+  const url = getGasUrl();
+  const msgEl = document.getElementById('gas-msg');
+  if (!url) { msgEl.innerHTML = '<div class="msg-err">URLを入力してね</div>'; return; }
+  msgEl.innerHTML = '<div class="msg-info">接続テスト中...</div>';
+  try {
+    const res = await fetch(url + '?action=test');
+    const data = await res.json();
+    if (data.ok) {
+      msgEl.innerHTML = '<div class="msg-ok">✓ ' + data.message + '</div>';
+    } else {
+      msgEl.innerHTML = '<div class="msg-err">' + (data.message || data.error || 'エラー') + '</div>';
+    }
+  } catch(e) {
+    msgEl.innerHTML = '<div class="msg-err">接続失敗: ' + e.message + '</div>';
+  }
+}
+
+async function fetchFromGMass() {
+  const url = getGasUrl();
+  const msgEl = document.getElementById('gas-msg');
+  const loadEl = document.getElementById('gas-loading');
+  if (!url) { msgEl.innerHTML = '<div class="msg-err">URLを入力してね</div>'; return; }
+
+  msgEl.innerHTML = '';
+  loadEl.style.display = 'block';
+  document.getElementById('fetchBtn').disabled = true;
+
+  try {
+    const res = await fetch(url + '?action=campaigns');
+    const data = await res.json();
+
+    if (!data.ok) throw new Error(data.error || 'APIエラー');
+    if (!data.campaigns || data.campaigns.length === 0) {
+      msgEl.innerHTML = '<div class="msg-info">キャンペーンが見つからなかったよ</div>';
+      loadEl.style.display = 'none';
+      document.getElementById('fetchBtn').disabled = false;
+      return;
+    }
+
+    gmassData = data.campaigns;
+    loadEl.style.display = 'none';
+    document.getElementById('fetchBtn').disabled = false;
+    showGmassImportModal();
+  } catch(e) {
+    loadEl.style.display = 'none';
+    document.getElementById('fetchBtn').disabled = false;
+    msgEl.innerHTML = '<div class="msg-err">取得失敗: ' + e.message + '</div>';
+  }
+}
+
+function showGmassImportModal() {
+  const el = document.getElementById('gmassCampList');
+  const existingSubjects = new Set(camps.map(c => c.subject));
+
+  el.innerHTML = gmassData.map((c, i) => {
+    const exists = existingSubjects.has(c.subject);
+    return `<label style="display:flex;align-items:flex-start;gap:8px;padding:6px 4px;cursor:${exists?'not-allowed':'pointer'};border-radius:6px;font-size:11px;color:${exists?'var(--ink3)':'var(--ink2)'};opacity:${exists?'.5':'1'}" ${exists?'':'onmouseover="this.style.background=\'var(--pink3)\'" onmouseout="this.style.background=\'\'"'}>
+      <input type="checkbox" class="gmass-chk" data-idx="${i}" ${exists?'disabled':''} ${exists?'':'checked'} style="width:14px;height:14px;cursor:pointer;flex-shrink:0;margin-top:2px">
+      <div style="flex:1">
+        <div style="font-weight:700;line-height:1.3">${esc(c.subject)} ${exists?'<span style="color:var(--mint);font-size:9px">登録済み</span>':''}</div>
+        <div style="font-size:10px;color:var(--ink3);margin-top:2px">送信${num(c.recipients)} 開封${pct(c.openRate)} 返信${c.replies}件 クリック${c.clicks}件 バウンス${pct(c.bounceRate)}</div>
+      </div>
+    </label>`;
+  }).join('');
+
+  document.getElementById('gmassImportMsg').innerHTML = '';
+  document.getElementById('gmassOverlay').classList.add('open');
+}
+
+function gmassSelectAll(checked) {
+  document.querySelectorAll('.gmass-chk:not(:disabled)').forEach(el => el.checked = checked);
+}
+
+function closeGmassModal() {
+  document.getElementById('gmassOverlay').classList.remove('open');
+}
+
+async function importSelectedGMass() {
+  const checks = document.querySelectorAll('.gmass-chk:checked');
+  if (!checks.length) {
+    document.getElementById('gmassImportMsg').innerHTML = '<div class="msg-err">キャンペーンを選択してね</div>';
+    return;
+  }
+
+  const gasUrl = getGasUrl();
+  let imported = 0;
+
+  for (const chk of checks) {
+    const idx = parseInt(chk.dataset.idx);
+    const c = gmassData[idx];
+    if (!c) continue;
+
+    // 送信日から曜日・時間を算出
+    let weekday = '', hour = '';
+    if (c.creationTime) {
+      try {
+        const d = new Date(c.creationTime);
+        weekday = ['日','月','火','水','木','金','土'][d.getDay()] || '';
+        hour = String(d.getHours());
+      } catch(e) {}
+    }
+
+    const camp = {
+      ...c,
+      weekday, hour,
+      appointments: 0,
+      apptRateSent: 0,
+      apptRateOpen: 0,
+      apptFinalized: false,
+      bodyText: '',
+      bodyLength: null,
+      aiMemos: [],
+      openTimes: [],
+      openCounts: [],
+      avgOpenCount: 0,
+      maxOpenCount: 0,
+      addedAt: new Date().toISOString(),
+    };
+
+    // 開封詳細を取得（APIがあれば）
+    if (gasUrl && c.campaignId) {
+      try {
+        const res = await fetch(gasUrl + '?action=opens&campaignId=' + c.campaignId);
+        const openData = await res.json();
+        if (openData.ok) {
+          camp.openTimes = (openData.openTimes || []);
+          camp.openCounts = (openData.openCounts || []);
+          camp.avgOpenCount = openData.avgOpenCount || 0;
+          camp.maxOpenCount = openData.maxOpenCount || 0;
+          // APIの開封者数で上書き
+          if (openData.openers) camp.opens = openData.openers;
+          camp.openRate = camp.recipients > 0 ? camp.opens / camp.recipients : 0;
+        }
+      } catch(e) { /* 詳細取得失敗しても基本データは使える */ }
+    }
+
+    camps.push(camp);
+    imported++;
+  }
+
+  save();
+  renderAll();
+  closeGmassModal();
+  document.getElementById('gas-msg').innerHTML = `<div class="msg-ok">✓ ${imported}件のキャンペーンをインポートしたよ♡</div>`;
+}
 
 // ══ DROP ZONE SETUP ══
 function initDrop(zoneId, inputId, onFile) {
@@ -575,7 +785,6 @@ function confirmAdd() {
   const bodyText = document.getElementById('f-body').value || '';
   const N = pend1.recipients || 1;
   const actualOpens = pend2 ? pend2.openers : pend1.opens;
-  // 返信数は手動入力を優先
   const actualReplies = manualReplies > 0 ? manualReplies : pend1.replies;
   camps.push({
     ...pend1,
@@ -628,7 +837,6 @@ function openEdit(i) {
   document.getElementById('e-finalized').checked = c.apptFinalized || false;
   document.getElementById('e-body').value = c.bodyText || '';
   document.getElementById('e-aimemo').value = '';
-  // メモ履歴を表示
   const histEl = document.getElementById('e-aimemo-history');
   const memos = c.aiMemos || [];
   if (memos.length > 0) {
@@ -673,7 +881,6 @@ function saveEdit() {
   const N = base.recipients || 1;
   const actualOpens = updPend2 ? updPend2.openers : (base.opens || 0);
   const actualReplies = manualReplies > 0 ? manualReplies : (base.replies || 0);
-  // AIメモを更新
   const aiMemos = c.aiMemos || [];
   if (memoText) {
     const lastMemo = aiMemos[aiMemos.length - 1];
@@ -700,11 +907,14 @@ function saveEdit() {
     aiMemos };
   save(); closeEdit(); renderAll();
 }
+function delCamp(i) {
+  if (!confirm('「' + (camps[i].subject||'') + '」を削除する？\nこの操作は元に戻せないよ')) return;
+  camps.splice(i,1); save(); renderAll();
+}
 function deleteMemo(campIdx, memoIdx) {
   if (!confirm('このメモを削除する？')) return;
   camps[campIdx].aiMemos.splice(memoIdx, 1);
   save();
-  // 履歴を再描画
   openEdit(campIdx);
 }
 
@@ -715,7 +925,6 @@ function openShare() {
   document.getElementById('analysisMsg').innerHTML = '';
   document.getElementById('importMsg').innerHTML = '';
   document.getElementById('importUrlIn').value = '';
-  // キャンペーンチェックボックスを生成
   const el = document.getElementById('campCheckList');
   if (!camps.length) {
     el.innerHTML = '<div style="color:var(--ink3);font-size:11px;text-align:center;padding:8px">キャンペーンがないよ〜</div>';
@@ -731,13 +940,11 @@ function openShare() {
 
 function copyAnalysisText() {
   const msgEl = document.getElementById('analysisMsg');
-  // 全キャンペーン統計
   const stats = camps.map((c,i) => {
     const r2a = (c.replies||0)>0 ? pct((c.appointments||0)/c.replies) : '0.0%';
-    return `キャンペーン${i+1}: 件名「${c.subject}」 送信${c.recipients}件 開封率${pct(c.openRate)} 返信率${pct(c.replyRate)} アポ${c.appointments||0}件 アポ率(送信比)${pct(c.apptRateSent)} アポ率(開封比)${pct(c.apptRateOpen)} バウンス率${pct(c.bounceRate)} 曜日:${c.weekday||'?'}曜${c.hour?c.hour+'時':''} 文字数:${c.bodyLength||'不明'}字 返信→アポ転換率${r2a} 平均開封回数:${c.avgOpenCount?(+c.avgOpenCount).toFixed(1)+'回':'不明'} 最多開封:${c.maxOpenCount||'不明'}回`;
+    return `キャンペーン${i+1}: 件名「${c.subject}」 送信${c.recipients}件 開封率${pct(c.openRate)} クリック率${pct(c.clickRate||0)} 返信率${pct(c.replyRate)} アポ${c.appointments||0}件 アポ率(送信比)${pct(c.apptRateSent)} アポ率(開封比)${pct(c.apptRateOpen)} バウンス率${pct(c.bounceRate)} 曜日:${c.weekday||'?'}曜${c.hour?c.hour+'時':''} 文字数:${c.bodyLength||'不明'}字 返信→アポ転換率${r2a} 平均開封回数:${c.avgOpenCount?(+c.avgOpenCount).toFixed(1)+'回':'不明'} 最多開封:${c.maxOpenCount||'不明'}回`;
   }).join('\n');
 
-  // 選択キャンペーンの本文
   const selected = camps.filter((c,i) => {
     const chk = document.getElementById(`chk_${i}`);
     return chk && chk.checked && c.bodyText;
@@ -767,7 +974,6 @@ function closeShare() { document.getElementById('shareOverlay').classList.remove
 
 function genShareUrl() {
   try {
-    // 本文テキスト・openTimes・openCountsを除いた統計データのみ
     const saveData = camps.map(({ openTimes, openCounts, bodyText, ...rest }) => rest);
     const json = JSON.stringify(saveData);
     const encoded = btoa(encodeURIComponent(json));
@@ -784,19 +990,6 @@ function copyShareUrl() {
   const url = document.getElementById('shareUrlBox').textContent;
   navigator.clipboard.writeText(url).then(() => {
     document.getElementById('shareUrlMsg').innerHTML = '<div class="msg-ok">✓ URLをコピーしたよ♡ Claudeのチャットに貼り付けてね！</div>';
-  });
-}
-
-function copyBodyTexts() {
-  const texts = camps.filter(c => c.bodyText && c.bodyText.trim()).map((c,i) =>
-    `【キャンペーン${i+1}】件名: ${c.subject}\n本文(${c.bodyLength}字):\n${c.bodyText}`
-  ).join('\n\n---\n\n');
-  if (!texts) {
-    document.getElementById('shareUrlMsg').innerHTML = '<div class="msg-err">本文が登録されているキャンペーンがないよ💦</div>';
-    return;
-  }
-  navigator.clipboard.writeText(texts).then(() => {
-    document.getElementById('shareUrlMsg').innerHTML = '<div class="msg-ok">✓ 本文テキストをコピーしたよ♡<br>URLと一緒にClaudeに貼り付けてね！</div>';
   });
 }
 
@@ -820,10 +1013,30 @@ function importFromUrl() {
   }
 }
 
+// ══ CSV EXPORT ══
+function exportCSV() {
+  if (!camps.length) return;
+  const headers = ['件名','送信数','開封数','開封率','クリック数','クリック率','返信数','返信率','バウンス数','バウンス率','アポ数','アポ率(送信)','アポ率(開封)','曜日','時間','文字数','状態','登録日'];
+  const rows = camps.map(c => [
+    c.subject, c.recipients, c.opens, pct(c.openRate),
+    c.clicks||0, pct(c.clickRate||0),
+    c.replies, pct(c.replyRate), c.bounces, pct(c.bounceRate),
+    c.appointments||0, pct(c.apptRateSent), pct(c.apptRateOpen),
+    (c.weekday||'')+'曜', c.hour?c.hour+'時':'',
+    c.bodyLength||'', c.apptFinalized?'完了':'未確定',
+    c.addedAt?c.addedAt.split('T')[0]:''
+  ]);
+  const bom = '\uFEFF';
+  const csv = bom + [headers, ...rows].map(r => r.map(v => '"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'gmass_dashboard_' + new Date().toISOString().split('T')[0] + '.csv';
+  a.click();
+}
+
 function save() {
-  // localStorageには全データ（本文含む）を保存
   try { localStorage.setItem('gm_v11', JSON.stringify(camps)); } catch(e) {}
-  // URLハッシュには本文・openTimes・openCountsを除いた軽量データのみ
   try {
     const saveData = camps.map(({ openTimes, openCounts, bodyText, aiMemos, ...rest }) => rest);
     const encoded = btoa(encodeURIComponent(JSON.stringify(saveData)));
@@ -831,13 +1044,40 @@ function save() {
   } catch(e) {}
 }
 
+// ══ TABLE SORT ══
+function sortTable(col) {
+  if (sortCol === col) { sortAsc = !sortAsc; }
+  else { sortCol = col; sortAsc = col === 'subject' ? true : false; }
+  renderAll();
+}
+function getSortedCamps() {
+  if (!sortCol) return camps.map((c,i) => ({...c, _idx:i}));
+  const arr = camps.map((c,i) => ({...c, _idx:i}));
+  arr.sort((a,b) => {
+    let va = a[sortCol], vb = b[sortCol];
+    if (typeof va === 'string') va = va.toLowerCase();
+    if (typeof vb === 'string') vb = vb.toLowerCase();
+    if (va == null) va = sortAsc ? Infinity : -Infinity;
+    if (vb == null) vb = sortAsc ? Infinity : -Infinity;
+    if (va < vb) return sortAsc ? -1 : 1;
+    if (va > vb) return sortAsc ? 1 : -1;
+    return 0;
+  });
+  return arr;
+}
+function sortArrow(col) {
+  if (sortCol !== col) return '<span class="sort-arrow">⇅</span>';
+  return `<span class="sort-arrow">${sortAsc?'▲':'▼'}</span>`;
+}
+
 // ══ RENDER ══
 function renderAll() { renderHeader(); renderSidebar(); renderContent(); }
 
 function renderHeader() {
   document.getElementById('h-n').textContent = camps.length;
-  if (!camps.length) { ['h-open','h-a1','h-a2'].forEach(id => document.getElementById(id).textContent = '—'); return; }
+  if (!camps.length) { ['h-open','h-click','h-a1','h-a2'].forEach(id => document.getElementById(id).textContent = '—'); return; }
   document.getElementById('h-open').textContent = pct(avg(camps.map(c => c.openRate||0)));
+  document.getElementById('h-click').textContent = pct(avg(camps.map(c => c.clickRate||0)));
   document.getElementById('h-a1').textContent = pct(avg(camps.map(c => c.apptRateSent||0)));
   const ho = camps.filter(c => (c.opens||0) > 0);
   document.getElementById('h-a2').textContent = ho.length ? pct(avg(ho.map(c => c.apptRateOpen||0))) : '—';
@@ -858,6 +1098,7 @@ function renderSidebar() {
       </div>
       <div class="camp-stats">
         <div><div class="cs-v cp">${pct(c.openRate)}</div><div class="cs-l">開封率</div></div>
+        <div><div class="cs-v" style="color:#2563eb">${pct(c.clickRate||0)}</div><div class="cs-l">クリック率</div></div>
         <div><div class="cs-v cg">${pct(c.apptRateSent)}</div><div class="cs-l">アポ/送信</div></div>
         <div><div class="cs-v cgn">${pct(c.apptRateOpen)}</div><div class="cs-l">アポ/開封</div></div>
       </div>
@@ -879,6 +1120,7 @@ function renderContent() {
   const n = camps.length;
   const totalAppt = sum(camps.map(c => c.appointments||0));
   const avgOpen = avg(camps.map(c => c.openRate||0));
+  const avgClick = avg(camps.map(c => c.clickRate||0));
   const avgReply = avg(camps.map(c => c.replyRate||0));
   const avgA1 = avg(camps.map(c => c.apptRateSent||0));
   const ho = camps.filter(c => (c.opens||0) > 0);
@@ -888,15 +1130,26 @@ function renderContent() {
   const r2a = totalR > 0 ? totalAppt/totalR : 0;
   const pending = camps.filter(c => !c.apptFinalized).length;
 
+  // バウンス率アラート
+  const highBounce = camps.filter(c => (c.bounceRate||0) > 0.05);
+  let bounceAlert = '';
+  if (highBounce.length > 0) {
+    const names = highBounce.map(c => `「${shortS(c.subject)}」(${pct(c.bounceRate)})`).join('、');
+    bounceAlert = `<div class="alert-bounce">⚠️ <strong>バウンス率が高いキャンペーンがあるよ！</strong><br>${names}<br>💡 リストのクリーニング（無効アドレスの除外）を検討してね。バウンス率5%超はドメイン評価に悪影響があるよ。</div>`;
+  }
+
   wrapper.innerHTML = `<div class="fade-in">
+    ${bounceAlert}
     ${pending > 0 ? `<div class="note">⏳ <strong>${pending}件</strong>のシーケンスが進行中！完了したら✏️ボタンでアポ数を追記してね♡</div>` : ''}
     <div class="kpi-grid">
       <div class="kpi"><div class="kpi-e">📬</div><div class="kpi-l">平均開封率</div><div class="kpi-v kv-p">${pct(avgOpen)}</div><div class="kpi-s">${n}件の平均</div></div>
+      <div class="kpi"><div class="kpi-e">🔗</div><div class="kpi-l">平均クリック率</div><div class="kpi-v kv-bl">${pct(avgClick)}</div><div class="kpi-s">リンククリック</div></div>
       <div class="kpi"><div class="kpi-e">💬</div><div class="kpi-l">平均返信率</div><div class="kpi-v kv-pu">${pct(avgReply)}</div><div class="kpi-s">返信ベース</div></div>
       <div class="kpi"><div class="kpi-e">🎯</div><div class="kpi-l">アポ率（送信比）</div><div class="kpi-v kv-g">${pct(avgA1)}</div><div class="kpi-s">アポ÷送信数</div></div>
       <div class="kpi"><div class="kpi-e">✨</div><div class="kpi-l">アポ率（開封比）</div><div class="kpi-v kv-gn">${pct(avgA2)}</div><div class="kpi-s">アポ÷開封数</div></div>
       <div class="kpi"><div class="kpi-e">💌</div><div class="kpi-l">返信→アポ転換率</div><div class="kpi-v kv-m">${pct(r2a)}</div><div class="kpi-s">お断り除いた実力値</div></div>
       <div class="kpi"><div class="kpi-e">⚠️</div><div class="kpi-l">平均バウンス率</div><div class="kpi-v kv-c">${pct(avgBounce)}</div><div class="kpi-s">${avgBounce>0.05?'リスト要更新！':'リスト良好♡'}</div></div>
+      <div class="kpi"><div class="kpi-e">📊</div><div class="kpi-l">総アポ数</div><div class="kpi-v kv-g">${totalAppt}</div><div class="kpi-s">${n}キャンペーン合計</div></div>
     </div>
 
     <div class="ai-box">
@@ -912,11 +1165,15 @@ function renderContent() {
     <div class="sec">キャンペーン別ランキング</div>
     <div class="chart-row">
       <div class="card"><div class="card-title">📬 開封率ランキング</div><div class="bars">${buildBar('openRate','bf-p')}</div></div>
-      <div class="card"><div class="card-title">🎯 アポ率ランキング（送信比）</div><div class="bars">${buildBar('apptRateSent','bf-g')}</div></div>
+      <div class="card"><div class="card-title">🔗 クリック率ランキング</div><div class="bars">${buildBar('clickRate','bf-bl')}</div></div>
     </div>
     <div class="chart-row">
+      <div class="card"><div class="card-title">🎯 アポ率ランキング（送信比）</div><div class="bars">${buildBar('apptRateSent','bf-g')}</div></div>
       <div class="card"><div class="card-title">✨ アポ率ランキング（開封比）</div><div class="bars">${buildBar('apptRateOpen','bf-gn')}</div></div>
+    </div>
+    <div class="chart-row">
       <div class="card"><div class="card-title">⚠️ バウンス率（低い方がGOOD！）</div><div class="bars">${buildBar('bounceRate','bf-c',true)}</div></div>
+      <div class="card"><div class="card-title">💬 返信率ランキング</div><div class="bars">${buildBar('replyRate','bf-pu')}</div></div>
     </div>
 
     <div class="sec">開封の詳細分析</div>
@@ -941,8 +1198,19 @@ function renderContent() {
     <div class="sec">全キャンペーン一覧</div>
     <div class="card" style="margin-bottom:20px;overflow-x:auto">
       <table class="tbl"><thead><tr>
-        <th>状態</th><th>件名</th><th>曜日・時間</th><th>文字数</th>
-        <th>送信数</th><th>開封率</th><th>返信率</th><th>アポ数</th><th>アポ率(送信)</th><th>アポ率(開封)</th><th>返信→アポ</th><th>バウンス</th><th></th>
+        <th>状態</th>
+        <th onclick="sortTable('subject')" class="${sortCol==='subject'?'sort-active':''}">件名 ${sortArrow('subject')}</th>
+        <th>曜日・時間</th>
+        <th onclick="sortTable('bodyLength')" class="${sortCol==='bodyLength'?'sort-active':''}">文字数 ${sortArrow('bodyLength')}</th>
+        <th onclick="sortTable('recipients')" class="${sortCol==='recipients'?'sort-active':''}">送信数 ${sortArrow('recipients')}</th>
+        <th onclick="sortTable('openRate')" class="${sortCol==='openRate'?'sort-active':''}">開封率 ${sortArrow('openRate')}</th>
+        <th onclick="sortTable('clickRate')" class="${sortCol==='clickRate'?'sort-active':''}">クリック率 ${sortArrow('clickRate')}</th>
+        <th onclick="sortTable('replyRate')" class="${sortCol==='replyRate'?'sort-active':''}">返信率 ${sortArrow('replyRate')}</th>
+        <th onclick="sortTable('appointments')" class="${sortCol==='appointments'?'sort-active':''}">アポ数 ${sortArrow('appointments')}</th>
+        <th onclick="sortTable('apptRateSent')" class="${sortCol==='apptRateSent'?'sort-active':''}">アポ率(送信) ${sortArrow('apptRateSent')}</th>
+        <th onclick="sortTable('apptRateOpen')" class="${sortCol==='apptRateOpen'?'sort-active':''}">アポ率(開封) ${sortArrow('apptRateOpen')}</th>
+        <th onclick="sortTable('bounceRate')" class="${sortCol==='bounceRate'?'sort-active':''}">バウンス ${sortArrow('bounceRate')}</th>
+        <th></th>
       </tr></thead><tbody>${buildRows()}</tbody></table>
     </div>
   </div>`;
@@ -977,7 +1245,9 @@ function buildBar(field, cls, rev=false) {
 }
 
 function buildRows() {
-  return camps.map((c,i)=>{
+  const sorted = getSortedCamps();
+  return sorted.map(c=>{
+    const i = c._idx;
     const r2a=(c.replies||0)>0?pct((c.appointments||0)/c.replies):'—';
     const lp=c.bodyLength?`<span class="pill ${c.bodyLength<150?'pc':c.bodyLength<350?'pm':'ppu'}">${c.bodyLength}字</span>`:'<span class="pill pgr">—</span>';
     return`<tr>
@@ -987,11 +1257,11 @@ function buildRows() {
       <td>${lp}</td>
       <td style="font-weight:700">${num(c.recipients)}</td>
       <td><span class="pill pp">${pct(c.openRate)}</span></td>
+      <td><span class="pill pbl">${pct(c.clickRate||0)}</span></td>
       <td><span class="pill ppu">${pct(c.replyRate)}</span></td>
       <td style="color:var(--hot);font-weight:700;font-size:14px">${c.appointments||0}</td>
       <td><span class="pill pg">${pct(c.apptRateSent)}</span></td>
       <td><span class="pill pgn">${pct(c.apptRateOpen)}</span></td>
-      <td><span class="pill pm">${r2a}</span></td>
       <td><span class="pill ${(c.bounceRate||0)>0.05?'pc':'pgr'}">${pct(c.bounceRate)}</span></td>
       <td><button class="icon-btn" onclick="openEdit(${i})">✏️</button></td>
     </tr>`;
@@ -1128,10 +1398,10 @@ function drawSubj() {
 // ══ DEMO ══
 function loadDemo() {
   camps=[
-    {subject:'【ベンナビ】初期費用ゼロで始められる件のご案内',recipients:180,opens:54,replies:8,bounces:4,openRate:.30,replyRate:.044,bounceRate:.022,appointments:3,apptRateSent:.0167,apptRateOpen:.0556,weekday:'火',hour:'10',bodyLength:220,bodyText:'弁護士先生、はじめまして。株式会社アシロの並木と申します。ベンナビにて初期費用ゼロで始められるプランをご用意しております。まずは30分だけお時間をいただけませんか。',openTimes:[],openCounts:[1,1,2,1,3],avgOpenCount:1.6,maxOpenCount:3,aiMemos:[],addedAt:new Date().toISOString(),apptFinalized:true},
-    {subject:'{name}先生、初期費用なしで試せるプランができました',recipients:200,opens:78,replies:14,bounces:5,openRate:.39,replyRate:.07,bounceRate:.025,appointments:6,apptRateSent:.030,apptRateOpen:.0769,weekday:'木',hour:'10',bodyLength:170,bodyText:'{name}先生、お世話になっております。アシロの並木です。初期費用なしで試せる新プランができました。ご興味があればぜひ一度お話しさせてください。',openTimes:[],openCounts:[1,2,1,3,4,1],avgOpenCount:2.0,maxOpenCount:4,aiMemos:[],addedAt:new Date().toISOString(),apptFinalized:true},
-    {subject:'弁護士事務所向け集客ソリューションのご提案',recipients:150,opens:27,replies:3,bounces:9,openRate:.18,replyRate:.02,bounceRate:.06,appointments:0,apptRateSent:0,apptRateOpen:0,weekday:'月',hour:'9',bodyLength:450,bodyText:'拝啓 時下ますますご清栄のこととお慶び申し上げます。株式会社アシロと申します。この度は弁護士事務所様向けの集客ソリューションをご提案させていただきたく、ご連絡差し上げました。',openTimes:[],openCounts:[1,1,1],avgOpenCount:1.0,maxOpenCount:1,aiMemos:[],addedAt:new Date().toISOString(),apptFinalized:false},
-    {subject:'先生のご事務所、新規案件を増やすお手伝いができます',recipients:210,opens:88,replies:18,bounces:6,openRate:.419,replyRate:.086,bounceRate:.029,appointments:8,apptRateSent:.038,apptRateOpen:.0909,weekday:'水',hour:'11',bodyLength:190,bodyText:'先生、こんにちは。アシロの並木です。先生のご事務所の新規案件を増やすお手伝いができます。月10件以上の案件獲得を実現されている事務所様もいらっしゃいます。',openTimes:[],openCounts:[1,2,3,1,4,2,1],avgOpenCount:2.0,maxOpenCount:4,aiMemos:[{date:new Date().toISOString(),text:'件名に{name}を使ったパーソナライズが有効。本文は200字以下に抑えるとアポ率が高い傾向。火曜・木曜の10〜11時台が最も開封率が高い。'}],addedAt:new Date().toISOString(),apptFinalized:true},
+    {subject:'【ベンナビ】初期費用ゼロで始められる件のご案内',recipients:180,opens:54,replies:8,bounces:4,clicks:7,openRate:.30,replyRate:.044,bounceRate:.022,clickRate:.0389,appointments:3,apptRateSent:.0167,apptRateOpen:.0556,weekday:'火',hour:'10',bodyLength:220,bodyText:'弁護士先生、はじめまして。株式会社アシロの並木と申します。ベンナビにて初期費用ゼロで始められるプランをご用意しております。まずは30分だけお時間をいただけませんか。',openTimes:[],openCounts:[1,1,2,1,3],avgOpenCount:1.6,maxOpenCount:3,aiMemos:[],addedAt:new Date().toISOString(),apptFinalized:true},
+    {subject:'{name}先生、初期費用なしで試せるプランができました',recipients:200,opens:78,replies:14,bounces:5,clicks:12,openRate:.39,replyRate:.07,bounceRate:.025,clickRate:.06,appointments:6,apptRateSent:.030,apptRateOpen:.0769,weekday:'木',hour:'10',bodyLength:170,bodyText:'{name}先生、お世話になっております。アシロの並木です。初期費用なしで試せる新プランができました。ご興味があればぜひ一度お話しさせてください。',openTimes:[],openCounts:[1,2,1,3,4,1],avgOpenCount:2.0,maxOpenCount:4,aiMemos:[],addedAt:new Date().toISOString(),apptFinalized:true},
+    {subject:'弁護士事務所向け集客ソリューションのご提案',recipients:150,opens:27,replies:3,bounces:9,clicks:1,openRate:.18,replyRate:.02,bounceRate:.06,clickRate:.0067,appointments:0,apptRateSent:0,apptRateOpen:0,weekday:'月',hour:'9',bodyLength:450,bodyText:'拝啓 時下ますますご清栄のこととお慶び申し上げます。株式会社アシロと申します。この度は弁護士事務所様向けの集客ソリューションをご提案させていただきたく、ご連絡差し上げました。',openTimes:[],openCounts:[1,1,1],avgOpenCount:1.0,maxOpenCount:1,aiMemos:[],addedAt:new Date().toISOString(),apptFinalized:false},
+    {subject:'先生のご事務所、新規案件を増やすお手伝いができます',recipients:210,opens:88,replies:18,bounces:6,clicks:15,openRate:.419,replyRate:.086,bounceRate:.029,clickRate:.0714,appointments:8,apptRateSent:.038,apptRateOpen:.0909,weekday:'水',hour:'11',bodyLength:190,bodyText:'先生、こんにちは。アシロの並木です。先生のご事務所の新規案件を増やすお手伝いができます。月10件以上の案件獲得を実現されている事務所様もいらっしゃいます。',openTimes:[],openCounts:[1,2,3,1,4,2,1],avgOpenCount:2.0,maxOpenCount:4,aiMemos:[{date:new Date().toISOString(),text:'件名に{name}を使ったパーソナライズが有効。本文は200字以下に抑えるとアポ率が高い傾向。火曜・木曜の10〜11時台が最も開封率が高い。'}],addedAt:new Date().toISOString(),apptFinalized:true},
   ];
   save();renderAll();
 }
